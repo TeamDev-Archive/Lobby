@@ -4,10 +4,16 @@ buildscript {
     }
 }
 
+repositories {
+    maven {
+        url = "http://maven.teamdev.com/repository/spine";
+    }
+}
+
 dependencies {
 
     // Spine
-    compile group: 'org.spine3', name: 'spine', version: '0.1'
+    compile group: 'org.spine3', name: 'core-java', version: '0.1-SNAPSHOT', changing: true
 
     // Spring
     compile group: 'org.springframework', name: 'spring-core', version: project.SPRING_VERSION
