@@ -51,18 +51,6 @@ subprojects {
 
     dependencies {
 
-        // Spine
-        compile group: 'org.spine3', name: 'spine', version: '0.1'
-
-        // Spring
-        compile group: 'org.springframework', name: 'spring-core', version: project.SPRING_VERSION
-        compile group: 'org.springframework', name: 'spring-webmvc', version: project.SPRING_VERSION
-        compile group: 'org.springframework', name: 'spring-context', version: project.SPRING_VERSION
-        compile group: 'org.springframework', name: 'spring-context-support', version: project.SPRING_VERSION
-
-        // Jackson
-        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.4.2'
-
         // Guava
         compile group: 'com.google.guava', name: 'guava', version: '19.0-rc2'
 
