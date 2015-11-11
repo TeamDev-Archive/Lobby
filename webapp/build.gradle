@@ -1,0 +1,20 @@
+buildscript {
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor(0, 'seconds')
+    }
+}
+
+dependencies {
+
+    // Spine
+    compile group: 'org.spine3', name: 'core-java', version: '0.1', changing: true
+
+    // Spring
+    compile group: 'org.springframework', name: 'spring-core', version: project.SPRING_VERSION
+    compile group: 'org.springframework', name: 'spring-webmvc', version: project.SPRING_VERSION
+    compile group: 'org.springframework', name: 'spring-context', version: project.SPRING_VERSION
+    compile group: 'org.springframework', name: 'spring-context-support', version: project.SPRING_VERSION
+
+    // Jackson
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.4.2'
+}

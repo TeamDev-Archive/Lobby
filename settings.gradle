@@ -1,0 +1,5 @@
+rootProject.name = 'Lobby'
+
+include ':webapp'
+
+project(':webapp').projectDir = "$rootDir/webapp" as File
