@@ -26,8 +26,10 @@ option java_multiple_files = true;
 
 import "google/protobuf/timestamp.proto";
 
+// The conference created by a business customer.
 message Conference {
 
+    // The unique conference id.
     ConferenceId conference_id = 1;
 
     // The conference locator access code.
@@ -35,34 +37,58 @@ message Conference {
     // Generated when the business customer creates the conference.
     string access_code = 2;
 
+    // The conference name. Used in the slug.
     string name = 3;
 
+    // The conference description (optional).
     string description = 4;
 
     // The part of the URL used to access the conference.
     // Consists of conferenceId + conferenceName (name is cut).
     string slug = 5;
 
+    // The start date of the conference.
     google.protobuf.Timestamp start_date = 6;
 
+    // The end date of the conference (inclusive).
     google.protobuf.Timestamp end_date = 7;
 
+    // The types of seats available for the conference.
     repeated SeatType seat_type = 8;
 }
 
+// The id of the conference based on the UUID (universally unique identifier).
 message ConferenceId {
-
-    int64 value = 1;
+    string uuid = 1;
 }
 
+// The type of a seat which represents the right to be admitted to a conference or
+// to access a specific session at the conference (tutorial, workshop etc).
 message SeatType {
 
+    // The unique seat id.
     SeatTypeId seat_type_id = 1;
 
+    // The conference id the seat associated with.
     ConferenceId conference_id = 2;
+
+    // The seat name.
+    string name = 3;
+
+    // The seat description (optional).
+    string description = 4;
+
+    // The seat price (in USD).
+    double price = 5;
+
+    // The total quantity of seats available for the conference.
+    int32 quantity_total = 6;
+
+    // The available quantity of seats for the conference.
+    int32 quantity_available = 7;
 }
 
+// The id of the seat type based on the UUID (universally unique identifier).
 message SeatTypeId {
-
-    int32 value = 1;
+    string uuid = 1;
 }

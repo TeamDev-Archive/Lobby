@@ -26,33 +26,40 @@ option java_multiple_files = true;
 
 import "lobby/registration/conference.proto";
 
+// The order placed by a user to reserve seats for a conference.
 message Order {
 
+    // The unique order id.
     OrderId order_id = 1;
 
+    // The conference id the order associated with.
     ConferenceId conference_id = 2;
 
+    // The order items.
     repeated SeatOrderItem seat = 3;
 
+    // The current status of the order.
     Status status = 4;
 
     enum Status {
-
+        // The initial status of the order.
         CREATED = 0;
-        BOOKED = 1;
-        REJECTED = 2;
-        CONFIRMED = 3;
+        // The order is in this status when the registrant has successfully paid for order items.
+        CONFIRMED = 1;
     }
 }
 
+// The id of the order based on the UUID (universally unique identifier).
 message OrderId {
-
-    string value = 1;
+    string uuid = 1;
 }
 
+// Represents a seat type and quantity of seats, associated with an order.
 message SeatOrderItem {
 
+    // The type of seats in this item.
     SeatTypeId seat_type_id = 1;
 
+    // The quantity of seats with such a seat type.
     int32 quantity = 2;
 }
