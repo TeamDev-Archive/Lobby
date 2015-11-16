@@ -24,18 +24,35 @@ package lobby.registration;
 option java_package="com.lobby.registration";
 option java_multiple_files = true;
 
+import "lobby/registration/conference.proto";
+
 message Order {
 
     OrderId order_id = 1;
 
-    enum Status {
-        NEW = 0;
-        PAID = 3;
-    }
+    ConferenceId conference_id = 2;
+
+    repeated SeatOrderItem seat = 3;
 
     Status status = 4;
+
+    enum Status {
+
+        CREATED = 0;
+        BOOKED = 1;
+        REJECTED = 2;
+        CONFIRMED = 3;
+    }
 }
 
 message OrderId {
+
     string value = 1;
+}
+
+message SeatOrderItem {
+
+    SeatTypeId seat_type_id = 1;
+
+    int32 quantity = 2;
 }

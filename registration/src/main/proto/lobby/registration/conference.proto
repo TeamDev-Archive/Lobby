@@ -19,20 +19,50 @@
 //
 syntax = "proto3";
 
-package lobby.registration.command;
+package lobby.registration;
 
-option java_package="com.lobby.registration.command";
-option java_outer_classname = "RegistrationCommandsProto";
+option java_package="com.lobby.registration";
 option java_multiple_files = true;
 
-import "lobby/registration/order.proto";
-import "lobby/registration/conference.proto";
+import "google/protobuf/timestamp.proto";
 
-message RegisterToConference {
+message Conference {
 
-    OrderId order_id = 1;
+    ConferenceId conference_id = 1;
+
+    // The conference locator access code.
+    // Used by conference creator to view conference details.
+    // Generated when the business customer creates the conference.
+    string access_code = 2;
+
+    string name = 3;
+
+    string description = 4;
+
+    // The part of the URL used to access the conference.
+    // Consists of conferenceId + conferenceName (name is cut).
+    string slug = 5;
+
+    google.protobuf.Timestamp start_date = 6;
+
+    google.protobuf.Timestamp end_date = 7;
+
+    repeated SeatType seat_type = 8;
+}
+
+message ConferenceId {
+
+    int64 value = 1;
+}
+
+message SeatType {
+
+    SeatTypeId seat_type_id = 1;
 
     ConferenceId conference_id = 2;
+}
 
-    repeated SeatOrderItem seat = 3;
+message SeatTypeId {
+
+    int32 value = 1;
 }
