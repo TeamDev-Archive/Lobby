@@ -18,7 +18,7 @@ allprojects {
 
     apply plugin: 'java';
     apply plugin: 'maven';
-    group = 'org.lobby';
+    group = 'com.lobby';
     version = '0.1';
 }
 

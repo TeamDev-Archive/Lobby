@@ -23,7 +23,7 @@ package lobby.registration.command;
 
 import "lobby/registration/order.proto";
 
-option java_package="org.lobby.registration.command";
+option java_package="com.lobby.registration.command";
 option java_outer_classname = "RegistrationCommandsProto";
 option java_multiple_files = true;
 
