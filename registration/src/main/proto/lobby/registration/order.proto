@@ -44,8 +44,12 @@ message Order {
     enum Status {
         // The initial status of the order.
         CREATED = 0;
+        // The order is in this status when the system has reserved the seats requested by the registrant.
+        BOOKED = 1;
+        // The order is in this status when the system cannot reserve the needed quantity of seats requested by the registrant.
+        REJECTED = 2;
         // The order is in this status when the registrant has successfully paid for order items.
-        CONFIRMED = 1;
+        CONFIRMED = 3;
     }
 }
 
