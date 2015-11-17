@@ -40,7 +40,7 @@ message Conference {
     // The conference name. Used in the slug.
     string name = 3;
 
-    // The conference description (optional).
+    // The conference description.
     string description = 4;
 
     // The part of the URL used to access the conference.
@@ -75,7 +75,7 @@ message SeatType {
     // The seat name.
     string name = 3;
 
-    // The seat description (optional).
+    // The seat description.
     string description = 4;
 
     // The seat price (in USD).
