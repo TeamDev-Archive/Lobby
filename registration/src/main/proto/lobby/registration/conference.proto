@@ -81,7 +81,7 @@ message SeatType {
     // The seat price (in USD).
     double price = 5;
 
-    // The total quantity of seats available for the conference.
+    // The total quantity of seats for the conference.
     int32 quantity_total = 6;
 
     // The available quantity of seats for the conference.
