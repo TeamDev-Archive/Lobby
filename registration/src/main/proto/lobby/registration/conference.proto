@@ -33,7 +33,7 @@ message Conference {
     ConferenceId conference_id = 1;
 
     // The conference locator access code.
-    // Used by conference creator to view conference details.
+    // Used by a business customer (conference owner) to view conference details.
     // Generated when the business customer creates the conference.
     string access_code = 2;
 
@@ -66,7 +66,7 @@ message ConferenceId {
 // to access a specific session at the conference (tutorial, workshop etc).
 message SeatType {
 
-    // The unique seat id.
+    // The unique seat type id.
     SeatTypeId seat_type_id = 1;
 
     // The conference id the seat associated with.
@@ -91,4 +91,26 @@ message SeatType {
 // The id of the seat type based on the UUID (universally unique identifier).
 message SeatTypeId {
     string uuid = 1;
+}
+
+// Associates an attendee with a seat in a confirmed order.
+message SeatAssignment {
+
+    // The seat type for the attendee.
+    SeatTypeId seat_type_id = 1;
+
+    // The personal info of the attendee.
+    PersonalInfo attendee = 2;
+}
+
+message PersonalInfo {
+
+    // The person's first name.
+    string first_name = 1;
+
+    // The person's last name.
+    string last_name = 2;
+
+    // The person's email.
+    string email = 3;
 }
