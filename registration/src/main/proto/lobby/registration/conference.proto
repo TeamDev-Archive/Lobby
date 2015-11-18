@@ -24,7 +24,7 @@ package lobby.registration;
 option java_package="com.lobby.registration";
 option java_multiple_files = true;
 
-import "google/protobuf/timestamp.proto";
+import "spine/time/time.proto";
 
 // The conference created by a business customer.
 message Conference {
@@ -48,10 +48,10 @@ message Conference {
     string slug = 5;
 
     // The start date of the conference.
-    google.protobuf.Timestamp start_date = 6;
+    spine.time.LocalDate start_date = 6;
 
     // The end date of the conference (inclusive).
-    google.protobuf.Timestamp end_date = 7;
+    spine.time.LocalDate end_date = 7;
 
     // The types of seats available for the conference.
     repeated SeatType seat_type = 8;
