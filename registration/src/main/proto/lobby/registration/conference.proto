@@ -42,9 +42,7 @@ message Conference {
     ConferenceId id = 1;
 
     // The conference locator access code.
-    // Used by a business customer (conference owner) to view conference details.
-    // Generated when the business customer creates the conference.
-    string access_code = 2;
+    ConferenceAccessCode access_code = 2;
 
     // The conference name. Used in the slug.
     string name = 3;
@@ -53,8 +51,7 @@ message Conference {
     string description = 4;
 
     // The part of the URL used to access the conference.
-    // Consists of conferenceId + conferenceName (name is cut).
-    string slug = 5;
+    Slug slug = 5;
 
     // The start date of the conference.
     spine.time.LocalDate start_date = 6;
@@ -64,6 +61,20 @@ message Conference {
 
     // The types of seats available for the conference.
     repeated SeatType seat_type = 8;
+}
+
+// The conference locator access code.
+// Used by a business customer (conference owner) to view conference details.
+// Generated when the business customer creates the conference.
+message ConferenceAccessCode {
+    // The string value of the access code.
+    string value = 1;
+}
+
+// The part of the URL used to access the conference.
+message Slug {
+    // The string value of the slug.
+    string value = 1;
 }
 
 // The type of a seat which represents the right to be admitted to a conference or
