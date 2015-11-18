@@ -73,10 +73,10 @@ message SeatType {
     // The conference id the seat associated with.
     ConferenceId conference_id = 2;
 
-    // The seat name.
+    // The name of the seat type.
     string name = 3;
 
-    // The seat description.
+    // The description of the seat type.
     string description = 4;
 
     // The seat price (in USD).
