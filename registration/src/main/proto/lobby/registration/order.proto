@@ -30,7 +30,7 @@ import "lobby/registration/conference.proto";
 message Order {
 
     // The unique order id.
-    OrderId order_id = 1;
+    OrderId id = 1;
 
     // The conference id the order associated with.
     ConferenceId conference_id = 2;

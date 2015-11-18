@@ -30,7 +30,7 @@ import "spine/time/time.proto";
 message Conference {
 
     // The unique conference id.
-    ConferenceId conference_id = 1;
+    ConferenceId id = 1;
 
     // The conference locator access code.
     // Used by a business customer (conference owner) to view conference details.
@@ -68,7 +68,7 @@ message ConferenceId {
 message SeatType {
 
     // The unique seat type id.
-    SeatTypeId seat_type_id = 1;
+    SeatTypeId id = 1;
 
     // The conference id the seat associated with.
     ConferenceId conference_id = 2;
