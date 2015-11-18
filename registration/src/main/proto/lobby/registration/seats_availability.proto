@@ -21,7 +21,7 @@ syntax = "proto3";
 
 package lobby.registration;
 
-option java_package="com.lobby.registration";
+option java_package="lobby.registration";
 option java_multiple_files = true;
 
 import "lobby/registration/conference.proto";

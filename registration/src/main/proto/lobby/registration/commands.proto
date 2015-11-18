@@ -21,7 +21,7 @@ syntax = "proto3";
 
 package lobby.registration.command;
 
-option java_package="com.lobby.registration.command";
+option java_package="lobby.registration.command";
 option java_outer_classname = "RegistrationCommandsProto";
 option java_multiple_files = true;
 

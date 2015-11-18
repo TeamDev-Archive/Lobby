@@ -21,7 +21,7 @@ syntax = "proto3";
 
 package lobby.registration.event;
 
-option java_package="com.lobby.registration.event";
+option java_package="lobby.registration.event";
 option java_outer_classname = "RegistrationEventsProto";
 option java_multiple_files = true;
 
