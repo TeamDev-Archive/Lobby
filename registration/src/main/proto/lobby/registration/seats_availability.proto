@@ -26,7 +26,7 @@ option java_multiple_files = true;
 
 import "lobby/registration/conference.proto";
 
-// Manages the availability of conference seats.
+// Represents the availability of conference seats.
 message SeatsAvailability {
 
     // The map from a seat type id to an available quantity of seats.
@@ -36,10 +36,12 @@ message SeatsAvailability {
     map<string, SeatQuantities> pending_reservations = 2;
 }
 
+// The set of seat quantities of different types.
 message SeatQuantities {
 
     repeated SeatQuantity quantities = 1;
 
+    // Represents the quantity of seats of the given type.
     message SeatQuantity {
 
         // The seat type id.
