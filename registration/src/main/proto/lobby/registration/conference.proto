@@ -27,6 +27,7 @@ option java_multiple_files = true;
 import "spine/time/time.proto";
 import "spine/base/person.proto";
 import "spine/base/email.proto";
+import "spine/base/money.proto";
 
 // The id of the conference based on the UUID.
 message ConferenceId {
@@ -81,8 +82,8 @@ message SeatType {
     // The description of the seat type.
     string description = 4;
 
-    // The seat price (in USD).
-    double price = 5;
+    // The seat price.
+    spine.base.MonetaryAmount price = 5;
 
     // The total quantity of seats for the conference.
     int32 quantity_total = 6;
