@@ -41,6 +41,7 @@ message Order {
     // The current status of the order.
     Status status = 4;
 
+    // The status of the order.
     enum Status {
         // The initial status of the order.
         CREATED = 0;
