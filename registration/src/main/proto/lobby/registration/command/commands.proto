@@ -1,0 +1,89 @@
+//
+// Copyright 2015, TeamDev Ltd. All rights reserved.
+//
+// Redistribution and use in source and/or binary forms, with or without
+// modification, must retain the above copyright notice and the following
+// disclaimer.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+syntax = "proto3";
+
+package lobby.registration.command;
+
+option java_package="lobby.registration.command";
+option java_outer_classname = "RegistrationCommandsProto";
+option java_multiple_files = true;
+
+import "lobby/registration/order.proto";
+import "lobby/registration/conference.proto";
+
+// The request to reserve one or more seats at the conference.
+// Is sent as the result of a user (registrant) interaction with the UI.
+message MakeSeatsOrder {
+
+    // The ID of the new order.
+    OrderId order_id = 1;
+
+    // The ID of the conference.
+    ConferenceId conference_id = 2;
+
+    // The order items representing seats at the conference.
+    repeated SeatOrderItem seat = 3;
+}
+
+// The request to accept the order.
+// Is sent from a RegistrationProcessManager to an Order aggregate as the result of a ReservationAccepted event.
+message AcceptOrder {
+    // The ID of the order to accept.
+    OrderId order_id = 1;
+}
+
+// The request to reject the order.
+// Is sent from a RegistrationProcessManager to an Order aggregate as the result of a ReservationRejected event.
+message RejectOrder {
+    // The ID of the order to reject.
+    OrderId order_id = 1;
+}
+
+// The request to reserve one or more seats.
+// Is sent from a RegistrationProcessManager to a SeatsAvailability aggregate as the result of an OrderPlaced event.
+message MakeSeatsReservation {
+
+    // The ID of the new reservation.
+    ReservationId reservation_id = 1;
+
+    // The order items representing seats.
+    repeated SeatOrderItem seat = 2;
+}
+
+// The request to commit seats reservation.
+// Is sent from a RegistrationProcessManager to a SeatsAvailability aggregate as the result of a PaymentReceived event.
+message CommitSeatsReservation {
+    // The ID of the reservation.
+    ReservationId reservation_id = 1;
+}
+
+// The request to reject seats reservation.
+// Is sent from a RegistrationProcessManager to a SeatsAvailability aggregate as the result of an ExpireReservationProcess command.
+message RejectSeatsReservation {
+    // The ID of the reservation.
+    ReservationId reservation_id = 1;
+}
+
+// The request to stop seats reservation process.
+// Is sent from a RegistrationProcessManager as the result of a ReservationAccepted event.
+message ExpireReservationProcess {
+    // The ID of the reservation.
+    ReservationId reservation_id = 1;
+}
