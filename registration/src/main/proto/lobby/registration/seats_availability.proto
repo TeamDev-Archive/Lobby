@@ -38,16 +38,15 @@ message SeatsAvailability {
 
 // The set of seat quantities of different types.
 message SeatQuantities {
-
     repeated SeatQuantity quantities = 1;
+}
 
-    // Represents the quantity of seats of the given type.
-    message SeatQuantity {
+// Represents the quantity of seats of the given type.
+message SeatQuantity {
 
-        // The seat type id.
-        SeatTypeId seat_type_id = 1;
+    // The seat type id.
+    SeatTypeId seat_type_id = 1;
 
-        // The quantity of seats of the given type.
-        int32 quantity = 2;
-    }
+    // The quantity of seats of the given type.
+    int32 quantity = 2;
 }

@@ -27,6 +27,7 @@ option java_multiple_files = true;
 
 import "lobby/registration/order.proto";
 import "lobby/registration/conference.proto";
+import "lobby/registration/seats_availability.proto";
 
 // The request to reserve one or more seats at the conference.
 // Is sent as the result of a user (registrant) interaction with the UI.
@@ -63,8 +64,8 @@ message MakeSeatsReservation {
     // The ID of the new reservation.
     ReservationId reservation_id = 1;
 
-    // The order items representing seats.
-    repeated SeatOrderItem seat = 2;
+    // The set of seat quantities of different types.
+    repeated SeatQuantity seat = 2;
 }
 
 // The request to commit seats reservation.
