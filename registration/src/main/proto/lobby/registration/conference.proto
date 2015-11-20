@@ -37,7 +37,6 @@ message ConferenceId {
 
 // The conference created by a business customer.
 message Conference {
-
     // The unique conference id.
     ConferenceId id = 1;
 
@@ -80,7 +79,6 @@ message Slug {
 // The type of a seat which represents the right to be admitted to a conference or
 // to access a specific session at the conference (tutorial, workshop etc).
 message SeatType {
-
     // The unique seat type id.
     SeatTypeId id = 1;
 
@@ -111,7 +109,6 @@ message SeatTypeId {
 
 // Associates an attendee with a seat in a confirmed order.
 message SeatAssignment {
-
     // The seat type for the attendee.
     SeatTypeId seat_type_id = 1;
 
@@ -120,7 +117,6 @@ message SeatAssignment {
 }
 
 message PersonalInfo {
-
     // The person's name.
     spine.base.PersonName name = 1;
 

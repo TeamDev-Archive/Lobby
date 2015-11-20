@@ -28,7 +28,6 @@ import "lobby/registration/conference.proto";
 
 // The order placed by a user (registrant) to reserve seats for a conference.
 message Order {
-
     // The unique order id.
     OrderId id = 1;
 
@@ -62,7 +61,6 @@ message OrderId {
 
 // Represents a seat type and quantity of seats, associated with an order.
 message SeatOrderItem {
-
     // The type of seats in this item.
     SeatTypeId seat_type_id = 1;
 

@@ -32,7 +32,6 @@ import "lobby/registration/seats_availability.proto";
 // The request to reserve one or more seats at the conference.
 // Is sent as the result of a user (registrant) interaction with the UI.
 message MakeSeatsOrder {
-
     // The ID of the new order.
     OrderId order_id = 1;
 
@@ -60,7 +59,6 @@ message RejectOrder {
 // The request to reserve one or more seats.
 // Is sent from a RegistrationProcessManager to a SeatsAvailability aggregate as the result of an OrderPlaced event.
 message MakeSeatsReservation {
-
     // The ID of the new reservation.
     ReservationId reservation_id = 1;
 

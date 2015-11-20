@@ -28,7 +28,6 @@ import "lobby/registration/conference.proto";
 
 // Represents the availability of conference seats.
 message SeatsAvailability {
-
     // The map from a seat type id to an available quantity of seats.
     map<string, int32> seats_available = 1;
 
@@ -38,12 +37,11 @@ message SeatsAvailability {
 
 // The set of seat quantities of different types.
 message SeatQuantities {
-    repeated SeatQuantity quantities = 1;
+    repeated SeatQuantity quantity = 1;
 }
 
 // Represents the quantity of seats of the given type.
 message SeatQuantity {
-
     // The seat type id.
     SeatTypeId seat_type_id = 1;
 
