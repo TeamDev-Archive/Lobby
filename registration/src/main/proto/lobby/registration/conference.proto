@@ -92,7 +92,7 @@ message SeatType {
     string description = 4;
 
     // The price of the seat of this type.
-    spine.money.MonetaryAmount price = 5;
+    spine.money.Money price = 5;
 
     // The total quantity of seats for the conference.
     int32 quantity_total = 6;
