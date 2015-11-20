@@ -19,14 +19,32 @@
 //
 syntax = "proto3";
 
-package lobby.registration.command;
+package lobby.registration;
 
-import "lobby/registration/order.proto";
-
-option java_package="com.lobby.registration.command";
-option java_outer_classname = "RegistrationCommandsProto";
+option java_package="lobby.registration";
 option java_multiple_files = true;
 
-message CreateOrder {
-    OrderId order_id = 1;
+import "lobby/registration/conference.proto";
+
+// Represents the availability of conference seats.
+message SeatsAvailability {
+    // The map from a seat type id to an available quantity of seats.
+    map<string, int32> seats_available = 1;
+
+    // The map from a reservation request id to seat quantities.
+    map<string, SeatQuantities> pending_reservations = 2;
+}
+
+// The set of seat quantities of different types.
+message SeatQuantities {
+    repeated SeatQuantity quantity = 1;
+}
+
+// Represents the quantity of seats of the given type.
+message SeatQuantity {
+    // The seat type id.
+    SeatTypeId seat_type_id = 1;
+
+    // The quantity of seats of the given type.
+    int32 quantity = 2;
 }

@@ -21,12 +21,32 @@ syntax = "proto3";
 
 package lobby.registration.event;
 
-import "lobby/registration/order.proto";
-
-option java_package="com.lobby.registration.event";
+option java_package="lobby.registration.event";
 option java_outer_classname = "RegistrationEventsProto";
 option java_multiple_files = true;
 
-message OrderCreated {
+import "lobby/registration/order.proto";
+
+// The event propagated when a MakeSeatsOrder command handled in an Order aggregate.
+message OrderPlaced {
+    // The ID of the order.
     OrderId order_id = 1;
+}
+
+// The event propagated from a SeatsAvailability aggregate when it is possible to reserve needed quantity of seats.
+message ReservationAccepted {
+    // The ID of the reservation to accept.
+    lobby.registration.ReservationId reservation_id = 1;
+}
+
+// The event propagated from a SeatsAvailability aggregate when the available quantity of seats is insufficient.
+message ReservationRejected {
+    // The ID of the reservation to reject.
+    lobby.registration.ReservationId reservation_id = 1;
+}
+
+// The event propagated when the payment for the order is received.
+message PaymentReceived {
+    // The ID of the reservation.
+    lobby.registration.ReservationId reservation_id = 1;
 }
