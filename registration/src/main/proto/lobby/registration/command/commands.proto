@@ -57,7 +57,7 @@ message RejectOrder {
 }
 
 // The request to reserve one or more seats.
-// Is sent from a RegistrationProcessManager to a SeatsAvailability aggregate as the result of an OrderPlaced event.
+// Is sent from a RegistrationProcessManager to a SeatsAvailability aggregate as the result of an OrderCreated event.
 message MakeSeatsReservation {
     // The ID of the new reservation.
     ReservationId reservation_id = 1;
