@@ -34,8 +34,8 @@ message Order {
     // The conference id the order associated with.
     ConferenceId conference_id = 2;
 
-    // The order items.
-    repeated SeatOrderItem seat = 3;
+    // The set of seat items representing seat quantities of different types.
+    repeated SeatItem seat = 3;
 
     // The current status of the order.
     Status status = 4;
@@ -55,15 +55,6 @@ message Order {
 message OrderId {
     // The UUID-based value of the order ID.
     string uuid = 1;
-}
-
-// Represents a seat type and quantity of seats, associated with an order.
-message SeatOrderItem {
-    // The type of seats in this item.
-    SeatTypeId seat_type_id = 1;
-
-    // The quantity of seats with such a seat type.
-    int32 quantity = 2;
 }
 
 // The id of the reservation based on the UUID.

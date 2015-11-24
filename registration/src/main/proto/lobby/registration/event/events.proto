@@ -26,11 +26,14 @@ option java_outer_classname = "RegistrationEventsProto";
 option java_multiple_files = true;
 
 import "lobby/registration/order.proto";
+import "lobby/registration/conference.proto";
 
 // The event propagated when a MakeOrder command handled in an Order aggregate.
 message OrderCreated {
     // The ID of the order.
     OrderId order_id = 1;
+    // The order items.
+    repeated SeatItem seat = 2;
 }
 
 // The event propagated from an Order aggregate when an AcceptOrder command handled in an Order aggregate.
