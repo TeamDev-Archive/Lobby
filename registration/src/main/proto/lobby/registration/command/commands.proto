@@ -31,7 +31,7 @@ import "lobby/registration/seats_availability.proto";
 
 // The request to reserve one or more seats at the conference.
 // Is sent as the result of a user (registrant) interaction with the UI.
-message MakeSeatsOrder {
+message MakeOrder {
     // The ID of the new order.
     OrderId order_id = 1;
 

@@ -27,7 +27,7 @@ option java_multiple_files = true;
 
 import "lobby/registration/order.proto";
 
-// The event propagated when a MakeSeatsOrder command handled in an Order aggregate.
+// The event propagated when a MakeOrder command handled in an Order aggregate.
 message OrderCreated {
     // The ID of the order.
     OrderId order_id = 1;
