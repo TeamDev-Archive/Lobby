@@ -21,7 +21,7 @@ import static lobby.registration.Order.Status.*;
 @SuppressWarnings("TypeMayBeWeakened") // not in handlers
 public class OrderAggregate extends Aggregate<OrderId, Order> {
 
-    protected OrderAggregate(OrderId id) {
+    public OrderAggregate(OrderId id) {
         super(id);
     }
 
