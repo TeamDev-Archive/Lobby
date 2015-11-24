@@ -33,7 +33,7 @@ message OrderPlaced {
     OrderId order_id = 1;
 }
 
-// The event propagated from a SeatsAvailability aggregate when it is possible to reserve needed quantity of seats.
+// The event propagated from a SeatsAvailability aggregate when the system has temporarily reserved the needed quantity of seats.
 message ReservationAccepted {
     // The ID of the reservation to accept.
     lobby.registration.ReservationId reservation_id = 1;
