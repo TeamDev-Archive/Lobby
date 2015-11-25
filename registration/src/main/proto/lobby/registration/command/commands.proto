@@ -41,13 +41,6 @@ message CreateOrder {
     repeated SeatItem seat = 3;
 }
 
-// The request to confirm the order.
-// Is sent from a RegistrationProcessManager to an Order aggregate as the result of a PaymentConfirmed event.
-message ConfirmOrder {
-    // The ID of the order to confirm.
-    OrderId order_id = 1;
-}
-
 // The request to reserve the order.
 // Is sent from a RegistrationProcessManager to an Order aggregate as the result of a ReservationConfirmed event.
 message ReserveOrder {
@@ -59,6 +52,13 @@ message ReserveOrder {
 // Is sent from a RegistrationProcessManager to an Order aggregate as the result of a ReservationRejected or ReservationExpired event.
 message RejectOrder {
     // The ID of the order to reject.
+    OrderId order_id = 1;
+}
+
+// The request to confirm the order.
+// Is sent from a RegistrationProcessManager to an Order aggregate as the result of a PaymentConfirmed event.
+message ConfirmOrder {
+    // The ID of the order to confirm.
     OrderId order_id = 1;
 }
 
