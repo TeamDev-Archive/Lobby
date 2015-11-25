@@ -28,7 +28,7 @@ option java_multiple_files = true;
 import "lobby/registration/order.proto";
 import "lobby/registration/conference.proto";
 
-// The event propagated when a MakeOrder command handled in an Order aggregate.
+// The event propagated when an order was created.
 message OrderCreated {
     // The ID of the order.
     OrderId order_id = 1;
@@ -36,32 +36,50 @@ message OrderCreated {
     repeated SeatItem seat = 2;
 }
 
-// The event propagated from an Order aggregate when an AcceptOrder command handled in an Order aggregate.
-message OrderAccepted {
-    // The ID of the order to accept.
+// The event propagated when an order was confirmed.
+message OrderConfirmed {
+    // The ID of the order.
     OrderId order_id = 1;
 }
 
-// The event propagated from an Order aggregate when a RejectOrder command handled in an Order aggregate.
+// The event propagated when an order was rejected.
 message OrderRejected {
-    // The ID of the order to reject.
+    // The ID of the order.
     OrderId order_id = 1;
 }
 
-// The event propagated from a Reservation aggregate when the system has temporarily reserved the needed quantity of seats.
-message ReservationAccepted {
-    // The ID of the reservation to accept.
+// The event propagated when an order was reserved.
+message OrderReserved {
+    // The ID of the order.
+    OrderId order_id = 1;
+}
+
+// The event propagated when the needed quantity of seats was temporarily reserved.
+message ReservationConfirmed {
+    // The ID of the confirmed reservation.
     lobby.registration.ReservationId reservation_id = 1;
 }
 
-// The event propagated from a Reservation aggregate when the available quantity of seats is insufficient.
+// The event propagated when the available quantity of seats is insufficient for the reservation request.
 message ReservationRejected {
     // The ID of the reservation to reject.
     lobby.registration.ReservationId reservation_id = 1;
 }
 
-// The event propagated when the payment for the order is received.
-message PaymentReceived {
+// The event propagated when the expired reservation was cancelled.
+message ReservationExpired {
+    // The ID of the reservation to reject.
+    lobby.registration.ReservationId reservation_id = 1;
+}
+
+// The event propagated when the payment for the order was received.
+message PaymentConfirmed {
+    // The ID of the reservation.
+    lobby.registration.ReservationId reservation_id = 1;
+}
+
+// The event propagated when the payment for the order was rejected.
+message PaymentRejected {
     // The ID of the reservation.
     lobby.registration.ReservationId reservation_id = 1;
 }
