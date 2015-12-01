@@ -123,28 +123,32 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         if (command.getSeatCount() == 0) {
             throw new IllegalArgumentException("No seats in the order.");
         }
-        checkState(getState().getStatus() == UNRECOGNIZED, getState().getStatus());
+        final Order.Status status = getState().getStatus();
+        checkState(status == UNRECOGNIZED, status);
     }
 
     private void validateCommand(ReserveOrder command) {
         if (command.getOrderId().getUuid().isEmpty()) {
             throw noOrderIdException();
         }
-        checkState(getState().getStatus() == CREATED, getState().getStatus());
+        final Order.Status status = getState().getStatus();
+        checkState(status == CREATED, status);
     }
 
     private void validateCommand(RejectOrder command) {
         if (command.getOrderId().getUuid().isEmpty()) {
             throw noOrderIdException();
         }
-        checkState(getState().getStatus() == CREATED, getState().getStatus());
+        final Order.Status status = getState().getStatus();
+        checkState(status == CREATED, status);
     }
 
     private void validateCommand(ConfirmOrder command) {
         if (command.getOrderId().getUuid().isEmpty()) {
             throw noOrderIdException();
         }
-        checkState(getState().getStatus() == RESERVED, getState().getStatus());
+        final Order.Status status = getState().getStatus();
+        checkState(status == RESERVED, status);
     }
 
     private static IllegalArgumentException noOrderIdException() {
