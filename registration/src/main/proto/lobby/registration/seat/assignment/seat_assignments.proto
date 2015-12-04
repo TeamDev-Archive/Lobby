@@ -1,0 +1,51 @@
+//
+// Copyright 2015, TeamDev Ltd. All rights reserved.
+//
+// Redistribution and use in source and/or binary forms, with or without
+// modification, must retain the above copyright notice and the following
+// disclaimer.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+syntax = "proto3";
+
+package lobby.registration.seat.assignment;
+
+option java_package="lobby.registration.seat.assignment";
+option java_outer_classname = "SeatAssignmentsProto";
+option java_multiple_files = true;
+
+import "spine/base/person.proto";
+import "spine/base/email.proto";
+import "lobby/registration/conference.proto";
+
+// Associates an attendee with a seat in a confirmed order.
+message SeatAssignment {
+    // The position of the seat.
+    int32 position = 1;
+
+    // The seat type for the attendee.
+    SeatTypeId seat_type_id = 2;
+
+    // The personal info of the attendee.
+    PersonalInfo attendee = 3;
+}
+
+// The info about a person.
+message PersonalInfo {
+    // The person's name.
+    spine.base.PersonName name = 1;
+
+    // The person's email.
+    spine.base.EmailAddress email = 2;
+}

@@ -26,7 +26,7 @@ option java_outer_classname = "OrderProto";
 option java_multiple_files = true;
 
 import "lobby/registration/conference.proto";
-import "lobby/registration/seats/seats.proto";
+import "lobby/registration/seat/availability/seats_availability.proto";
 import "spine/money/money.proto";
 
 // The order made by a user (registrant) to reserve seats for a conference.
@@ -38,7 +38,7 @@ message Order {
     ConferenceId conference_id = 2;
 
     // The set of seat items representing seat quantities of different types.
-    repeated lobby.registration.seats.SeatQuantity seat = 3;
+    repeated lobby.registration.seat.availability.SeatQuantity seat = 3;
 
     // The current status of the order.
     Status status = 4;

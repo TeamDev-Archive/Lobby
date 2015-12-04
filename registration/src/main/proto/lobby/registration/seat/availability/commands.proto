@@ -1,0 +1,87 @@
+//
+// Copyright 2015, TeamDev Ltd. All rights reserved.
+//
+// Redistribution and use in source and/or binary forms, with or without
+// modification, must retain the above copyright notice and the following
+// disclaimer.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+syntax = "proto3";
+
+package lobby.registration.seat;
+
+option java_package="lobby.registration.seat.availability";
+option java_outer_classname = "SeatsAvailabilityCommandsProto";
+option java_multiple_files = true;
+
+import "lobby/registration/conference.proto";
+import "lobby/registration/order/order.proto";
+import "lobby/registration/seat/availability/seats_availability.proto";
+
+// The request to reserve one or more seats.
+// Is sent from a RegistrationProcessManager to a SeatsAvailability aggregate when the order is placed/updated.
+message MakeSeatReservation {
+    // The ID of the new reservation.
+    lobby.registration.seat.availability.ReservationId reservation_id = 1;
+
+    // The conference id the seats associated with.
+    lobby.registration.ConferenceId conference_id = 2;
+
+    // The set of seat items representing the quantities of seats of different types.
+    repeated lobby.registration.seat.availability.SeatQuantity seat = 3;
+}
+
+// The request to commit the seats reservation.
+// Is sent from a RegistrationProcessManager to a SeatsAvailability aggregate when the payment for the reservation is received.
+message CommitSeatReservation {
+    // The ID of the reservation.
+    lobby.registration.seat.availability.ReservationId reservation_id = 1;
+
+    // The conference id the seats associated with.
+    lobby.registration.ConferenceId conference_id = 2;
+}
+
+// The request to cancel a seat reservation.
+// Is sent from a RegistrationProcessManager to a SeatsAvailability aggregate as the result of the reservation expiration.
+message CancelSeatReservation {
+    // The ID of the reservation.
+    lobby.registration.seat.availability.ReservationId reservation_id = 1;
+
+    // The conference id the reservation associated with.
+    lobby.registration.ConferenceId conference_id = 2;
+}
+
+// The request to add seats to an existing seat type of the conference.
+message AddSeats {
+    // The conference id the seats associated with.
+    lobby.registration.ConferenceId conference_id = 1;
+
+    // The ID of the seat type.
+    lobby.registration.SeatTypeId seat_type_id = 2;
+
+    // The quantity of the seats to add.
+    int32 quantity = 3;
+}
+
+// The request to remove seats from the conference.
+message RemoveSeats {
+    // The conference id the seats associated with.
+    lobby.registration.ConferenceId conference_id = 1;
+
+    // The ID of the seat type.
+    lobby.registration.SeatTypeId seat_type_id = 2;
+
+    // The quantity of the seats to add.
+    int32 quantity = 3;
+}

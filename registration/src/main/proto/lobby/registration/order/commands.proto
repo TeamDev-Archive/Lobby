@@ -22,21 +22,63 @@ syntax = "proto3";
 package lobby.registration.order;
 
 option java_package="lobby.registration.order";
-option java_outer_classname = "RegistrationOrderCommandsProto";
+option java_outer_classname = "OrderCommandsProto";
 option java_multiple_files = true;
 
 import "lobby/registration/order/order.proto";
 import "lobby/registration/conference.proto";
-import "lobby/registration/seats/seats.proto";
+import "lobby/registration/seat/assignment/seat_assignments.proto";
+import "lobby/registration/seat/availability/seats_availability.proto";
+import "google/protobuf/timestamp.proto";
+
+// The request to reserve seats at the conference.
+// Is sent as the result of a registrant interaction with the UI.
+message RegisterToConference {
+    // The ID of the new order.
+    lobby.registration.order.OrderId order_id = 1;
+
+    // The ID of the conference.
+    ConferenceId conference_id = 2;
+
+    // The order items representing the quantity of seats at the conference.
+    repeated lobby.registration.seat.availability.SeatQuantity seat = 3;
+}
+
+// The request to mark order items as reserved.
+// Is sent when a reservation is confirmed.
+message MarkSeatsAsReserved {
+    // The ID of the order.
+    OrderId order_id = 1;
+
+    // The time of the reservation expiration.
+    google.protobuf.Timestamp reservation_expiration = 2;
+
+    // The order items representing the quantity of seats of different types.
+    repeated lobby.registration.seat.availability.SeatQuantity seat = 3;
+}
+
+// The request to confirm the payment for the order.
+// Is sent from a RegistrationProcessManager to an Order aggregate when the payment for the order is completed.
+message ConfirmOrderPayment {
+    // The ID of the order to confirm.
+    lobby.registration.order.OrderId order_id = 1;
+}
+
+// The request to reject the order.
+// Is sent from a RegistrationProcessManager to an Order aggregate when the reservation is rejected or expired.
+message RejectOrder {
+    // The ID of the order to reject.
+    lobby.registration.order.OrderId order_id = 1;
+}
 
 // The request to assign the registrant to the order.
 // Is sent as the result of a registrant interaction with the UI.
-message AssignRegistrationDetails {
+message AssignRegistrantDetails {
     // The ID of the order.
     lobby.registration.order.OrderId order_id = 1;
 
     // The info about the registrant.
-    lobby.registration.seats.PersonalInfo registrant = 2;
+    lobby.registration.seat.assignment.PersonalInfo registrant = 2;
 }
 
 // The request to assign the seat to the attendee.
@@ -46,41 +88,5 @@ message AssignSeat {
     lobby.registration.order.OrderId order_id = 1;
 
     // The info about the registrant.
-    lobby.registration.seats.PersonalInfo registrant = 2;
-}
-
-
-
-// The request to create a new order.
-// Is sent as the result of a registrant interaction with the UI.
-message CreateOrder {
-    // The ID of the new order.
-    lobby.registration.order.OrderId order_id = 1;
-
-    // The ID of the conference.
-    ConferenceId conference_id = 2;
-
-    // The order items representing the quantity of seats at the conference.
-    repeated lobby.registration.seats.SeatQuantity seat = 3;
-}
-
-// The request to reserve the order.
-// Is sent from a RegistrationProcessManager to an Order aggregate as the result of a ReservationConfirmed event.
-message ReserveOrder {
-    // The ID of the order to reserve.
-    lobby.registration.order.OrderId order_id = 1;
-}
-
-// The request to reject the order.
-// Is sent from a RegistrationProcessManager to an Order aggregate as the result of a ReservationRejected or ReservationExpired event.
-message RejectOrder {
-    // The ID of the order to reject.
-    lobby.registration.order.OrderId order_id = 1;
-}
-
-// The request to confirm the order.
-// Is sent from a RegistrationProcessManager to an Order aggregate as the result of a PaymentConfirmed event.
-message ConfirmOrder {
-    // The ID of the order to confirm.
-    lobby.registration.order.OrderId order_id = 1;
+    lobby.registration.seat.assignment.PersonalInfo registrant = 2;
 }

@@ -19,9 +19,9 @@
 //
 syntax = "proto3";
 
-package lobby.registration.seats;
+package lobby.registration.seat.availability;
 
-option java_package="lobby.registration.seats";
+option java_package="lobby.registration.seat.availability";
 option java_outer_classname = "SeatsAvailabilityProto";
 option java_multiple_files = true;
 
@@ -56,11 +56,14 @@ message SeatQuantity {
 
 // Associates an attendee with a seat in a confirmed order.
 message SeatAssignment {
+    // The position of the seat.
+    int32 position = 1;
+
     // The seat type for the attendee.
-    SeatTypeId seat_type_id = 1;
+    SeatTypeId seat_type_id = 2;
 
     // The personal info of the attendee.
-    PersonalInfo attendee = 2;
+    PersonalInfo attendee = 3;
 }
 
 // The info about a person.
