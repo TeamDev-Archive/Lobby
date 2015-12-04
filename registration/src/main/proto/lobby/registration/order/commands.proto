@@ -29,8 +29,30 @@ import "lobby/registration/order/order.proto";
 import "lobby/registration/conference.proto";
 import "lobby/registration/seats/seats.proto";
 
+// The request to assign the registrant to the order.
+// Is sent as the result of a registrant interaction with the UI.
+message AssignRegistrationDetails {
+    // The ID of the order.
+    lobby.registration.order.OrderId order_id = 1;
+
+    // The info about the registrant.
+    lobby.registration.seats.PersonalInfo registrant = 2;
+}
+
+// The request to assign the seat to the attendee.
+// Is sent as the result of a registrant interaction with the UI.
+message AssignSeat {
+    // The ID of the order.
+    lobby.registration.order.OrderId order_id = 1;
+
+    // The info about the registrant.
+    lobby.registration.seats.PersonalInfo registrant = 2;
+}
+
+
+
 // The request to create a new order.
-// Is sent as the result of a user (registrant) interaction with the UI.
+// Is sent as the result of a registrant interaction with the UI.
 message CreateOrder {
     // The ID of the new order.
     lobby.registration.order.OrderId order_id = 1;
