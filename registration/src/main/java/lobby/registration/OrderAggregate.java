@@ -1,20 +1,14 @@
 package lobby.registration;
 
-import lobby.registration.command.ConfirmOrder;
-import lobby.registration.command.CreateOrder;
-import lobby.registration.command.RejectOrder;
-import lobby.registration.command.ReserveOrder;
-import lobby.registration.event.OrderConfirmed;
-import lobby.registration.event.OrderCreated;
-import lobby.registration.event.OrderRejected;
-import lobby.registration.event.OrderReserved;
+import lobby.registration.order.*;
+import lobby.registration.order.Order.Status;
 import org.spine3.base.CommandContext;
 import org.spine3.server.Assign;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
 
 import static com.google.common.base.Preconditions.checkState;
-import static lobby.registration.Order.Status.*;
+import static lobby.registration.order.Order.Status.*;
 
 /**
  * The order aggregate root.
@@ -34,9 +28,9 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     }
 
     @Assign
-    public OrderCreated handle(CreateOrder command, CommandContext context) {
+    public OrderPlaced handle(CreateOrder command, CommandContext context) {
         validateCommand(command);
-        final OrderCreated result = OrderCreated.newBuilder()
+        final OrderPlaced result = OrderPlaced.newBuilder()
                 .setOrderId(command.getOrderId())
                 .setConferenceId(command.getConferenceId())
                 .addAllSeat(command.getSeatList())
@@ -45,7 +39,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     }
 
     @Apply
-    private void event(OrderCreated event) {
+    private void event(OrderPlaced event) {
         final Order newState = Order.newBuilder(getState())
                 .setId(event.getOrderId())
                 .setConferenceId(event.getConferenceId())
@@ -57,54 +51,16 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     }
 
     @Assign
-    public OrderReserved handle(ReserveOrder command, CommandContext context) {
+    public OrderPaymentConfirmed handle(ConfirmOrder command, CommandContext context) {
         validateCommand(command);
-        final OrderReserved result = OrderReserved.newBuilder()
+        final OrderPaymentConfirmed result = OrderPaymentConfirmed.newBuilder()
                 .setOrderId(command.getOrderId())
                 .build();
         return result;
     }
 
     @Apply
-    private void event(OrderReserved event) {
-        final Order newState = Order.newBuilder(getState())
-                .setId(event.getOrderId())
-                .setStatus(RESERVED)
-                .build();
-        validate(newState);
-        incrementState(newState);
-    }
-
-    @Assign
-    public OrderRejected handle(RejectOrder command, CommandContext context) {
-        validateCommand(command);
-        final OrderRejected result = OrderRejected.newBuilder()
-                .setOrderId(command.getOrderId())
-                .build();
-        return result;
-    }
-
-    @Apply
-    private void event(OrderRejected event) {
-        final Order newState = Order.newBuilder(getState())
-                .setId(event.getOrderId())
-                .setStatus(REJECTED)
-                .build();
-        validate(newState);
-        incrementState(newState);
-    }
-
-    @Assign
-    public OrderConfirmed handle(ConfirmOrder command, CommandContext context) {
-        validateCommand(command);
-        final OrderConfirmed result = OrderConfirmed.newBuilder()
-                .setOrderId(command.getOrderId())
-                .build();
-        return result;
-    }
-
-    @Apply
-    private void event(OrderConfirmed event) {
+    private void event(OrderPaymentConfirmed event) {
         final Order newState = Order.newBuilder(getState())
                 .setId(event.getOrderId())
                 .setStatus(CONFIRMED)
@@ -123,7 +79,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         if (command.getSeatCount() == 0) {
             throw new IllegalArgumentException("No seats in the order.");
         }
-        final Order.Status status = getState().getStatus();
+        final Status status = getState().getStatus();
         checkState(status == UNRECOGNIZED, status);
     }
 
@@ -131,7 +87,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         if (command.getOrderId().getUuid().isEmpty()) {
             throw noOrderIdException();
         }
-        final Order.Status status = getState().getStatus();
+        final Status status = getState().getStatus();
         checkState(status == CREATED, status);
     }
 
@@ -139,7 +95,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         if (command.getOrderId().getUuid().isEmpty()) {
             throw noOrderIdException();
         }
-        final Order.Status status = getState().getStatus();
+        final Status status = getState().getStatus();
         checkState(status == CREATED, status);
     }
 
@@ -147,7 +103,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         if (command.getOrderId().getUuid().isEmpty()) {
             throw noOrderIdException();
         }
-        final Order.Status status = getState().getStatus();
+        final Status status = getState().getStatus();
         checkState(status == RESERVED, status);
     }
 
