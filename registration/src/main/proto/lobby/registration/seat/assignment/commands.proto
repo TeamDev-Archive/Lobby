@@ -22,40 +22,29 @@ syntax = "proto3";
 package lobby.registration.seat.assignment;
 
 option java_package="lobby.registration.seat.assignment";
-option java_outer_classname = "SeatAssignmentsProto";
+option java_outer_classname = "SeatAssignmentsCommandsProto";
 option java_multiple_files = true;
 
-import "spine/base/person.proto";
-import "spine/base/email.proto";
-import "lobby/registration/conference.proto";
+import "lobby/registration/seat/assignment/seat_assignments.proto";
 
-// Associates an attendee with a seat in a confirmed order.
-message SeatAssignment {
-
+// The request to assign the seat to the attendee.
+// Is sent as the result of a registrant interaction with the UI.
+message AssignSeat {
     // The ID of the seat assignment.
-    SeatAssignmentId id = 1;
+    lobby.registration.seat.assignment.SeatAssignmentId seat_assignment_id = 1;
 
-    // The position of the seat.
-    int32 position = 2;
+    // The info about an attendee.
+    lobby.registration.seat.assignment.PersonalInfo attendee = 2;
 
-    // The seat type for the attendee.
-    SeatTypeId seat_type_id = 3;
-
-    // The personal info of the attendee.
-    PersonalInfo attendee = 4;
+    // The position of the assigned seat.
+    int32 seat_position = 3;
 }
 
-// The id of the seat assignment based on the UUID.
-message SeatAssignmentId {
-    // The UUID-based value of the seat assignment ID.
-    string uuid = 1;
-}
+// The request to unassign the seat from the attendee.
+message UnassignSeat {
+    // The ID of the seat assignment.
+    lobby.registration.seat.assignment.SeatAssignmentId seat_assignment_id = 1;
 
-// The info about a person.
-message PersonalInfo {
-    // The person's name.
-    spine.base.PersonName name = 1;
-
-    // The person's email.
-    spine.base.EmailAddress email = 2;
+    // The position of the seat to unassign.
+    int32 seat_position = 2;
 }

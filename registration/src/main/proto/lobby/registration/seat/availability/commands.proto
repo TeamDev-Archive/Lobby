@@ -19,7 +19,7 @@
 //
 syntax = "proto3";
 
-package lobby.registration.seat;
+package lobby.registration.seat.availability;
 
 option java_package="lobby.registration.seat.availability";
 option java_outer_classname = "SeatsAvailabilityCommandsProto";
