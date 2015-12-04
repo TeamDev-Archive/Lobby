@@ -28,7 +28,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     }
 
     @Assign
-    public OrderPlaced handle(CreateOrder command, CommandContext context) {
+    public OrderPlaced handle(RegisterToConference command, CommandContext context) {
         validateCommand(command);
         final OrderPlaced result = OrderPlaced.newBuilder()
                 .setOrderId(command.getOrderId())
@@ -50,15 +50,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         incrementState(newState);
     }
 
-    @Assign
-    public OrderPaymentConfirmed handle(ConfirmOrder command, CommandContext context) {
-        validateCommand(command);
-        final OrderPaymentConfirmed result = OrderPaymentConfirmed.newBuilder()
-                .setOrderId(command.getOrderId())
-                .build();
-        return result;
-    }
-
     @Apply
     private void event(OrderPaymentConfirmed event) {
         final Order newState = Order.newBuilder(getState())
@@ -69,7 +60,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         incrementState(newState);
     }
 
-    private void validateCommand(CreateOrder command) {
+    private void validateCommand(RegisterToConference command) {
         if (command.getOrderId().getUuid().isEmpty()) {
             throw noOrderIdException();
         }
@@ -83,28 +74,12 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         checkState(status == UNRECOGNIZED, status);
     }
 
-    private void validateCommand(ReserveOrder command) {
-        if (command.getOrderId().getUuid().isEmpty()) {
-            throw noOrderIdException();
-        }
-        final Status status = getState().getStatus();
-        checkState(status == CREATED, status);
-    }
-
     private void validateCommand(RejectOrder command) {
         if (command.getOrderId().getUuid().isEmpty()) {
             throw noOrderIdException();
         }
         final Status status = getState().getStatus();
         checkState(status == CREATED, status);
-    }
-
-    private void validateCommand(ConfirmOrder command) {
-        if (command.getOrderId().getUuid().isEmpty()) {
-            throw noOrderIdException();
-        }
-        final Status status = getState().getStatus();
-        checkState(status == RESERVED, status);
     }
 
     private static IllegalArgumentException noOrderIdException() {
