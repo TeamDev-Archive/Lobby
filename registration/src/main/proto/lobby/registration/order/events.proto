@@ -89,8 +89,8 @@ message OrderExpired {
     OrderId order_id = 1;
 }
 
-// The event propagated when an order payment is confirmed.
-message OrderPaymentConfirmed {
+// The event propagated when an order is confirmed.
+message OrderConfirmed {
     // The ID of the order.
     OrderId order_id = 1;
 }
