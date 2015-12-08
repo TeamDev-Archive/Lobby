@@ -56,7 +56,7 @@ message Order {
     }
 }
 
-// The id of the order based on the UUID.
+// The id of the order.
 message OrderId {
     // The UUID-based value of the order ID.
     string uuid = 1;
