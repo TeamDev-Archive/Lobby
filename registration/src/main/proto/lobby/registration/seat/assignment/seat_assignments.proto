@@ -29,9 +29,14 @@ import "spine/base/person.proto";
 import "spine/base/email.proto";
 import "lobby/registration/conference.proto";
 
+// The map from a seat position to a seat assignment.
+message SeatAssignments {
+    // The map from a seat position to a seat assignment.
+    map<int32, SeatAssignment> seats = 1;
+}
+
 // Associates an attendee with a seat in a confirmed order.
 message SeatAssignment {
-
     // The ID of the seat assignment.
     SeatAssignmentId id = 1;
 
