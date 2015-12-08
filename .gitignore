@@ -8,6 +8,7 @@ hs_err_pid*
 .idea/libraries
 .idea/artifacts
 .idea/*.xml
+.idea/*.patch
 
 # Gradle interim configs
 .gradle/*
