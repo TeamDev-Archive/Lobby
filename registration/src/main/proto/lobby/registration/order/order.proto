@@ -62,13 +62,17 @@ message OrderId {
     string uuid = 1;
 }
 
+// The line of the order.
 message SeatOrderLine {
-
+    // The total price for the order line.
     spine.money.Money line_total = 1;
 
-    lobby.registration.SeatType seat_type = 2;
+    // The price of the order unit (seat).
+    spine.money.Money unit_price = 2;
 
-    spine.money.Money unit_price = 3;
+    // The type of the order seats.
+    lobby.registration.SeatType seat_type = 3;
 
+    // The quantity of the order units (seats).
     int32 quantity = 4;
 }
