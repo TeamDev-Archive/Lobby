@@ -40,12 +40,16 @@ message RegistrationProcess {
         // The process is in this state when an order is placed by a registrant but the reservation is not confirmed yet.
         AWAITING_RESERVATION_CONFIRMATION = 1;
 
-        // The process is in this state when the system has temporarily reserved the seats requested by the registrant
-        // but the payment is not received yet.
-        AWAITING_PAYMENT_CONFIRMATION = 2;
+        // The process is in this state when the system has temporarily reserved the seats requested by the registrant.
+        RESERVATION_CONFIRMED = 2;
 
-        // The process is in this state when it is completed.
-        COMPLETED = 3;
+        // The process is in this state when the payment for the order is received.
+        PAYMENT_RECEIVED = 3;
+
+        // The process is in this state when it is completed:
+        // the reservation was confirmed (for free-of-charge orders) or
+        // the payment is received (for billable orders).
+        COMPLETED = 4;
     }
 }
 

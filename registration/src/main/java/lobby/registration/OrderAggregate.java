@@ -51,7 +51,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     }
 
     @Apply
-    private void event(OrderPaymentConfirmed event) {
+    private void event(OrderConfirmed event) {
         final Order newState = Order.newBuilder(getState())
                 .setId(event.getOrderId())
                 .setStatus(CONFIRMED)
