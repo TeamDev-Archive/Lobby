@@ -57,13 +57,6 @@ message MarkSeatsAsReserved {
     repeated lobby.registration.seat.availability.SeatQuantity seat = 3;
 }
 
-// The request to confirm the payment for the order.
-// Is sent from a RegistrationProcessManager to an Order aggregate when the payment for the order is completed.
-message ConfirmOrderPayment {
-    // The ID of the order to confirm.
-    lobby.registration.order.OrderId order_id = 1;
-}
-
 // The request to reject the order.
 // Is sent from a RegistrationProcessManager to an Order aggregate when the reservation is rejected or expired.
 message RejectOrder {
@@ -79,4 +72,12 @@ message AssignRegistrantDetails {
 
     // The info about the registrant.
     lobby.registration.seat.assignment.PersonalInfo registrant = 2;
+}
+
+// The request to confirm the order.
+// Is sent from a RegistrationProcessManager to an Order aggregate when the order is confirmed
+// (payment for the order is completed if the order is not free of charge).
+message ConfirmOrder {
+    // The ID of the order to confirm.
+    lobby.registration.order.OrderId order_id = 1;
 }
