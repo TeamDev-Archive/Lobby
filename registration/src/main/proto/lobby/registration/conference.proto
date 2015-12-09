@@ -27,7 +27,7 @@ option java_multiple_files = true;
 import "spine/time/time.proto";
 import "spine/money/money.proto";
 
-// The id of the conference based on the UUID.
+// The ID of the conference.
 message ConferenceId {
     // The UUID-based value of the conference ID.
     string uuid = 1;
@@ -107,7 +107,7 @@ message SeatType {
     int32 quantity_available = 7;
 }
 
-// The id of the seat type based on the UUID.
+// The ID of the seat type.
 message SeatTypeId {
     // The UUID-based value of the seat type ID.
     string uuid = 1;

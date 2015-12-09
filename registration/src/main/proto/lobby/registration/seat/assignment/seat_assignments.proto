@@ -39,7 +39,7 @@ message SeatAssignments {
     map<int32, SeatAssignment> seats = 2;
 }
 
-// The id of the seat assignments aggregate.
+// The ID of the seat assignments aggregate.
 message SeatAssignmentsId {
     // The UUID-based value of the seat assignments ID.
     string uuid = 1;

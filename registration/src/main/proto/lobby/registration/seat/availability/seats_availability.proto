@@ -41,7 +41,7 @@ message SeatsAvailability {
     map<string, SeatQuantities> pending_reservations = 3;
 }
 
-// The id of the seats availability aggregate.
+// The ID of the seats availability aggregate.
 message SeatsAvailabilityId {
     // The UUID-based value of the ID.
     string uuid = 1;
@@ -61,7 +61,7 @@ message SeatQuantity {
     int32 quantity = 2;
 }
 
-// The id of the reservation.
+// The ID of the reservation.
 message ReservationId {
     // The UUID-based value of the reservation ID.
     string uuid = 1;

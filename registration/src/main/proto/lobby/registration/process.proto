@@ -53,7 +53,7 @@ message RegistrationProcess {
     }
 }
 
-// The id of the registration process based on the UUID.
+// The ID of the registration process.
 message ProcessId {
     // The UUID-based value of the registration process ID.
     string uuid = 1;
