@@ -47,7 +47,7 @@ message OrderPlaced {
     google.protobuf.Timestamp reservation_auto_expiration = 4;
 
     // The conference locator access code.
-    lobby.registration.ConferenceAccessCode access_code = 5;
+    lobby.registration.Conference.AccessCode access_code = 5;
 }
 
 // The event propagated when an order is updated.
