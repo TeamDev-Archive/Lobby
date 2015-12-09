@@ -1,4 +1,3 @@
 dependencies {
     compile project(':common')
-    compile project(':registration-contracts')
 }

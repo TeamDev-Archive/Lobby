@@ -5,3 +5,13 @@ project(':webapp').projectDir = "$rootDir/webapp" as File
 
 include ':registration'
 project(':registration').projectDir = "$rootDir/registration" as File
+
+include ':payment-contracts'
+project(':payment-contracts').projectDir = "$rootDir/payment-contracts" as File
+
+include ':registration-contracts'
+project(':registration-contracts').projectDir = "$rootDir/registration-contracts" as File
+
+include ':common'
+project(':common').projectDir = "$rootDir/common" as File
+

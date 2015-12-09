@@ -19,32 +19,33 @@
 //
 syntax = "proto3";
 
-package lobby.registration;
+package lobby.registration.seat.availability;
 
-option java_package="lobby.registration";
+option java_package="lobby.registration.seat.availability";
+option java_outer_classname = "SeatsAvailabilityProto";
 option java_multiple_files = true;
 
-import "lobby/registration/conference.proto";
+import "lobby/contracts/registration/registration.proto";
 
-// Represents the availability of conference seats.
+// The availability of the conference seats.
 message SeatsAvailability {
-    // The map from a seat type id to an available quantity of seats.
-    map<string, int32> seats_available = 1;
+    // The id of the seats availability aggregate.
+    SeatsAvailabilityId id = 1;
 
-    // The map from a reservation request id to seat quantities.
-    map<string, SeatQuantities> pending_reservations = 2;
+    // The map from a seat type id value to an available quantity of seats.
+    map<string, int32> seats_available = 2;
+
+    // The map from a reservation request id value to seat items.
+    map<string, SeatQuantities> pending_reservations = 3;
 }
 
-// The set of seat quantities of different types.
+// The ID of the seats availability aggregate.
+message SeatsAvailabilityId {
+    // The UUID-based value of the ID.
+    string uuid = 1;
+}
+
+// The set of seat items representing seat quantities of different types.
 message SeatQuantities {
-    repeated SeatQuantity quantity = 1;
-}
-
-// Represents the quantity of seats of the given type.
-message SeatQuantity {
-    // The seat type id.
-    SeatTypeId seat_type_id = 1;
-
-    // The quantity of seats of the given type.
-    int32 quantity = 2;
+    repeated lobby.contracts.registration.SeatQuantity item = 1;
 }
