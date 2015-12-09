@@ -44,7 +44,7 @@ message SeatAssignmentsCreated {
     // The short seat assignment info object.
     message SeatAssignmentInfo {
         // The position of the seat.
-        int32 seat_position = 1;
+        lobby.registration.seat.assignment.SeatPosition position = 1;
 
         // The ID of the seat type.
         lobby.registration.SeatTypeId seat_type_id = 2;
@@ -57,7 +57,7 @@ message SeatAssignmentUpdated {
     lobby.registration.seat.availability.ReservationId reservation_id = 1;
 
     // The position of the seat.
-    int32 seat_position = 2;
+    lobby.registration.seat.assignment.SeatPosition position = 2;
 
     // The personal info of the attendee.
     lobby.registration.seat.assignment.PersonalInfo attendee = 3;
@@ -69,7 +69,7 @@ message SeatAssigned {
     lobby.registration.seat.availability.ReservationId reservation_id = 1;
 
     // The position of the seat.
-    int32 seat_position = 2;
+    lobby.registration.seat.assignment.SeatPosition position = 2;
 
     // The ID of the seat type.
     lobby.registration.SeatTypeId seat_type_id = 3;
@@ -84,5 +84,5 @@ message SeatUnassigned {
     lobby.registration.seat.availability.ReservationId reservation_id = 1;
 
     // The position of the seat.
-    int32 seat_position = 2;
+    lobby.registration.seat.assignment.SeatPosition position = 2;
 }

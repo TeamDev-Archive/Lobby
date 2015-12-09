@@ -37,7 +37,7 @@ message AssignSeat {
     lobby.registration.seat.assignment.PersonalInfo attendee = 2;
 
     // The position of the assigned seat.
-    int32 seat_position = 3;
+    lobby.registration.seat.assignment.SeatPosition position = 3;
 }
 
 // The request to unassign the seat from the attendee.
@@ -46,5 +46,5 @@ message UnassignSeat {
     lobby.registration.seat.assignment.SeatAssignmentsId seat_assignments_id = 1;
 
     // The position of the seat to unassign.
-    int32 seat_position = 2;
+    lobby.registration.seat.assignment.SeatPosition position = 2;
 }
