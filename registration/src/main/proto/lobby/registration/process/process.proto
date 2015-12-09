@@ -19,9 +19,9 @@
 //
 syntax = "proto3";
 
-package lobby.registration;
+package lobby.registration.process;
 
-option java_package="lobby.registration";
+option java_package="lobby.registration.process";
 option java_outer_classname = "RegistrationProcessProto";
 option java_multiple_files = true;
 
@@ -58,11 +58,4 @@ message RegistrationProcess {
 message ProcessId {
     // The UUID-based value of the registration process ID.
     string uuid = 1;
-}
-
-// The request to stop a registration process.
-// Is sent when a reservation is confirmed.
-message ExpireRegistrationProcess {
-    // The ID of the process to expire.
-    ProcessId process_id = 1;
 }
