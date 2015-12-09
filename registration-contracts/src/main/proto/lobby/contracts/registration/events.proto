@@ -109,14 +109,16 @@ message OrderTotalsCalculated {
     // The ID of the order.
     lobby.contracts.common.OrderId order_id = 1;
 
-    // The total price of the order.
-    spine.money.Money total = 2;
+    oneof payable {
+        // The total price of the order.
+        spine.money.Money total = 2;
+
+        // If the order is free of charge.
+        bool is_free_of_charge = 3;
+    }
 
     // The lines of the order.
-    repeated lobby.contracts.registration.SeatOrderLine order_line = 3;
-
-    // If the order is free of charge.
-    bool is_free_of_charge = 4;
+    repeated lobby.contracts.registration.SeatOrderLine order_line = 4;
 }
 
 

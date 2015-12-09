@@ -61,8 +61,8 @@ message SeatOrderLine {
 
 // The position of the seat.
 message SeatPosition {
-    // The integer-based value of the seat position.
-    int32 position = 1;
+    // A positive number of a seat, which determines its position at the conference.
+    int32 value = 1;
 }
 
 // The conference locator access code.
