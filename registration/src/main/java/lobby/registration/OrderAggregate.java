@@ -1,7 +1,12 @@
 package lobby.registration;
 
-import lobby.registration.order.*;
+import lobby.contracts.common.OrderId;
+import lobby.contracts.registration.order.OrderConfirmed;
+import lobby.contracts.registration.order.OrderPlaced;
+import lobby.registration.order.Order;
 import lobby.registration.order.Order.Status;
+import lobby.registration.order.RegisterToConference;
+import lobby.registration.order.RejectOrder;
 import org.spine3.base.CommandContext;
 import org.spine3.server.Assign;
 import org.spine3.server.aggregate.Aggregate;

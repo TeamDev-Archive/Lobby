@@ -25,22 +25,18 @@ option java_package="lobby.registration";
 option java_outer_classname = "ConferenceProto";
 option java_multiple_files = true;
 
+import "lobby/contracts/common/common.proto";
+import "lobby/contracts/registration/registration.proto";
 import "spine/time/time.proto";
 import "spine/money/money.proto";
-
-// The ID of the conference.
-message ConferenceId {
-    // The UUID-based value of the conference ID.
-    string uuid = 1;
-}
 
 // The conference created by a business customer.
 message Conference {
     // The unique conference id.
-    ConferenceId id = 1;
+    lobby.contracts.common.ConferenceId id = 1;
 
     // The conference locator access code.
-    AccessCode access_code = 2;
+    lobby.contracts.registration.ConferenceAccessCode access_code = 2;
 
     // The conference name. Used in the slug.
     string name = 3;
@@ -73,24 +69,16 @@ message Conference {
         // The conference is visible for users.
         PUBLISHED = 1;
     }
-
-    // The conference locator access code.
-    // Used by a business customer (conference owner) to view conference details.
-    // Generated when the business customer creates the conference.
-    message AccessCode {
-        // The string value of the access code.
-        string value = 1;
-    }
 }
 
 // The type of a seat which represents the right to be admitted to a conference or
 // to access a specific session at the conference (tutorial, workshop etc).
 message SeatType {
     // The unique seat type id.
-    SeatTypeId id = 1;
+    lobby.contracts.registration.SeatTypeId id = 1;
 
     // The conference id the seat associated with.
-    ConferenceId conference_id = 2;
+    lobby.contracts.common.ConferenceId conference_id = 2;
 
     // The name of the seat type.
     string name = 3;
@@ -106,10 +94,4 @@ message SeatType {
 
     // The available quantity of seats for the conference.
     int32 quantity_available = 7;
-}
-
-// The ID of the seat type.
-message SeatTypeId {
-    // The UUID-based value of the seat type ID.
-    string uuid = 1;
 }

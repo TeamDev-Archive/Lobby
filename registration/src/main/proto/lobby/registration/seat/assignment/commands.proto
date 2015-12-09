@@ -25,6 +25,7 @@ option java_package="lobby.registration.seat.assignment";
 option java_outer_classname = "SeatAssignmentsCommandsProto";
 option java_multiple_files = true;
 
+import "lobby/contracts/registration/registration.proto";
 import "lobby/registration/seat/assignment/seat_assignments.proto";
 
 // The request to assign the seat to the attendee.
@@ -34,10 +35,10 @@ message AssignSeat {
     lobby.registration.seat.assignment.SeatAssignmentsId seat_assignments_id = 1;
 
     // The info about an attendee.
-    lobby.registration.seat.assignment.PersonalInfo attendee = 2;
+    lobby.contracts.registration.PersonalInfo attendee = 2;
 
     // The position of the assigned seat.
-    lobby.registration.seat.assignment.SeatPosition position = 3;
+    lobby.contracts.registration.SeatPosition position = 3;
 }
 
 // The request to unassign the seat from the attendee.
@@ -46,5 +47,5 @@ message UnassignSeat {
     lobby.registration.seat.assignment.SeatAssignmentsId seat_assignments_id = 1;
 
     // The position of the seat to unassign.
-    lobby.registration.seat.assignment.SeatPosition position = 2;
+    lobby.contracts.registration.SeatPosition position = 2;
 }

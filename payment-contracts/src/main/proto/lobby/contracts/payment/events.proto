@@ -19,33 +19,16 @@
 //
 syntax = "proto3";
 
-package lobby.registration.seat.availability;
+package lobby.contracts.payment;
 
-option java_package="lobby.registration.seat.availability";
-option java_outer_classname = "SeatsAvailabilityProto";
+option java_package="lobby.contracts.payment";
+option java_outer_classname = "PaymentContractsEventsProto";
 option java_multiple_files = true;
 
-import "lobby/contracts/registration/registration.proto";
+import "lobby/contracts/common/common.proto";
 
-// The availability of the conference seats.
-message SeatsAvailability {
-    // The id of the seats availability aggregate.
-    SeatsAvailabilityId id = 1;
-
-    // The map from a seat type id value to an available quantity of seats.
-    map<string, int32> seats_available = 2;
-
-    // The map from a reservation request id value to seat items.
-    map<string, SeatQuantities> pending_reservations = 3;
-}
-
-// The ID of the seats availability aggregate.
-message SeatsAvailabilityId {
-    // The UUID-based value of the ID.
-    string uuid = 1;
-}
-
-// The set of seat items representing seat quantities of different types.
-message SeatQuantities {
-    repeated lobby.contracts.registration.SeatQuantity item = 1;
+// The event propagated when a payment for an order is completed.
+message PaymentCompleted {
+    // The ID of the order.
+    lobby.contracts.common.OrderId order_id = 1;
 }

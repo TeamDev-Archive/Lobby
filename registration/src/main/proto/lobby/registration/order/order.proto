@@ -25,20 +25,19 @@ option java_package="lobby.registration.order";
 option java_outer_classname = "OrderProto";
 option java_multiple_files = true;
 
-import "lobby/registration/conference.proto";
-import "lobby/registration/seat/availability/seats_availability.proto";
-import "spine/money/money.proto";
+import "lobby/contracts/common/common.proto";
+import "lobby/contracts/registration/registration.proto";
 
 // The order made by a user (registrant) to reserve seats for a conference.
 message Order {
     // The unique order id.
-    OrderId id = 1;
+    lobby.contracts.common.OrderId id = 1;
 
     // The conference id the order associated with.
-    ConferenceId conference_id = 2;
+    lobby.contracts.common.ConferenceId conference_id = 2;
 
     // The set of seat items representing seat quantities of different types.
-    repeated lobby.registration.seat.availability.SeatQuantity seat = 3;
+    repeated lobby.contracts.registration.SeatQuantity seat = 3;
 
     // The current status of the order.
     Status status = 4;
@@ -54,25 +53,4 @@ message Order {
         // The order is in this status when the system cannot reserve the needed quantity of seats requested by the registrant.
         REJECTED = 3;
     }
-}
-
-// The id of the order.
-message OrderId {
-    // The UUID-based value of the order ID.
-    string uuid = 1;
-}
-
-// The line of the order.
-message SeatOrderLine {
-    // The total price for the order line.
-    spine.money.Money line_total = 1;
-
-    // The price of the order unit (seat).
-    spine.money.Money unit_price = 2;
-
-    // The type of the order seats.
-    lobby.registration.SeatType seat_type = 3;
-
-    // The quantity of the order units (seats).
-    int32 quantity = 4;
 }
