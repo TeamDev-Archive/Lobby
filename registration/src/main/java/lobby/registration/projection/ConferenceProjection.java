@@ -21,8 +21,14 @@
 package lobby.registration.projection;
 
 import lobby.contracts.common.ConferenceId;
+import lobby.contracts.common.SeatType;
+import lobby.contracts.conference.*;
 import lobby.registration.Conference;
+import org.spine3.eventbus.Subscribe;
 import org.spine3.server.projection.Projection;
+
+import static lobby.registration.Conference.PublishingStatus.NOT_PUBLISHED;
+import static lobby.registration.Conference.PublishingStatus.PUBLISHED;
 
 /**
  * The projection of a conference.
@@ -30,6 +36,7 @@ import org.spine3.server.projection.Projection;
  * @see Projection
  * @author Alexander Litus
  */
+@SuppressWarnings("TypeMayBeWeakened")
 public class ConferenceProjection extends Projection<ConferenceId, Conference> {
 
     /**
@@ -47,5 +54,60 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         return Conference.getDefaultInstance();
     }
 
-    // TODO:2015-12-11:alexander.litus: store info about the seats
+    @Subscribe
+    public void on(ConferenceCreated event) {
+        final Conference newState = convert(event.getConference());
+        incrementState(newState);
+    }
+
+    @Subscribe
+    public void on(ConferenceUpdated event) {
+        final Conference newState = convert(event.getConference());
+        incrementState(newState);
+    }
+
+    @Subscribe
+    public void on(ConferencePublished event) {
+        updatePublishingStatus(PUBLISHED);
+    }
+
+    @Subscribe
+    public void on(ConferenceUnpublished event) {
+        updatePublishingStatus(NOT_PUBLISHED);
+    }
+
+    private void updatePublishingStatus(Conference.PublishingStatus status) {
+        final Conference.Builder conference = getState().toBuilder();
+        conference.setPublishingStatus(status);
+        incrementState(conference.build());
+    }
+
+    @Subscribe
+    public void on(SeatTypeCreated event) {
+        updateSeatType(event.getSeatType());
+    }
+
+    @Subscribe
+    public void on(SeatTypeUpdated event) {
+        updateSeatType(event.getSeatType());
+    }
+
+    private void updateSeatType(SeatType seatType) {
+        final Conference.Builder conference = getState().toBuilder();
+        conference.addSeatType(seatType);
+        incrementState(conference.build());
+    }
+
+    private static Conference convert(lobby.contracts.conference.Conference c) {
+        final Conference.Builder newState = Conference.newBuilder()
+                .setId(c.getId())
+                .setSlug(c.getSlug())
+                .setName(c.getName())
+                .setDescription(c.getDescription())
+                .setLocation(c.getLocation())
+                .setTagline(c.getTagline())
+                .setTwitterSearch(c.getTwitterSearch())
+                .setStartDate(c.getStartDate());
+        return newState.build();
+    }
 }
