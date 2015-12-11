@@ -43,7 +43,7 @@ message Conference {
     string location = 4;
 
     // The part of the URL used to access the conference.
-    string slug = 5;
+    lobby.contracts.common.ConferenceSlug slug = 5;
 
     // The tagline of the conference.
     string tagline = 6;

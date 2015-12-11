@@ -58,14 +58,6 @@ message SeatPosition {
     int32 value = 1;
 }
 
-// The conference locator access code.
-// Used by a business customer (conference owner) to view conference details.
-// Generated when the business customer creates the conference.
-message ConferenceAccessCode {
-    // The value of the access code.
-    string value = 1;
-}
-
 // The order access code.
 // Used by a registrant to view order details.
 // Generated when the registrant places an order.

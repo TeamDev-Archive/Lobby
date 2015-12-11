@@ -34,10 +34,10 @@ message Conference {
     // The unique conference id.
     lobby.contracts.common.ConferenceId id = 1;
 
-    // The conference locator access code.
-    lobby.contracts.registration.ConferenceAccessCode access_code = 2;
+    // The part of the URL used to access the conference.
+    lobby.contracts.common.ConferenceSlug slug = 2;
 
-    // The conference name. Used in the slug.
+    // The conference name.
     string name = 3;
 
     // The conference description.

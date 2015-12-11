@@ -86,3 +86,9 @@ message PersonalInfo {
     // The person's email.
     spine.base.EmailAddress email = 2;
 }
+
+// The part of the URL used to access the conference.
+message ConferenceSlug {
+    // The value of the slug.
+    string value = 1;
+}
