@@ -28,7 +28,6 @@ option java_multiple_files = true;
 import "lobby/contracts/common/common.proto";
 import "lobby/contracts/registration/registration.proto";
 import "spine/time/time.proto";
-import "spine/money/money.proto";
 
 // The conference created by a business customer.
 message Conference {
@@ -57,7 +56,7 @@ message Conference {
     spine.time.LocalDate start_date = 8;
 
     // The types of seats available for the conference.
-    repeated SeatType seat_type = 9;
+    repeated lobby.contracts.common.SeatType seat_type = 9;
 
     // The publishing status of the conference.
     PublishingStatus publishing_status = 10;
@@ -69,29 +68,4 @@ message Conference {
         // The conference is visible for users.
         PUBLISHED = 1;
     }
-}
-
-// The type of a seat which represents the right to be admitted to a conference or
-// to access a specific session at the conference (tutorial, workshop etc).
-message SeatType {
-    // The unique seat type id.
-    lobby.contracts.registration.SeatTypeId id = 1;
-
-    // The conference id the seat associated with.
-    lobby.contracts.common.ConferenceId conference_id = 2;
-
-    // The name of the seat type.
-    string name = 3;
-
-    // The description of the seat type.
-    string description = 4;
-
-    // The price of the seat of this type.
-    spine.money.Money price = 5;
-
-    // The total quantity of seats for the conference.
-    int32 quantity_total = 6;
-
-    // The available quantity of seats for the conference.
-    int32 quantity_available = 7;
 }

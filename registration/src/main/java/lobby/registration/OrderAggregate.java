@@ -7,6 +7,7 @@ import lobby.registration.order.Order;
 import lobby.registration.order.Order.Status;
 import lobby.registration.order.RegisterToConference;
 import lobby.registration.order.RejectOrder;
+import lobby.registration.service.OrderPricingService;
 import org.spine3.base.CommandContext;
 import org.spine3.server.Assign;
 import org.spine3.server.aggregate.Aggregate;
@@ -23,8 +24,14 @@ import static lobby.registration.order.Order.Status.*;
 @SuppressWarnings("TypeMayBeWeakened") // not in handlers
 public class OrderAggregate extends Aggregate<OrderId, Order> {
 
+    private OrderPricingService orderPricingService;
+
     public OrderAggregate(OrderId id) {
         super(id);
+    }
+
+    public void setOrderPricingService(OrderPricingService orderPricingService) {
+        this.orderPricingService = orderPricingService;
     }
 
     @Override

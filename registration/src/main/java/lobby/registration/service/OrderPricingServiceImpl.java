@@ -21,10 +21,10 @@
 package lobby.registration.service;
 
 import lobby.contracts.common.ConferenceId;
+import lobby.contracts.common.SeatType;
 import lobby.contracts.registration.OrderTotal;
 import lobby.contracts.registration.SeatOrderLine;
 import lobby.contracts.registration.SeatQuantity;
-import lobby.registration.SeatType;
 import lobby.registration.projection.ConferenceProjection;
 import lobby.registration.projection.ConferenceProjectionRepository;
 import org.spine3.money.Money;

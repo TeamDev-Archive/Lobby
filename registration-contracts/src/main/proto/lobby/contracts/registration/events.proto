@@ -141,7 +141,7 @@ message SeatAssignmentsCreated {
         lobby.contracts.registration.SeatPosition position = 1;
 
         // The ID of the seat type.
-        lobby.contracts.registration.SeatTypeId seat_type_id = 2;
+        lobby.contracts.common.SeatTypeId seat_type_id = 2;
     }
 }
 
@@ -166,7 +166,7 @@ message SeatAssigned {
     lobby.contracts.registration.SeatPosition position = 2;
 
     // The ID of the seat type.
-    lobby.contracts.registration.SeatTypeId seat_type_id = 3;
+    lobby.contracts.common.SeatTypeId seat_type_id = 3;
 
     // The personal info of the attendee.
     lobby.contracts.registration.PersonalInfo attendee = 4;
