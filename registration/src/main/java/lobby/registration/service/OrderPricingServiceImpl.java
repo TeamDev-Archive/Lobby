@@ -40,6 +40,11 @@ public class OrderPricingServiceImpl implements OrderPricingService {
 
     private final ConferenceProjectionRepository conferenceRepository;
 
+    /**
+     * Creates a new pricing service instance.
+     *
+     * @param conferenceRepository the conference repository to use for obtaining conference projections
+     */
     public OrderPricingServiceImpl(ConferenceProjectionRepository conferenceRepository) {
         this.conferenceRepository = conferenceRepository;
     }
