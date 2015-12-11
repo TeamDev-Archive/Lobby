@@ -26,6 +26,8 @@ option java_outer_classname = "CommonContractsProto";
 option java_multiple_files = true;
 
 import "spine/money/money.proto";
+import "spine/base/person.proto";
+import "spine/base/email.proto";
 
 // The ID of the order.
 message OrderId {
@@ -74,4 +76,13 @@ message SeatType {
 
     // The available quantity of seats for the conference.
     int32 quantity_available = 7;
+}
+
+// The info about a person.
+message PersonalInfo {
+    // The person's name.
+    spine.base.PersonName name = 1;
+
+    // The person's email.
+    spine.base.EmailAddress email = 2;
 }

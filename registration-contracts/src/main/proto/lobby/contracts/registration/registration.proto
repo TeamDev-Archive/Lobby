@@ -27,8 +27,6 @@ option java_multiple_files = true;
 
 import "lobby/contracts/common/common.proto";
 import "spine/money/money.proto";
-import "spine/base/person.proto";
-import "spine/base/email.proto";
 
 // The quantity of seats of the given type.
 message SeatQuantity {
@@ -83,13 +81,4 @@ message OrderTotal {
 
     // The lines of the order.
     repeated lobby.contracts.registration.SeatOrderLine order_line = 2;
-}
-
-// The info about a person.
-message PersonalInfo {
-    // The person's name.
-    spine.base.PersonName name = 1;
-
-    // The person's email.
-    spine.base.EmailAddress email = 2;
 }

@@ -101,7 +101,7 @@ message OrderRegistrantAssigned {
     lobby.contracts.common.OrderId order_id = 1;
 
     // The personal info of the registrant.
-    lobby.contracts.registration.PersonalInfo personal_info = 2;
+    lobby.contracts.common.PersonalInfo personal_info = 2;
 }
 
 // The event propagated when an order total price is calculated.
@@ -154,7 +154,7 @@ message SeatAssignmentUpdated {
     lobby.contracts.registration.SeatPosition position = 2;
 
     // The personal info of the attendee.
-    lobby.contracts.registration.PersonalInfo attendee = 3;
+    lobby.contracts.common.PersonalInfo attendee = 3;
 }
 
 // The event propagated when a seat is assigned to an attendee.
@@ -169,7 +169,7 @@ message SeatAssigned {
     lobby.contracts.common.SeatTypeId seat_type_id = 3;
 
     // The personal info of the attendee.
-    lobby.contracts.registration.PersonalInfo attendee = 4;
+    lobby.contracts.common.PersonalInfo attendee = 4;
 }
 
 // The event propagated when a seat is unassigned from an attendee.

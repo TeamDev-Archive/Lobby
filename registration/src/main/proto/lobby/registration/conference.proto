@@ -22,7 +22,7 @@ syntax = "proto3";
 package lobby.registration;
 
 option java_package="lobby.registration";
-option java_outer_classname = "ConferenceProto";
+option java_outer_classname = "ConferenceRegistrationProto";
 option java_multiple_files = true;
 
 import "lobby/contracts/common/common.proto";
