@@ -20,24 +20,43 @@
 
 package lobby.registration.projection;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
 import lobby.contracts.common.ConferenceId;
 import lobby.contracts.common.SeatType;
+import lobby.contracts.common.SeatTypeId;
 import lobby.contracts.conference.*;
 import lobby.registration.Conference;
+import lobby.registration.seat.availability.AddSeats;
+import lobby.registration.seat.availability.RemoveSeats;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spine3.base.CommandContext;
+import org.spine3.client.CommandRequest;
 import org.spine3.eventbus.Subscribe;
+import org.spine3.server.BoundedContext;
 import org.spine3.server.projection.Projection;
+import org.spine3.util.Commands;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
+import static com.google.common.collect.Iterables.filter;
+import static java.lang.Math.abs;
+import static java.lang.String.format;
 import static lobby.registration.Conference.PublishingStatus.NOT_PUBLISHED;
 import static lobby.registration.Conference.PublishingStatus.PUBLISHED;
 
 /**
  * The projection of a conference.
  *
- * @see Projection
  * @author Alexander Litus
+ * @see Projection
  */
 @SuppressWarnings("TypeMayBeWeakened")
 public class ConferenceProjection extends Projection<ConferenceId, Conference> {
+
+    private BoundedContext boundedContext;
 
     /**
      * Creates a new instance.
@@ -47,6 +66,10 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
      */
     public ConferenceProjection(ConferenceId id) {
         super(id);
+    }
+
+    public void setBoundedContext(BoundedContext boundedContext) {
+        this.boundedContext = boundedContext;
     }
 
     @Override
@@ -84,21 +107,85 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
 
     @Subscribe
     public void on(SeatTypeCreated event) {
-        updateSeatType(event.getSeatType());
+        final Conference.Builder conference = getState().toBuilder();
+        final SeatType seatType = event.getSeatType();
+        final SeatTypeId id = seatType.getId();
+        if (seatTypesListContains(id)) {
+            log().warn(format("Seat type with ID %s already exists. Conference ID: %s", id.getUuid(), conference.getId().getUuid()));
+            return;
+        }
+        conference.addSeatType(seatType);
+        sendAddSeatsRequest(id, seatType.getQuantityTotal());
+        incrementState(conference.build());
+    }
+
+    private boolean seatTypesListContains(SeatTypeId id) {
+        final List<SeatType> filtered = filterById(id, getState().getSeatTypeList());
+        final boolean contains = !filtered.isEmpty();
+        return contains;
     }
 
     @Subscribe
     public void on(SeatTypeUpdated event) {
-        updateSeatType(event.getSeatType());
-    }
-
-    private void updateSeatType(SeatType seatType) {
         final Conference.Builder conference = getState().toBuilder();
-        conference.addSeatType(seatType);
+        final SeatType newSeatType = event.getSeatType();
+        final SeatTypeId id = newSeatType.getId();
+        final List<SeatType> seatTypes = conference.getSeatTypeList();
+
+        final List<SeatType> filtered = filterById(id, seatTypes);
+        if (filtered.isEmpty()) {
+            log().warn("No seat type with ID %s; conference ID: %s", id.getUuid(), conference.getId().getUuid());
+            return;
+        }
+        final SeatType oldSeatType = filtered.get(0);
+        final int oldTypeIndex = seatTypes.indexOf(oldSeatType);
+        conference.setSeatType(oldTypeIndex, newSeatType);
+
+        addOrRemoveSeats(newSeatType.getQuantityTotal(), oldSeatType.getQuantityTotal(), id);
+
         incrementState(conference.build());
     }
 
-    private static Conference convert(lobby.contracts.conference.Conference c) {
+    private void addOrRemoveSeats(int newQuantity, int oldQuantity, SeatTypeId id) {
+        final int difference = newQuantity - oldQuantity;
+        if (difference > 0) {
+            sendAddSeatsRequest(id, difference);
+        } else if(difference < 0) {
+            sendRemoveSeatsRequest(id, abs(difference));
+        }
+    }
+
+    private void sendAddSeatsRequest(SeatTypeId seatTypeId, int quantity) {
+        final AddSeats command = AddSeats.newBuilder()
+                .setConferenceId(getState().getId())
+                .setSeatTypeId(seatTypeId)
+                .setQuantity(quantity)
+                .build();
+        final CommandRequest request = Commands.newCommandRequest(command, CommandContext.getDefaultInstance());
+        boundedContext.process(request);
+    }
+
+    private void sendRemoveSeatsRequest(SeatTypeId seatTypeId, int quantity) {
+        final RemoveSeats command = RemoveSeats.newBuilder()
+                .setConferenceId(getState().getId())
+                .setSeatTypeId(seatTypeId)
+                .setQuantity(quantity)
+                .build();
+        final CommandRequest request = Commands.newCommandRequest(command, CommandContext.getDefaultInstance());
+        boundedContext.process(request);
+    }
+
+    private static List<SeatType> filterById(final SeatTypeId id, List<SeatType> seatTypes) {
+        final Iterable<SeatType> result = filter(seatTypes, new Predicate<SeatType>() {
+            @Override
+            public boolean apply(@Nullable SeatType input) {
+                return (input != null) && input.getId().equals(id);
+            }
+        });
+        return ImmutableList.copyOf(result);
+    }
+
+    protected static Conference convert(lobby.contracts.conference.Conference c) {
         final Conference.Builder newState = Conference.newBuilder()
                 .setId(c.getId())
                 .setSlug(c.getSlug())
@@ -109,5 +196,15 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                 .setTwitterSearch(c.getTwitterSearch())
                 .setStartDate(c.getStartDate());
         return newState.build();
+    }
+
+    private static Logger log() {
+        return LogSingleton.INSTANCE.value;
+    }
+
+    private enum LogSingleton {
+        INSTANCE;
+        @SuppressWarnings("NonSerializableFieldInSerializableClass")
+        private final Logger value = LoggerFactory.getLogger(ConferenceProjection.class);
     }
 }

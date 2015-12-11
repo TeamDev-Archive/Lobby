@@ -22,7 +22,10 @@ package lobby.registration.projection;
 
 import lobby.contracts.common.ConferenceId;
 import lobby.registration.Conference;
+import org.spine3.server.BoundedContext;
 import org.spine3.server.projection.ProjectionRepository;
+
+import javax.annotation.Nonnull;
 
 /**
  * The repository which manages conference projections.
@@ -33,4 +36,24 @@ import org.spine3.server.projection.ProjectionRepository;
  */
 public class ConferenceProjectionRepository extends ProjectionRepository<ConferenceId, ConferenceProjection, Conference> {
 
+
+    private final BoundedContext context;
+
+    /**
+     * Creates a new repository instance.
+     *
+     * @param context current bounded context
+     */
+    public ConferenceProjectionRepository(BoundedContext context) {
+        super();
+        this.context = context;
+    }
+
+    @Nonnull
+    @Override
+    public ConferenceProjection load(ConferenceId id) throws IllegalStateException {
+        final ConferenceProjection conference = super.load(id);
+        conference.setBoundedContext(context);
+        return conference;
+    }
 }
