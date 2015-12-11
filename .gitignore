@@ -5,6 +5,7 @@ hs_err_pid*
 *.iml
 .idea/libraries
 .idea/artifacts
+.idea/shelf
 .idea/*.xml
 .idea/*.patch
 
