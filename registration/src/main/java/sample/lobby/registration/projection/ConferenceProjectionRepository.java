@@ -36,7 +36,6 @@ import javax.annotation.Nonnull;
  */
 public class ConferenceProjectionRepository extends ProjectionRepository<ConferenceId, ConferenceProjection, Conference> {
 
-
     private final BoundedContext context;
 
     /**

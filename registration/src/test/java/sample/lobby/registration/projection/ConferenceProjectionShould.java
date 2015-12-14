@@ -69,7 +69,7 @@ public class ConferenceProjectionShould {
         projection.setBoundedContext(boundedContext);
     }
 
-    private static BoundedContext buildBoundedContext() {
+    static BoundedContext buildBoundedContext() {
         return BoundedContext.newBuilder()
                 .setStorageFactory(InMemoryStorageFactory.getInstance())
                 .setCommandDispatcher(CommandDispatcher.getInstance())
