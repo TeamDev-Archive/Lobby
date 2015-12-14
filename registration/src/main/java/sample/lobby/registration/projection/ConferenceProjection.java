@@ -29,7 +29,6 @@ import org.spine3.client.CommandRequest;
 import org.spine3.eventbus.Subscribe;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.projection.Projection;
-import org.spine3.util.Commands;
 import sample.lobby.contracts.common.ConferenceId;
 import sample.lobby.contracts.common.SeatType;
 import sample.lobby.contracts.common.SeatTypeId;
@@ -44,6 +43,7 @@ import java.util.List;
 import static com.google.common.collect.Iterables.filter;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
+import static org.spine3.util.Commands.newCommandRequest;
 import static sample.lobby.registration.Conference.PublishingStatus.NOT_PUBLISHED;
 import static sample.lobby.registration.Conference.PublishingStatus.PUBLISHED;
 
@@ -161,7 +161,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                 .setSeatTypeId(seatTypeId)
                 .setQuantity(quantity)
                 .build();
-        final CommandRequest request = Commands.newCommandRequest(command, CommandContext.getDefaultInstance());
+        final CommandRequest request = newCommandRequest(command, CommandContext.getDefaultInstance());
         boundedContext.process(request);
     }
 
@@ -171,7 +171,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                 .setSeatTypeId(seatTypeId)
                 .setQuantity(quantity)
                 .build();
-        final CommandRequest request = Commands.newCommandRequest(command, CommandContext.getDefaultInstance());
+        final CommandRequest request = newCommandRequest(command, CommandContext.getDefaultInstance());
         boundedContext.process(request);
     }
 
