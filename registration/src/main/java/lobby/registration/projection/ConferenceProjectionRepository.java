@@ -28,7 +28,6 @@ import org.spine3.server.projection.ProjectionRepository;
  * The repository which manages conference projections.
  *
  * @see ConferenceProjection
- * @see ProjectionRepository
  * @author Alexander Litus
  */
 public class ConferenceProjectionRepository extends ProjectionRepository<ConferenceId, ConferenceProjection, Conference> {
