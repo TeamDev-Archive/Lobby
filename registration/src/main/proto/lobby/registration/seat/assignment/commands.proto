@@ -21,7 +21,7 @@ syntax = "proto3";
 
 package lobby.registration.seat.assignment;
 
-option java_package="lobby.registration.seat.assignment";
+option java_package="sample.lobby.registration.seat.assignment";
 option java_outer_classname = "SeatAssignmentsCommandsProto";
 option java_multiple_files = true;
 

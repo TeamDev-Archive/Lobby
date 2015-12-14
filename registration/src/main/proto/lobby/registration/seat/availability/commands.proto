@@ -21,7 +21,7 @@ syntax = "proto3";
 
 package lobby.registration.seat.availability;
 
-option java_package="lobby.registration.seat.availability";
+option java_package="sample.lobby.registration.seat.availability";
 option java_outer_classname = "SeatsAvailabilityCommandsProto";
 option java_multiple_files = true;
 

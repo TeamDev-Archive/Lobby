@@ -18,40 +18,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package lobby.registration;
+package sample.lobby.registration.service;
 
-import lobby.contracts.common.OrderId;
-import lobby.registration.service.OrderPricingService;
-import org.spine3.server.aggregate.AggregateRepositoryBase;
-
-import javax.annotation.Nonnull;
+import sample.lobby.contracts.common.ConferenceId;
+import sample.lobby.contracts.registration.OrderTotal;
+import sample.lobby.contracts.registration.SeatQuantity;
 
 /**
- * The repository for order aggregate roots.
+ * The service which calculates prices of order seats.
  *
- * @see OrderAggregate
- * @see AggregateRepositoryBase
  * @author Alexander Litus
  */
-public class OrderRepository extends AggregateRepositoryBase<OrderId, OrderAggregate> {
-
-    private final OrderPricingService orderPricingService;
+public interface OrderPricingService {
 
     /**
-     * Creates a new repository instance.
+     * Calculates the price of order seats.
      *
-     * @param orderPricingService the pricing service to inject to order aggregate roots
+     * @param conferenceId the ID of the conference to which the {@code seats} are related
+     * @param seats the seats to calculate the price for
+     * @return the total price of the seats
      */
-    public OrderRepository(OrderPricingService orderPricingService) {
-        super();
-        this.orderPricingService = orderPricingService;
-    }
-
-    @Nonnull
-    @Override
-    public OrderAggregate load(OrderId id) throws IllegalStateException {
-        final OrderAggregate order = super.load(id);
-        order.setOrderPricingService(orderPricingService);
-        return order;
-    }
+    OrderTotal calculateTotalOrderPrice(ConferenceId conferenceId, Iterable<SeatQuantity> seats);
 }

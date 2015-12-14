@@ -18,42 +18,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package lobby.registration.projection;
+package sample.lobby.registration;
 
-import lobby.contracts.common.ConferenceId;
-import lobby.registration.Conference;
-import org.spine3.server.BoundedContext;
-import org.spine3.server.projection.ProjectionRepository;
+import org.spine3.server.aggregate.AggregateRepositoryBase;
+import sample.lobby.contracts.common.OrderId;
+import sample.lobby.registration.service.OrderPricingService;
 
 import javax.annotation.Nonnull;
 
 /**
- * The repository which manages conference projections.
+ * The repository for order aggregate roots.
  *
- * @see ConferenceProjection
- * @see ProjectionRepository
+ * @see OrderAggregate
+ * @see AggregateRepositoryBase
  * @author Alexander Litus
  */
-public class ConferenceProjectionRepository extends ProjectionRepository<ConferenceId, ConferenceProjection, Conference> {
+public class OrderRepository extends AggregateRepositoryBase<OrderId, OrderAggregate> {
 
-
-    private final BoundedContext context;
+    private final OrderPricingService orderPricingService;
 
     /**
      * Creates a new repository instance.
      *
-     * @param context current bounded context
+     * @param orderPricingService the pricing service to inject to order aggregate roots
      */
-    public ConferenceProjectionRepository(BoundedContext context) {
+    public OrderRepository(OrderPricingService orderPricingService) {
         super();
-        this.context = context;
+        this.orderPricingService = orderPricingService;
     }
 
     @Nonnull
     @Override
-    public ConferenceProjection load(ConferenceId id) throws IllegalStateException {
-        final ConferenceProjection conference = super.load(id);
-        conference.setBoundedContext(context);
-        return conference;
+    public OrderAggregate load(OrderId id) throws IllegalStateException {
+        final OrderAggregate order = super.load(id);
+        order.setOrderPricingService(orderPricingService);
+        return order;
     }
 }

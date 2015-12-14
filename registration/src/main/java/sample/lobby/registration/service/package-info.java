@@ -19,6 +19,6 @@
  */
 
 @ParametersAreNonnullByDefault
-package lobby.registration.projection;
+package sample.lobby.registration.service;
 
 import javax.annotation.ParametersAreNonnullByDefault;

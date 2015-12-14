@@ -19,6 +19,6 @@
  */
 
 @ParametersAreNonnullByDefault
-package lobby.registration;
+package sample.lobby.registration;
 
 import javax.annotation.ParametersAreNonnullByDefault;

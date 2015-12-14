@@ -18,25 +18,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package lobby.registration.service;
+package sample.lobby.registration.projection;
 
-import lobby.contracts.common.ConferenceId;
-import lobby.contracts.registration.OrderTotal;
-import lobby.contracts.registration.SeatQuantity;
+import org.spine3.server.BoundedContext;
+import org.spine3.server.projection.ProjectionRepository;
+import sample.lobby.contracts.common.ConferenceId;
+import sample.lobby.registration.Conference;
+
+import javax.annotation.Nonnull;
 
 /**
- * The service which calculates prices of order seats.
+ * The repository which manages conference projections.
  *
+ * @see ConferenceProjection
+ * @see ProjectionRepository
  * @author Alexander Litus
  */
-public interface OrderPricingService {
+public class ConferenceProjectionRepository extends ProjectionRepository<ConferenceId, ConferenceProjection, Conference> {
+
+
+    private final BoundedContext context;
 
     /**
-     * Calculates the price of order seats.
+     * Creates a new repository instance.
      *
-     * @param conferenceId the ID of the conference to which the {@code seats} are related
-     * @param seats the seats to calculate the price for
-     * @return the total price of the seats
+     * @param context current bounded context
      */
-    OrderTotal calculateTotalOrderPrice(ConferenceId conferenceId, Iterable<SeatQuantity> seats);
+    public ConferenceProjectionRepository(BoundedContext context) {
+        super();
+        this.context = context;
+    }
+
+    @Nonnull
+    @Override
+    public ConferenceProjection load(ConferenceId id) throws IllegalStateException {
+        final ConferenceProjection conference = super.load(id);
+        conference.setBoundedContext(context);
+        return conference;
+    }
 }

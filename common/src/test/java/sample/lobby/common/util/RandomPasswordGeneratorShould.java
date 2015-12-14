@@ -18,7 +18,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package lobby.common.util;
+package sample.lobby.common.util;
 
 import org.junit.Test;
 

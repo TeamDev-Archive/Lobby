@@ -18,17 +18,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package lobby.registration.projection;
+package sample.lobby.registration.projection;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
-import lobby.contracts.common.ConferenceId;
-import lobby.contracts.common.SeatType;
-import lobby.contracts.common.SeatTypeId;
-import lobby.contracts.conference.*;
-import lobby.registration.Conference;
-import lobby.registration.seat.availability.AddSeats;
-import lobby.registration.seat.availability.RemoveSeats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spine3.base.CommandContext;
@@ -37,6 +30,13 @@ import org.spine3.eventbus.Subscribe;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.projection.Projection;
 import org.spine3.util.Commands;
+import sample.lobby.contracts.common.ConferenceId;
+import sample.lobby.contracts.common.SeatType;
+import sample.lobby.contracts.common.SeatTypeId;
+import sample.lobby.contracts.conference.*;
+import sample.lobby.registration.Conference;
+import sample.lobby.registration.seat.availability.AddSeats;
+import sample.lobby.registration.seat.availability.RemoveSeats;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -44,8 +44,8 @@ import java.util.List;
 import static com.google.common.collect.Iterables.filter;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
-import static lobby.registration.Conference.PublishingStatus.NOT_PUBLISHED;
-import static lobby.registration.Conference.PublishingStatus.PUBLISHED;
+import static sample.lobby.registration.Conference.PublishingStatus.NOT_PUBLISHED;
+import static sample.lobby.registration.Conference.PublishingStatus.PUBLISHED;
 
 /**
  * The projection of a conference.
@@ -185,7 +185,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         return ImmutableList.copyOf(result);
     }
 
-    protected static Conference convert(lobby.contracts.conference.Conference c) {
+    protected static Conference convert(sample.lobby.contracts.conference.Conference c) {
         final Conference.Builder newState = Conference.newBuilder()
                 .setId(c.getId())
                 .setSlug(c.getSlug())
