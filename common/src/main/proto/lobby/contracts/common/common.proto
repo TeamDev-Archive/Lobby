@@ -21,9 +21,13 @@ syntax = "proto3";
 
 package lobby.contracts.common;
 
-option java_package="lobby.contracts.common";
+option java_package="sample.lobby.contracts.common";
 option java_outer_classname = "CommonContractsProto";
 option java_multiple_files = true;
+
+import "spine/money/money.proto";
+import "spine/base/person.proto";
+import "spine/base/email.proto";
 
 // The ID of the order.
 message OrderId {
@@ -41,4 +45,50 @@ message ConferenceId {
 message ReservationId {
     // The UUID-based value of the reservation ID.
     string uuid = 1;
+}
+
+// The ID of the seat type.
+message SeatTypeId {
+    // The UUID-based value of the seat type ID.
+    string uuid = 1;
+}
+
+// The type of a seat which represents the right to be admitted to a conference or
+// to access a specific session at the conference (tutorial, workshop etc).
+message SeatType {
+    // The unique seat type id.
+    SeatTypeId id = 1;
+
+    // The conference id the seat associated with.
+    ConferenceId conference_id = 2;
+
+    // The name of the seat type.
+    string name = 3;
+
+    // The description of the seat type.
+    string description = 4;
+
+    // The price of the seat of this type.
+    spine.money.Money price = 5;
+
+    // The total quantity of seats for the conference.
+    int32 quantity_total = 6;
+
+    // The available quantity of seats for the conference.
+    int32 quantity_available = 7;
+}
+
+// The info about a person.
+message PersonalInfo {
+    // The person's name.
+    spine.base.PersonName name = 1;
+
+    // The person's email.
+    spine.base.EmailAddress email = 2;
+}
+
+// The part of the URL used to access the conference.
+message ConferenceSlug {
+    // The value of the slug.
+    string value = 1;
 }

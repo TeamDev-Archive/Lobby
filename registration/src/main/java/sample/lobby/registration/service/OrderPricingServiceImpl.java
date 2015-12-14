@@ -18,16 +18,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package lobby.registration.service;
+package sample.lobby.registration.service;
 
-import lobby.contracts.common.ConferenceId;
-import lobby.contracts.registration.OrderTotal;
-import lobby.contracts.registration.SeatOrderLine;
-import lobby.contracts.registration.SeatQuantity;
-import lobby.registration.SeatType;
-import lobby.registration.projection.ConferenceProjection;
-import lobby.registration.projection.ConferenceProjectionRepository;
 import org.spine3.money.Money;
+import sample.lobby.contracts.common.ConferenceId;
+import sample.lobby.contracts.common.SeatType;
+import sample.lobby.contracts.registration.OrderTotal;
+import sample.lobby.contracts.registration.SeatOrderLine;
+import sample.lobby.contracts.registration.SeatQuantity;
+import sample.lobby.registration.projection.ConferenceProjection;
+import sample.lobby.registration.projection.ConferenceProjectionRepository;
 
 import java.util.List;
 

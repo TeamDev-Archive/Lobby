@@ -1,19 +1,20 @@
-package lobby.registration;
+package sample.lobby.registration;
 
-import lobby.contracts.common.OrderId;
-import lobby.contracts.registration.order.OrderConfirmed;
-import lobby.contracts.registration.order.OrderPlaced;
-import lobby.registration.order.Order;
-import lobby.registration.order.Order.Status;
-import lobby.registration.order.RegisterToConference;
-import lobby.registration.order.RejectOrder;
 import org.spine3.base.CommandContext;
 import org.spine3.server.Assign;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
+import sample.lobby.contracts.common.OrderId;
+import sample.lobby.contracts.registration.order.OrderConfirmed;
+import sample.lobby.contracts.registration.order.OrderPlaced;
+import sample.lobby.registration.order.Order;
+import sample.lobby.registration.order.Order.Status;
+import sample.lobby.registration.order.RegisterToConference;
+import sample.lobby.registration.order.RejectOrder;
+import sample.lobby.registration.service.OrderPricingService;
 
 import static com.google.common.base.Preconditions.checkState;
-import static lobby.registration.order.Order.Status.*;
+import static sample.lobby.registration.order.Order.Status.*;
 
 /**
  * The order aggregate root.
@@ -23,8 +24,14 @@ import static lobby.registration.order.Order.Status.*;
 @SuppressWarnings("TypeMayBeWeakened") // not in handlers
 public class OrderAggregate extends Aggregate<OrderId, Order> {
 
+    private OrderPricingService orderPricingService;
+
     public OrderAggregate(OrderId id) {
         super(id);
+    }
+
+    public void setOrderPricingService(OrderPricingService orderPricingService) {
+        this.orderPricingService = orderPricingService;
     }
 
     @Override

@@ -19,34 +19,44 @@
 //
 syntax = "proto3";
 
-package lobby.registration.seat.assignment;
+package lobby.contracts.conference;
 
-option java_package="sample.lobby.registration.seat.assignment";
-option java_outer_classname = "SeatAssignmentsCommandsProto";
+option java_package="sample.lobby.contracts.conference";
+option java_outer_classname = "ConferenceContractsProto";
 option java_multiple_files = true;
 
 import "lobby/contracts/common/common.proto";
-import "lobby/contracts/registration/registration.proto";
-import "lobby/registration/seat/assignment/seat_assignments.proto";
+import "spine/time/time.proto";
 
-// The request to assign the seat to the attendee.
-// Is sent as the result of a registrant interaction with the UI.
-message AssignSeat {
-    // The ID of the seat assignments aggregate.
-    lobby.registration.seat.assignment.SeatAssignmentsId seat_assignments_id = 1;
+// The conference created by a business customer.
+message Conference {
+    // The unique conference id.
+    lobby.contracts.common.ConferenceId id = 1;
 
-    // The info about an attendee.
-    lobby.contracts.common.PersonalInfo attendee = 2;
+    // The conference name. Used in the slug.
+    string name = 2;
 
-    // The position of the assigned seat.
-    lobby.contracts.registration.SeatPosition position = 3;
-}
+    // The conference description.
+    string description = 3;
 
-// The request to unassign the seat from the attendee.
-message UnassignSeat {
-    // The ID of the seat assignments aggregate.
-    lobby.registration.seat.assignment.SeatAssignmentsId seat_assignments_id = 1;
+    // The location of the conference.
+    string location = 4;
 
-    // The position of the seat to unassign.
-    lobby.contracts.registration.SeatPosition position = 2;
+    // The part of the URL used to access the conference.
+    lobby.contracts.common.ConferenceSlug slug = 5;
+
+    // The tagline of the conference.
+    string tagline = 6;
+
+    // The search query for Twitter.
+    string twitter_search = 7;
+
+    // The start date of the conference.
+    spine.time.LocalDate start_date = 8;
+
+    // The end date of the conference.
+    spine.time.LocalDate end_date = 9;
+
+    // The info about the owner of the conference.
+    lobby.contracts.common.PersonalInfo owner = 10;
 }

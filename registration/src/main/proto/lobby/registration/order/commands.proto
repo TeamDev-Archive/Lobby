@@ -21,7 +21,7 @@ syntax = "proto3";
 
 package lobby.registration.order;
 
-option java_package="lobby.registration.order";
+option java_package="sample.lobby.registration.order";
 option java_outer_classname = "OrderCommandsProto";
 option java_multiple_files = true;
 
@@ -69,7 +69,7 @@ message AssignRegistrantDetails {
     lobby.contracts.common.OrderId order_id = 1;
 
     // The info about the registrant.
-    lobby.contracts.registration.PersonalInfo registrant = 2;
+    lobby.contracts.common.PersonalInfo registrant = 2;
 }
 
 // The request to confirm the order.

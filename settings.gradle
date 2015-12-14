@@ -1,5 +1,8 @@
 rootProject.name = 'Lobby'
 
+include ':common'
+project(':common').projectDir = "$rootDir/common" as File
+
 include ':webapp'
 project(':webapp').projectDir = "$rootDir/webapp" as File
 
@@ -12,6 +15,5 @@ project(':payment-contracts').projectDir = "$rootDir/payment-contracts" as File
 include ':registration-contracts'
 project(':registration-contracts').projectDir = "$rootDir/registration-contracts" as File
 
-include ':common'
-project(':common').projectDir = "$rootDir/common" as File
-
+include ':conference-contracts'
+project(':conference-contracts').projectDir = "$rootDir/conference-contracts" as File

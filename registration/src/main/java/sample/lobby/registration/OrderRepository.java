@@ -18,34 +18,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package lobby.registration.projection;
+package sample.lobby.registration;
 
-import lobby.contracts.common.ConferenceId;
-import lobby.registration.Conference;
-import org.spine3.server.projection.Projection;
+import org.spine3.server.aggregate.AggregateRepositoryBase;
+import sample.lobby.contracts.common.OrderId;
+import sample.lobby.registration.service.OrderPricingService;
+
+import javax.annotation.Nonnull;
 
 /**
- * The projection of a conference.
+ * The repository for order aggregate roots.
  *
- * @see Projection
+ * @see OrderAggregate
+ * @see AggregateRepositoryBase
  * @author Alexander Litus
  */
-public class ConferenceProjection extends Projection<ConferenceId, Conference> {
+public class OrderRepository extends AggregateRepositoryBase<OrderId, OrderAggregate> {
+
+    private final OrderPricingService orderPricingService;
 
     /**
-     * Creates a new instance.
+     * Creates a new repository instance.
      *
-     * @param id the ID for the new instance
-     * @throws IllegalArgumentException if the ID is not of one of the supported types
+     * @param orderPricingService the pricing service to inject to order aggregate roots
      */
-    public ConferenceProjection(ConferenceId id) {
-        super(id);
+    public OrderRepository(OrderPricingService orderPricingService) {
+        super();
+        this.orderPricingService = orderPricingService;
     }
 
+    @Nonnull
     @Override
-    protected Conference getDefaultState() {
-        return Conference.getDefaultInstance();
+    public OrderAggregate load(OrderId id) throws IllegalStateException {
+        final OrderAggregate order = super.load(id);
+        order.setOrderPricingService(orderPricingService);
+        return order;
     }
-
-    // TODO:2015-12-11:alexander.litus: store info about the seats
 }

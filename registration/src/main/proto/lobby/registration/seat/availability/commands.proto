@@ -21,7 +21,7 @@ syntax = "proto3";
 
 package lobby.registration.seat.availability;
 
-option java_package="lobby.registration.seat.availability";
+option java_package="sample.lobby.registration.seat.availability";
 option java_outer_classname = "SeatsAvailabilityCommandsProto";
 option java_multiple_files = true;
 
@@ -67,7 +67,7 @@ message AddSeats {
     lobby.contracts.common.ConferenceId conference_id = 1;
 
     // The ID of the seat type.
-    lobby.contracts.registration.SeatTypeId seat_type_id = 2;
+    lobby.contracts.common.SeatTypeId seat_type_id = 2;
 
     // The quantity of the seats to add.
     int32 quantity = 3;
@@ -79,7 +79,7 @@ message RemoveSeats {
     lobby.contracts.common.ConferenceId conference_id = 1;
 
     // The ID of the seat type.
-    lobby.contracts.registration.SeatTypeId seat_type_id = 2;
+    lobby.contracts.common.SeatTypeId seat_type_id = 2;
 
     // The quantity of the seats to add.
     int32 quantity = 3;

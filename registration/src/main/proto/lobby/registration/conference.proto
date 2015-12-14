@@ -21,24 +21,23 @@ syntax = "proto3";
 
 package lobby.registration;
 
-option java_package="lobby.registration";
-option java_outer_classname = "ConferenceProto";
+option java_package="sample.lobby.registration";
+option java_outer_classname = "ConferenceRegistrationProto";
 option java_multiple_files = true;
 
 import "lobby/contracts/common/common.proto";
 import "lobby/contracts/registration/registration.proto";
 import "spine/time/time.proto";
-import "spine/money/money.proto";
 
 // The conference created by a business customer.
 message Conference {
     // The unique conference id.
     lobby.contracts.common.ConferenceId id = 1;
 
-    // The conference locator access code.
-    lobby.contracts.registration.ConferenceAccessCode access_code = 2;
+    // The part of the URL used to access the conference.
+    lobby.contracts.common.ConferenceSlug slug = 2;
 
-    // The conference name. Used in the slug.
+    // The conference name.
     string name = 3;
 
     // The conference description.
@@ -57,7 +56,7 @@ message Conference {
     spine.time.LocalDate start_date = 8;
 
     // The types of seats available for the conference.
-    repeated SeatType seat_type = 9;
+    repeated lobby.contracts.common.SeatType seat_type = 9;
 
     // The publishing status of the conference.
     PublishingStatus publishing_status = 10;
@@ -69,29 +68,4 @@ message Conference {
         // The conference is visible for users.
         PUBLISHED = 1;
     }
-}
-
-// The type of a seat which represents the right to be admitted to a conference or
-// to access a specific session at the conference (tutorial, workshop etc).
-message SeatType {
-    // The unique seat type id.
-    lobby.contracts.registration.SeatTypeId id = 1;
-
-    // The conference id the seat associated with.
-    lobby.contracts.common.ConferenceId conference_id = 2;
-
-    // The name of the seat type.
-    string name = 3;
-
-    // The description of the seat type.
-    string description = 4;
-
-    // The price of the seat of this type.
-    spine.money.Money price = 5;
-
-    // The total quantity of seats for the conference.
-    int32 quantity_total = 6;
-
-    // The available quantity of seats for the conference.
-    int32 quantity_available = 7;
 }
