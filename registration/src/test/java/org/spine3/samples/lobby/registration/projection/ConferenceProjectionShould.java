@@ -49,8 +49,6 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.spine3.samples.lobby.conference.contracts.Conference.PublishingStatus.NOT_PUBLISHED;
-import static org.spine3.samples.lobby.conference.contracts.Conference.PublishingStatus.PUBLISHED;
 
 /**
  * @author Alexander Litus
@@ -105,8 +103,7 @@ public class ConferenceProjectionShould {
 
         projection.on(event);
 
-        final Conference.PublishingStatus status = projection.getState().getPublishingStatus();
-        assertEquals(PUBLISHED, status);
+        assertTrue(projection.getState().getIsPublished());
     }
 
     @Test
@@ -115,8 +112,7 @@ public class ConferenceProjectionShould {
 
         projection.on(event);
 
-        final Conference.PublishingStatus status = projection.getState().getPublishingStatus();
-        assertEquals(NOT_PUBLISHED, status);
+        assertFalse(projection.getState().getIsPublished());
     }
 
     @Test

@@ -43,8 +43,6 @@ import java.util.List;
 import static com.google.common.collect.Iterables.filter;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
-import static org.spine3.samples.lobby.conference.contracts.Conference.PublishingStatus.NOT_PUBLISHED;
-import static org.spine3.samples.lobby.conference.contracts.Conference.PublishingStatus.PUBLISHED;
 import static org.spine3.util.Commands.newCommandRequest;
 
 /**
@@ -95,17 +93,17 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
 
     @Subscribe
     public void on(ConferencePublished event) {
-        updatePublishingStatus(PUBLISHED);
+        updatePublishingStatus(true);
     }
 
     @Subscribe
     public void on(ConferenceUnpublished event) {
-        updatePublishingStatus(NOT_PUBLISHED);
+        updatePublishingStatus(false);
     }
 
-    private void updatePublishingStatus(Conference.PublishingStatus status) {
+    private void updatePublishingStatus(boolean isPublished) {
         final Conference.Builder conference = getState().toBuilder();
-        conference.setPublishingStatus(status);
+        conference.setIsPublished(isPublished);
         incrementState(conference.build());
     }
 

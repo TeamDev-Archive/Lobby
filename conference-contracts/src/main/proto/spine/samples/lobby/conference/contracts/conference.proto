@@ -63,14 +63,6 @@ message Conference {
     // The info about the owner of the conference.
     spine.samples.lobby.common.PersonalInfo owner = 11;
 
-    // The publishing status of the conference.
-    PublishingStatus publishing_status = 12;
-
-    // The publishing status of the conference.
-    enum PublishingStatus {
-        // The conference is not visible for users.
-        NOT_PUBLISHED = 0;
-        // The conference is visible for users.
-        PUBLISHED = 1;
-    }
+    // If the conference is published it is visible for users.
+    bool is_published = 12;
 }
