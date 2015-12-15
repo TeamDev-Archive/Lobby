@@ -35,12 +35,19 @@ import static org.junit.Assert.assertFalse;
 @SuppressWarnings("InstanceMethodNamingConvention")
 public class RandomPasswordGeneratorShould {
 
-    private static final int PASSWORD_LENGTH = 7;
+    private static final int PASSWORD_LENGTH = 8;
+    private static final int PASSWORD_GENERATION_COUNT = 1000;
 
     @Test
-    public void generate_non_empty_password() {
+    public void generate_non_null_and_non_empty_password() {
         final String password = RandomPasswordGenerator.generate(PASSWORD_LENGTH);
         assertFalse(isNullOrEmpty(password));
+    }
+
+    @Test
+    public void generate_password_without_spaces() {
+        final String password = RandomPasswordGenerator.generate(PASSWORD_LENGTH);
+        assertFalse(password.contains(" "));
     }
 
     @Test
@@ -51,12 +58,11 @@ public class RandomPasswordGeneratorShould {
 
     @Test
     public void generate_random_passwords() {
-        final Set<Object> passwords = newHashSet();
-        final int generationsCount = 30;
-        for (int i = 0; i < generationsCount; i++) {
+        final Set<Object> uniquePasswords = newHashSet();
+        for (int i = 0; i < PASSWORD_GENERATION_COUNT; i++) {
             final String password = RandomPasswordGenerator.generate(PASSWORD_LENGTH);
-            passwords.add(password);
+            uniquePasswords.add(password);
         }
-        assertEquals(generationsCount, passwords.size());
+        assertEquals(PASSWORD_GENERATION_COUNT, uniquePasswords.size());
     }
 }

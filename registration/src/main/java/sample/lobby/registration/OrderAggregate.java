@@ -2,6 +2,7 @@ package sample.lobby.registration;
 
 import org.spine3.base.CommandContext;
 import org.spine3.server.Assign;
+import org.spine3.server.Entity;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
 import sample.lobby.contracts.common.OrderId;
@@ -10,11 +11,11 @@ import sample.lobby.contracts.registration.order.OrderPlaced;
 import sample.lobby.registration.order.Order;
 import sample.lobby.registration.order.Order.Status;
 import sample.lobby.registration.order.RegisterToConference;
-import sample.lobby.registration.order.RejectOrder;
 import sample.lobby.registration.service.OrderPricingService;
 
 import static com.google.common.base.Preconditions.checkState;
-import static sample.lobby.registration.order.Order.Status.*;
+import static sample.lobby.registration.order.Order.Status.CONFIRMED;
+import static sample.lobby.registration.order.Order.Status.UNRECOGNIZED;
 
 /**
  * The order aggregate root.
@@ -26,10 +27,22 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     private OrderPricingService orderPricingService;
 
+    /**
+     * Creates a new instance.
+     *
+     * @param id the ID for the new instance
+     * @throws IllegalArgumentException if the ID is not of one of the supported types
+     * @see Entity
+     */
     public OrderAggregate(OrderId id) {
         super(id);
     }
 
+    /**
+     * Sets the pricing service to use to calculate a price of an order.
+     *
+     * @param orderPricingService the pricing service implementation
+     */
     public void setOrderPricingService(OrderPricingService orderPricingService) {
         this.orderPricingService = orderPricingService;
     }
@@ -56,7 +69,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
                 .setId(event.getOrderId())
                 .setConferenceId(event.getConferenceId())
                 .addAllSeat(event.getSeatList())
-                .setStatus(CREATED)
                 .build();
         validate(newState);
         incrementState(newState);
@@ -84,14 +96,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         }
         final Status status = getState().getStatus();
         checkState(status == UNRECOGNIZED, status);
-    }
-
-    private void validateCommand(RejectOrder command) {
-        if (command.getOrderId().getUuid().isEmpty()) {
-            throw noOrderIdException();
-        }
-        final Status status = getState().getStatus();
-        checkState(status == CREATED, status);
     }
 
     private static IllegalArgumentException noOrderIdException() {
