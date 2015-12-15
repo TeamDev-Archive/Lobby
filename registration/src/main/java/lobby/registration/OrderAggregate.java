@@ -11,7 +11,6 @@ import lobby.registration.service.OrderPricingService;
 import org.spine3.base.CommandContext;
 import org.spine3.server.Assign;
 import org.spine3.server.Entity;
-import org.spine3.server.EntityId;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
 
@@ -33,7 +32,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
      *
      * @param id the ID for the new instance
      * @throws IllegalArgumentException if the ID is not of one of the supported types
-     * @see EntityId
      * @see Entity
      */
     public OrderAggregate(OrderId id) {
