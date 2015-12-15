@@ -46,8 +46,8 @@ message OrderPlaced {
     // The expected expiration time if the reservation is not explicitly confirmed later.
     google.protobuf.Timestamp reservation_auto_expiration = 4;
 
-    // The conference locator access code.
-    lobby.contracts.registration.ConferenceAccessCode access_code = 5;
+    // The order access code.
+    lobby.contracts.registration.OrderAccessCode access_code = 5;
 }
 
 // The event propagated when an order is updated.
@@ -59,7 +59,7 @@ message OrderUpdated {
     repeated lobby.contracts.registration.SeatQuantity seat = 2;
 }
 
-// The event propagated when an order is partially reserved.
+// The event propagated when an order is partially reserved (some of the requested seats were unavailable).
 message OrderPartiallyReserved {
     // The ID of the order.
     lobby.contracts.common.OrderId order_id = 1;

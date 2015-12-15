@@ -69,8 +69,25 @@ message SeatPosition {
 // Used by a business customer (conference owner) to view conference details.
 // Generated when the business customer creates the conference.
 message ConferenceAccessCode {
-    // The string value of the access code.
+    // The value of the access code.
     string value = 1;
+}
+
+// The order access code.
+// Used by a registrant to view order details.
+// Generated when the registrant places an order.
+message OrderAccessCode {
+    // The value of the access code.
+    string value = 1;
+}
+
+// The total price of the order and order lines to pay for.
+message OrderTotal {
+    // The total price of the order.
+    spine.money.Money total_price = 1;
+
+    // The lines of the order.
+    repeated lobby.contracts.registration.SeatOrderLine order_line = 2;
 }
 
 // The info about a person.
