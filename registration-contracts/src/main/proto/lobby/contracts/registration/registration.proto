@@ -52,9 +52,9 @@ message SeatOrderLine {
     int32 quantity = 4;
 }
 
-// The position of the seat.
+// The position of the seat at the conference session (e.g., number of the seat).
 message SeatPosition {
-    // A positive number of a seat, which determines its position at the conference.
+    // The unique positive number of a seat, which determines its position at the conference session.
     int32 value = 1;
 }
 
