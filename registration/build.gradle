@@ -1,4 +1,5 @@
 dependencies {
     compile project(':common')
     compile project(':registration-contracts')
+    compile project(':conference-contracts')
 }
