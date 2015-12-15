@@ -48,7 +48,11 @@ import static sample.lobby.registration.Conference.PublishingStatus.NOT_PUBLISHE
 import static sample.lobby.registration.Conference.PublishingStatus.PUBLISHED;
 
 /**
- * The projection of a conference.
+ * Holds a structural representation of data extracted from a stream of events related to a conference.
+ *
+ * <p> Contains the data about the conference for registrants.
+ *
+ * <p> Also notifies about some of the data changes by sending commands.
  *
  * @author Alexander Litus
  * @see Projection
