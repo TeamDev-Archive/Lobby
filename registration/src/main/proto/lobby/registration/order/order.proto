@@ -44,15 +44,9 @@ message Order {
 
     // The status of the order.
     enum Status {
-        // The initial status of the order.
-        NEW = 0;
-        // The order is in this status when it was already created but the reservation was not confirmed yet.
-        CREATED = 1;
-        // The order is in this status when the system has temporarily reserved the seats requested by the registrant.
-        RESERVED = 2;
-        // The order is in this status when the registrant has successfully paid for order items.
-        CONFIRMED = 3;
-        // The order is in this status when it is placed but already expired.
-        REJECTED = 4;
+        // The order is in this status when the registrant has not paid for the order items yet.
+        NOT_CONFIRMED = 0;
+        // The order is in this status when the registrant has successfully paid for the order items.
+        CONFIRMED = 1;
     }
 }
