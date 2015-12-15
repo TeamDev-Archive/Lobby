@@ -31,7 +31,7 @@ import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.ConferenceSlug;
 import org.spine3.samples.lobby.common.SeatType;
 import org.spine3.samples.lobby.common.SeatTypeId;
-import org.spine3.samples.lobby.registration.Conference;
+import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.lobby.registration.seat.availability.AddSeats;
 import org.spine3.samples.lobby.registration.seat.availability.RemoveSeats;
 import org.spine3.samples.sample.lobby.conference.contracts.*;
@@ -49,9 +49,8 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.spine3.samples.lobby.registration.Conference.PublishingStatus.NOT_PUBLISHED;
-import static org.spine3.samples.lobby.registration.Conference.PublishingStatus.PUBLISHED;
-import static org.spine3.samples.lobby.registration.projection.ConferenceProjection.convert;
+import static org.spine3.samples.lobby.conference.contracts.Conference.PublishingStatus.NOT_PUBLISHED;
+import static org.spine3.samples.lobby.conference.contracts.Conference.PublishingStatus.PUBLISHED;
 
 /**
  * @author Alexander Litus
@@ -88,9 +87,7 @@ public class ConferenceProjectionShould {
 
         projection.on(event);
 
-        final Conference expectedState = convert(event.getConference());
-        final Conference actualState = projection.getState();
-        assertEquals(expectedState, actualState);
+        assertEquals(event.getConference(), projection.getState());
     }
 
     @Test
@@ -99,9 +96,7 @@ public class ConferenceProjectionShould {
 
         projection.on(event);
 
-        final Conference expectedState = convert(event.getConference());
-        final Conference actualState = projection.getState();
-        assertEquals(expectedState, actualState);
+        assertEquals(event.getConference(), projection.getState());
     }
 
     @Test
@@ -126,7 +121,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeCreated_event_and_update_state() {
-        projection.incrementState(convert(buildConferenceForEvent()));
+        projection.incrementState(buildConferenceForEvent());
         final SeatTypeCreated event = seatTypeCreated(5);
 
         projection.on(event);
@@ -136,7 +131,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void not_add_seat_type_with_the_same_id_on_SeatTypeCreated_event() {
-        projection.incrementState(convert(buildConferenceForEvent()));
+        projection.incrementState(buildConferenceForEvent());
         final SeatTypeCreated event = seatTypeCreated(5);
 
         projection.on(event);
@@ -147,7 +142,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_update_state() {
-        projection.incrementState(convert(buildConferenceForEvent()));
+        projection.incrementState(buildConferenceForEvent());
         projection.on(seatTypeCreated("old-description", 5));
 
         final SeatTypeUpdated updatedEvent = seatTypeUpdated("new-description", 7);
@@ -158,7 +153,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_send_AddSeats_command_when_seats_added() {
-        projection.incrementState(convert(buildConferenceForEvent()));
+        projection.incrementState(buildConferenceForEvent());
 
         projection.on(seatTypeCreated(3));
         projection.on(seatTypeUpdated(7));
@@ -168,7 +163,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_send_AddSeats_command_when_seats_removed() {
-        projection.incrementState(convert(buildConferenceForEvent()));
+        projection.incrementState(buildConferenceForEvent());
 
         projection.on(seatTypeCreated(7));
         projection.on(seatTypeUpdated(3));
@@ -178,7 +173,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_do_not_send_commands_when_seat_quantity_not_changed() {
-        projection.incrementState(convert(buildConferenceForEvent()));
+        projection.incrementState(buildConferenceForEvent());
         final int seatQuantity = 5;
 
         projection.on(seatTypeCreated(seatQuantity));
@@ -198,12 +193,12 @@ public class ConferenceProjectionShould {
     }
 
     private ConferenceCreated conferenceCreated() {
-        final org.spine3.samples.lobby.conference.contracts.Conference conference = buildConferenceForEvent();
+        final Conference conference = buildConferenceForEvent();
         return ConferenceCreated.newBuilder().setConference(conference).build();
     }
 
     private ConferenceUpdated conferenceUpdated() {
-        final org.spine3.samples.lobby.conference.contracts.Conference conference = buildConferenceForEvent();
+        final Conference conference = buildConferenceForEvent();
         return ConferenceUpdated.newBuilder().setConference(conference).build();
     }
 
@@ -235,8 +230,8 @@ public class ConferenceProjectionShould {
         return SeatTypeUpdated.newBuilder().setSeatType(seatType).build();
     }
 
-    private org.spine3.samples.lobby.conference.contracts.Conference buildConferenceForEvent() {
-        return org.spine3.samples.lobby.conference.contracts.Conference.newBuilder()
+    private Conference buildConferenceForEvent() {
+        return Conference.newBuilder()
                 .setId(id)
                 .setSlug(ConferenceSlug.newBuilder().setValue("slug"))
                 .setName("Test Conference")

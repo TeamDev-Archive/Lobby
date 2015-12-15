@@ -30,7 +30,7 @@ import org.spine3.eventbus.Subscribe;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.SeatType;
 import org.spine3.samples.lobby.common.SeatTypeId;
-import org.spine3.samples.lobby.registration.Conference;
+import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.lobby.registration.seat.availability.AddSeats;
 import org.spine3.samples.lobby.registration.seat.availability.RemoveSeats;
 import org.spine3.samples.sample.lobby.conference.contracts.*;
@@ -43,8 +43,8 @@ import java.util.List;
 import static com.google.common.collect.Iterables.filter;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
-import static org.spine3.samples.lobby.registration.Conference.PublishingStatus.NOT_PUBLISHED;
-import static org.spine3.samples.lobby.registration.Conference.PublishingStatus.PUBLISHED;
+import static org.spine3.samples.lobby.conference.contracts.Conference.PublishingStatus.NOT_PUBLISHED;
+import static org.spine3.samples.lobby.conference.contracts.Conference.PublishingStatus.PUBLISHED;
 import static org.spine3.util.Commands.newCommandRequest;
 
 /**
@@ -83,13 +83,13 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
 
     @Subscribe
     public void on(ConferenceCreated event) {
-        final Conference newState = convert(event.getConference());
+        final Conference newState = event.getConference();
         incrementState(newState);
     }
 
     @Subscribe
     public void on(ConferenceUpdated event) {
-        final Conference newState = convert(event.getConference());
+        final Conference newState = event.getConference();
         incrementState(newState);
     }
 

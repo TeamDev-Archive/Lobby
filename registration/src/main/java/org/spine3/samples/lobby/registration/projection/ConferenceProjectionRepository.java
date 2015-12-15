@@ -21,7 +21,7 @@
 package org.spine3.samples.lobby.registration.projection;
 
 import org.spine3.samples.lobby.common.ConferenceId;
-import org.spine3.samples.lobby.registration.Conference;
+import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.projection.ProjectionRepository;
 

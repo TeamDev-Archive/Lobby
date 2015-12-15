@@ -57,6 +57,20 @@ message Conference {
     // The end date of the conference.
     spine.time.LocalDate end_date = 9;
 
+    // The types of seats available for the conference.
+    repeated spine.samples.lobby.common.SeatType seat_type = 10;
+
     // The info about the owner of the conference.
-    spine.samples.lobby.common.PersonalInfo owner = 10;
+    spine.samples.lobby.common.PersonalInfo owner = 11;
+
+    // The publishing status of the conference.
+    PublishingStatus publishing_status = 12;
+
+    // The publishing status of the conference.
+    enum PublishingStatus {
+        // The conference is not visible for users.
+        NOT_PUBLISHED = 0;
+        // The conference is visible for users.
+        PUBLISHED = 1;
+    }
 }
