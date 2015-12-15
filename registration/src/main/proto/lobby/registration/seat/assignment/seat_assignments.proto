@@ -26,7 +26,7 @@ option java_outer_classname = "SeatAssignmentsProto";
 option java_multiple_files = true;
 
 import "lobby/contracts/common/common.proto";
-import "lobby/contracts/registration/registration.proto";
+import "lobby/registration/contracts/registration.proto";
 
 // The state of the seat assignments aggregate.
 message SeatAssignments {
@@ -47,7 +47,7 @@ message SeatAssignmentsId {
 // Associates an attendee with a seat in a confirmed order.
 message SeatAssignment {
     // The position of the seat.
-    lobby.contracts.registration.SeatPosition position = 1;
+    lobby.registration.contracts.SeatPosition position = 1;
 
     // The seat type for the attendee.
     lobby.contracts.common.SeatTypeId seat_type_id = 2;

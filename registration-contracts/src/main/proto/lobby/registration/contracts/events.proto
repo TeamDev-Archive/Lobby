@@ -19,14 +19,14 @@
 //
 syntax = "proto3";
 
-package lobby.contracts.registration.order;
+package lobby.registration.contracts.order;
 
-option java_package="sample.lobby.contracts.registration.order";
+option java_package="sample.lobby.registration.contracts.order";
 option java_outer_classname = "RegistrationContractsEventsProto";
 option java_multiple_files = true;
 
 import "lobby/contracts/common/common.proto";
-import "lobby/contracts/registration/registration.proto";
+import "lobby/registration/contracts/registration.proto";
 import "google/protobuf/timestamp.proto";
 import "spine/money/money.proto";
 
@@ -41,13 +41,13 @@ message OrderPlaced {
     lobby.contracts.common.ConferenceId conference_id = 2;
 
     // The order items representing the quantity of seats of different types at the conference.
-    repeated lobby.contracts.registration.SeatQuantity seat = 3;
+    repeated lobby.registration.contracts.SeatQuantity seat = 3;
 
     // The expected expiration time if the reservation is not explicitly confirmed later.
     google.protobuf.Timestamp reservation_auto_expiration = 4;
 
     // The order access code.
-    lobby.contracts.registration.OrderAccessCode access_code = 5;
+    lobby.registration.contracts.OrderAccessCode access_code = 5;
 }
 
 // The event propagated when an order is updated.
@@ -56,7 +56,7 @@ message OrderUpdated {
     lobby.contracts.common.OrderId order_id = 1;
 
     // The order items representing the quantity of seats of different types.
-    repeated lobby.contracts.registration.SeatQuantity seat = 2;
+    repeated lobby.registration.contracts.SeatQuantity seat = 2;
 }
 
 // The event propagated when an order is partially reserved (some of the requested seats were unavailable).
@@ -68,7 +68,7 @@ message OrderPartiallyReserved {
     google.protobuf.Timestamp reservation_expiration = 2;
 
     // The order items representing the quantity of seats of different types.
-    repeated lobby.contracts.registration.SeatQuantity seat = 3;
+    repeated lobby.registration.contracts.SeatQuantity seat = 3;
 }
 
 // The event propagated when an order reservation is completed.
@@ -80,7 +80,7 @@ message OrderReservationCompleted {
     google.protobuf.Timestamp reservation_expiration = 2;
 
     // The order items representing the quantity of seats of different types.
-    repeated lobby.contracts.registration.SeatQuantity seat = 3;
+    repeated lobby.registration.contracts.SeatQuantity seat = 3;
 }
 
 // The event propagated when an order is expired.
@@ -118,7 +118,7 @@ message OrderTotalsCalculated {
     }
 
     // The lines of the order.
-    repeated lobby.contracts.registration.SeatOrderLine order_line = 4;
+    repeated lobby.registration.contracts.SeatOrderLine order_line = 4;
 }
 
 
@@ -138,7 +138,7 @@ message SeatAssignmentsCreated {
     // The short seat assignment info object.
     message SeatAssignmentInfo {
         // The position of the seat.
-        lobby.contracts.registration.SeatPosition position = 1;
+        lobby.registration.contracts.SeatPosition position = 1;
 
         // The ID of the seat type.
         lobby.contracts.common.SeatTypeId seat_type_id = 2;
@@ -151,7 +151,7 @@ message SeatAssignmentUpdated {
     lobby.contracts.common.ReservationId reservation_id = 1;
 
     // The position of the seat.
-    lobby.contracts.registration.SeatPosition position = 2;
+    lobby.registration.contracts.SeatPosition position = 2;
 
     // The personal info of the attendee.
     lobby.contracts.common.PersonalInfo attendee = 3;
@@ -163,7 +163,7 @@ message SeatAssigned {
     lobby.contracts.common.ReservationId reservation_id = 1;
 
     // The position of the seat.
-    lobby.contracts.registration.SeatPosition position = 2;
+    lobby.registration.contracts.SeatPosition position = 2;
 
     // The ID of the seat type.
     lobby.contracts.common.SeatTypeId seat_type_id = 3;
@@ -178,5 +178,5 @@ message SeatUnassigned {
     lobby.contracts.common.ReservationId reservation_id = 1;
 
     // The position of the seat.
-    lobby.contracts.registration.SeatPosition position = 2;
+    lobby.registration.contracts.SeatPosition position = 2;
 }

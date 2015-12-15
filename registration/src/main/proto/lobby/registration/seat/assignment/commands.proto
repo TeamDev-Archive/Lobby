@@ -26,7 +26,7 @@ option java_outer_classname = "SeatAssignmentsCommandsProto";
 option java_multiple_files = true;
 
 import "lobby/contracts/common/common.proto";
-import "lobby/contracts/registration/registration.proto";
+import "lobby/registration/contracts/registration.proto";
 import "lobby/registration/seat/assignment/seat_assignments.proto";
 
 // The request to assign the seat to the attendee.
@@ -39,7 +39,7 @@ message AssignSeat {
     lobby.contracts.common.PersonalInfo attendee = 2;
 
     // The position of the assigned seat.
-    lobby.contracts.registration.SeatPosition position = 3;
+    lobby.registration.contracts.SeatPosition position = 3;
 }
 
 // The request to unassign the seat from the attendee.
@@ -48,5 +48,5 @@ message UnassignSeat {
     lobby.registration.seat.assignment.SeatAssignmentsId seat_assignments_id = 1;
 
     // The position of the seat to unassign.
-    lobby.contracts.registration.SeatPosition position = 2;
+    lobby.registration.contracts.SeatPosition position = 2;
 }

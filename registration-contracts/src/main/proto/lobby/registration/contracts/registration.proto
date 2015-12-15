@@ -19,9 +19,9 @@
 //
 syntax = "proto3";
 
-package lobby.contracts.registration;
+package lobby.registration.contracts;
 
-option java_package="sample.lobby.contracts.registration";
+option java_package="sample.lobby.registration.contracts";
 option java_outer_classname = "RegistrationContractsProto";
 option java_multiple_files = true;
 
@@ -72,5 +72,5 @@ message OrderTotal {
     spine.money.Money total_price = 1;
 
     // The lines of the order.
-    repeated lobby.contracts.registration.SeatOrderLine order_line = 2;
+    repeated SeatOrderLine order_line = 2;
 }

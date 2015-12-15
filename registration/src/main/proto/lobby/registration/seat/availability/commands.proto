@@ -26,7 +26,7 @@ option java_outer_classname = "SeatsAvailabilityCommandsProto";
 option java_multiple_files = true;
 
 import "lobby/contracts/common/common.proto";
-import "lobby/contracts/registration/registration.proto";
+import "lobby/registration/contracts/registration.proto";
 
 // The request to reserve one or more seats.
 // Is sent from a RegistrationProcessManager to a SeatsAvailability aggregate when the order is placed/updated.
@@ -38,7 +38,7 @@ message MakeSeatReservation {
     lobby.contracts.common.ConferenceId conference_id = 2;
 
     // The set of seat items representing the quantities of seats of different types.
-    repeated lobby.contracts.registration.SeatQuantity seat = 3;
+    repeated lobby.registration.contracts.SeatQuantity seat = 3;
 }
 
 // The request to commit the seats reservation.
