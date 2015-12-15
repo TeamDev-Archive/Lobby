@@ -39,14 +39,6 @@ message Order {
     // The set of seat items representing seat quantities of different types.
     repeated lobby.contracts.registration.SeatQuantity seat = 3;
 
-    // The current status of the order.
-    Status status = 4;
-
-    // The status of the order.
-    enum Status {
-        // The order is in this status when the registrant has not paid for the order items yet.
-        NOT_CONFIRMED = 0;
-        // The order is in this status when the registrant has successfully paid for the order items.
-        CONFIRMED = 1;
-    }
+    // The order is confirmed when the registrant has successfully paid for the order items.
+    bool is_confirmed = 4;
 }
