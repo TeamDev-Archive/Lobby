@@ -1,21 +1,10 @@
 package sample.lobby.registration;
 
-import org.spine3.base.CommandContext;
-import org.spine3.server.Assign;
 import org.spine3.server.Entity;
 import org.spine3.server.aggregate.Aggregate;
-import org.spine3.server.aggregate.Apply;
 import sample.lobby.contracts.common.OrderId;
-import sample.lobby.contracts.registration.order.OrderConfirmed;
-import sample.lobby.contracts.registration.order.OrderPlaced;
 import sample.lobby.registration.order.Order;
-import sample.lobby.registration.order.Order.Status;
-import sample.lobby.registration.order.RegisterToConference;
 import sample.lobby.registration.service.OrderPricingService;
-
-import static com.google.common.base.Preconditions.checkState;
-import static sample.lobby.registration.order.Order.Status.CONFIRMED;
-import static sample.lobby.registration.order.Order.Status.UNRECOGNIZED;
 
 /**
  * The order aggregate root.
@@ -50,55 +39,5 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     @Override
     protected Order getDefaultState() {
         return Order.getDefaultInstance();
-    }
-
-    @Assign
-    public OrderPlaced handle(RegisterToConference command, CommandContext context) {
-        validateCommand(command);
-        final OrderPlaced result = OrderPlaced.newBuilder()
-                .setOrderId(command.getOrderId())
-                .setConferenceId(command.getConferenceId())
-                .addAllSeat(command.getSeatList())
-                .build();
-        return result;
-    }
-
-    @Apply
-    private void event(OrderPlaced event) {
-        final Order newState = Order.newBuilder(getState())
-                .setId(event.getOrderId())
-                .setConferenceId(event.getConferenceId())
-                .addAllSeat(event.getSeatList())
-                .build();
-        validate(newState);
-        incrementState(newState);
-    }
-
-    @Apply
-    private void event(OrderConfirmed event) {
-        final Order newState = Order.newBuilder(getState())
-                .setId(event.getOrderId())
-                .setStatus(CONFIRMED)
-                .build();
-        validate(newState);
-        incrementState(newState);
-    }
-
-    private void validateCommand(RegisterToConference command) {
-        if (command.getOrderId().getUuid().isEmpty()) {
-            throw noOrderIdException();
-        }
-        if (command.getConferenceId().getUuid().isEmpty()) {
-            throw new IllegalArgumentException("No conference ID in the order.");
-        }
-        if (command.getSeatCount() == 0) {
-            throw new IllegalArgumentException("No seats in the order.");
-        }
-        final Status status = getState().getStatus();
-        checkState(status == UNRECOGNIZED, status);
-    }
-
-    private static IllegalArgumentException noOrderIdException() {
-        return new IllegalArgumentException("No order ID.");
     }
 }
