@@ -1,0 +1,70 @@
+//
+// Copyright 2015, TeamDev Ltd. All rights reserved.
+//
+// Redistribution and use in source and/or binary forms, with or without
+// modification, must retain the above copyright notice and the following
+// disclaimer.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+syntax = "proto3";
+
+package spine.samples.lobby.registration;
+
+option java_package="org.spine3.samples.lobby.registration";
+option java_outer_classname = "ConferenceRegistrationProto";
+option java_multiple_files = true;
+
+import "spine/samples/lobby/common/common.proto";
+import "spine/time/time.proto";
+
+// The conference created by a business customer.
+message Conference {
+    // The unique conference id.
+    spine.samples.lobby.common.ConferenceId id = 1;
+
+    // The part of the URL used to access the conference.
+    spine.samples.lobby.common.ConferenceSlug slug = 2;
+
+    // The conference name.
+    string name = 3;
+
+    // The conference description.
+    string description = 4;
+
+    // The location of the conference.
+    string location = 5;
+
+    // The tagline of the conference.
+    string tagline = 6;
+
+    // The search query for Twitter.
+    string twitter_search = 7;
+
+    // The start date of the conference.
+    spine.time.LocalDate start_date = 8;
+
+    // The types of seats available for the conference.
+    repeated spine.samples.lobby.common.SeatType seat_type = 9;
+
+    // The publishing status of the conference.
+    PublishingStatus publishing_status = 10;
+
+    // The publishing status of the conference.
+    enum PublishingStatus {
+        // The conference is not visible for users.
+        NOT_PUBLISHED = 0;
+        // The conference is visible for users.
+        PUBLISHED = 1;
+    }
+}
