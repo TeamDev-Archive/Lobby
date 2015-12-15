@@ -47,6 +47,13 @@ public class OrderRepository extends AggregateRepositoryBase<OrderId, OrderAggre
         this.orderPricingService = orderPricingService;
     }
 
+    /**
+     * Loads an aggregate by an ID and injects required services to it.
+     *
+     * @param id id of the aggregate to load
+     * @return the loaded object
+     * @throws IllegalStateException if the repository wasn't configured prior to calling this method
+     */
     @Nonnull
     @Override
     public OrderAggregate load(OrderId id) throws IllegalStateException {

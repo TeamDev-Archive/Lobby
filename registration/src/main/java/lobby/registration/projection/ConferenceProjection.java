@@ -25,9 +25,10 @@ import lobby.registration.Conference;
 import org.spine3.server.projection.Projection;
 
 /**
- * The projection of a conference.
+ * Holds a structural representation of data extracted from a stream of events related to a conference.
  *
- * @see Projection
+ * <p> Also notifies about some of its changes.
+ *
  * @author Alexander Litus
  */
 public class ConferenceProjection extends Projection<ConferenceId, Conference> {
@@ -46,6 +47,4 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
     protected Conference getDefaultState() {
         return Conference.getDefaultInstance();
     }
-
-    // TODO:2015-12-11:alexander.litus: store info about the seats
 }
