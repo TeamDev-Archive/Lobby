@@ -19,25 +19,25 @@
 //
 syntax = "proto3";
 
-package lobby.conference.contracts;
+package spine.samples.lobby.conference.contracts;
 
-option java_package="sample.lobby.conference.contracts";
+option java_package="org.spine3.samples.sample.lobby.conference.contracts";
 option java_outer_classname = "ConferenceContractsEventsProto";
 option java_multiple_files = true;
 
 import "spine/samples/lobby/common/common.proto";
-import "lobby/contracts/conference/conference.proto";
+import "spine/samples/lobby/conference/contracts/conference.proto";
 
 // The event propagated when a conference is created by a business customer.
 message ConferenceCreated {
     // The info about the created conference.
-    lobby.conference.contracts.Conference conference = 1;
+    spine.samples.lobby.conference.contracts.Conference conference = 1;
 }
 
 // The event propagated when a conference is updated by a business customer.
 message ConferenceUpdated {
     // The info about the updated conference.
-    lobby.conference.contracts.Conference conference = 1;
+    spine.samples.lobby.conference.contracts.Conference conference = 1;
 }
 
 // The event propagated when a conference is made public.
