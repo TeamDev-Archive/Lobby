@@ -1,0 +1,182 @@
+//
+// Copyright 2015, TeamDev Ltd. All rights reserved.
+//
+// Redistribution and use in source and/or binary forms, with or without
+// modification, must retain the above copyright notice and the following
+// disclaimer.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+syntax = "proto3";
+
+package spine.samples.lobby.registration.contracts;
+
+option java_package="org.spine3.samples.lobby.registration.contracts";
+option java_outer_classname = "RegistrationContractsEventsProto";
+option java_multiple_files = true;
+
+import "spine/samples/lobby/common/common.proto";
+import "spine/samples/lobby/registration/contracts/registration.proto";
+import "google/protobuf/timestamp.proto";
+import "spine/money/money.proto";
+
+// Order related
+
+// The event propagated when an order is placed by a registrant.
+message OrderPlaced {
+    // The ID of the order.
+    spine.samples.lobby.common.OrderId order_id = 1;
+
+    // The ID of the related conference.
+    spine.samples.lobby.common.ConferenceId conference_id = 2;
+
+    // The order items representing the quantity of seats of different types at the conference.
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity seat = 3;
+
+    // The expected expiration time if the reservation is not explicitly confirmed later.
+    google.protobuf.Timestamp reservation_auto_expiration = 4;
+
+    // The order access code.
+    spine.samples.lobby.registration.contracts.OrderAccessCode access_code = 5;
+}
+
+// The event propagated when an order is updated.
+message OrderUpdated {
+    // The ID of the order.
+    spine.samples.lobby.common.OrderId order_id = 1;
+
+    // The order items representing the quantity of seats of different types.
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity seat = 2;
+}
+
+// The event propagated when an order is partially reserved (some of the requested seats were unavailable).
+message OrderPartiallyReserved {
+    // The ID of the order.
+    spine.samples.lobby.common.OrderId order_id = 1;
+
+    // The time of the reservation expiration.
+    google.protobuf.Timestamp reservation_expiration = 2;
+
+    // The order items representing the quantity of seats of different types.
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity seat = 3;
+}
+
+// The event propagated when an order reservation is completed.
+message OrderReservationCompleted {
+    // The ID of the order.
+    spine.samples.lobby.common.OrderId order_id = 1;
+
+    // The time of the reservation expiration.
+    google.protobuf.Timestamp reservation_expiration = 2;
+
+    // The order items representing the quantity of seats of different types.
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity seat = 3;
+}
+
+// The event propagated when an order is expired.
+message OrderExpired {
+    // The ID of the order.
+    spine.samples.lobby.common.OrderId order_id = 1;
+}
+
+// The event propagated when an order is confirmed.
+message OrderConfirmed {
+    // The ID of the order.
+    spine.samples.lobby.common.OrderId order_id = 1;
+}
+
+// The event propagated when a registrant is assigned to an order.
+message OrderRegistrantAssigned {
+    // The ID of the order.
+    spine.samples.lobby.common.OrderId order_id = 1;
+
+    // The personal info of the registrant.
+    spine.samples.lobby.common.PersonalInfo personal_info = 2;
+}
+
+// The event propagated when an order total price is calculated.
+message OrderTotalsCalculated {
+    // The ID of the order.
+    spine.samples.lobby.common.OrderId order_id = 1;
+
+    oneof payable {
+        // The total price of the order.
+        spine.money.Money total = 2;
+
+        // If the order is free of charge.
+        bool is_free_of_charge = 3;
+    }
+
+    // The lines of the order.
+    repeated spine.samples.lobby.registration.contracts.SeatOrderLine order_line = 4;
+}
+
+
+// Seats related
+
+// The event propagated when a seat assignment is created.
+message SeatAssignmentsCreated {
+    // The ID of the reservation.
+    spine.samples.lobby.common.ReservationId reservation_id = 1;
+
+    // The ID of the order.
+    spine.samples.lobby.common.OrderId order_id = 2;
+
+    // The short seat assignment info objects.
+    repeated SeatAssignmentInfo seat = 3;
+
+    // The short seat assignment info object.
+    message SeatAssignmentInfo {
+        // The position of the seat.
+        spine.samples.lobby.registration.contracts.SeatPosition position = 1;
+
+        // The ID of the seat type.
+        spine.samples.lobby.common.SeatTypeId seat_type_id = 2;
+    }
+}
+
+// The event propagated when a seat assignment is updated.
+message SeatAssignmentUpdated {
+    // The ID of the reservation.
+    spine.samples.lobby.common.ReservationId reservation_id = 1;
+
+    // The position of the seat.
+    spine.samples.lobby.registration.contracts.SeatPosition position = 2;
+
+    // The personal info of the attendee.
+    spine.samples.lobby.common.PersonalInfo attendee = 3;
+}
+
+// The event propagated when a seat is assigned to an attendee.
+message SeatAssigned {
+    // The ID of the reservation.
+    spine.samples.lobby.common.ReservationId reservation_id = 1;
+
+    // The position of the seat.
+    spine.samples.lobby.registration.contracts.SeatPosition position = 2;
+
+    // The ID of the seat type.
+    spine.samples.lobby.common.SeatTypeId seat_type_id = 3;
+
+    // The personal info of the attendee.
+    spine.samples.lobby.common.PersonalInfo attendee = 4;
+}
+
+// The event propagated when a seat is unassigned from an attendee.
+message SeatUnassigned {
+    // The ID of the reservation.
+    spine.samples.lobby.common.ReservationId reservation_id = 1;
+
+    // The position of the seat.
+    spine.samples.lobby.registration.contracts.SeatPosition position = 2;
+}
