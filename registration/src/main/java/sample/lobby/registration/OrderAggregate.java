@@ -1,8 +1,8 @@
 package sample.lobby.registration;
 
+import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.server.Entity;
 import org.spine3.server.aggregate.Aggregate;
-import sample.lobby.contracts.common.OrderId;
 import sample.lobby.registration.order.Order;
 import sample.lobby.registration.service.OrderPricingService;
 

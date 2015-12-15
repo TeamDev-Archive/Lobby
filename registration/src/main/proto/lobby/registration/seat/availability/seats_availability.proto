@@ -25,7 +25,7 @@ option java_package="sample.lobby.registration.seat.availability";
 option java_outer_classname = "SeatsAvailabilityProto";
 option java_multiple_files = true;
 
-import "lobby/registration/contracts/registration.proto";
+import "spine/samples/lobby/registration/contracts/registration.proto";
 
 // The availability of the conference seats.
 message SeatsAvailability {
@@ -47,5 +47,5 @@ message SeatsAvailabilityId {
 
 // The set of seat items representing seat quantities of different types.
 message SeatQuantities {
-    repeated lobby.registration.contracts.SeatQuantity item = 1;
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity item = 1;
 }

@@ -21,11 +21,11 @@
 package sample.lobby.registration.service;
 
 import org.spine3.money.Money;
-import sample.lobby.contracts.common.ConferenceId;
-import sample.lobby.contracts.common.SeatType;
-import sample.lobby.contracts.registration.OrderTotal;
-import sample.lobby.contracts.registration.SeatOrderLine;
-import sample.lobby.contracts.registration.SeatQuantity;
+import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.common.SeatType;
+import org.spine3.samples.lobby.registration.contracts.OrderTotal;
+import org.spine3.samples.lobby.registration.contracts.SeatOrderLine;
+import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import sample.lobby.registration.projection.ConferenceProjection;
 import sample.lobby.registration.projection.ConferenceProjectionRepository;
 

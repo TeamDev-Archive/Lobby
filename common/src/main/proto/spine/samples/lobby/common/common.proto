@@ -19,9 +19,9 @@
 //
 syntax = "proto3";
 
-package lobby.contracts.common;
+package spine.samples.lobby.common;
 
-option java_package="sample.lobby.contracts.common";
+option java_package="org.spine3.samples.lobby.common";
 option java_outer_classname = "CommonContractsProto";
 option java_multiple_files = true;
 

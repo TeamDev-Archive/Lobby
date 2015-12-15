@@ -25,7 +25,7 @@ option java_package="sample.lobby.conference.contracts";
 option java_outer_classname = "ConferenceContractsEventsProto";
 option java_multiple_files = true;
 
-import "lobby/contracts/common/common.proto";
+import "spine/samples/lobby/common/common.proto";
 import "lobby/contracts/conference/conference.proto";
 
 // The event propagated when a conference is created by a business customer.
@@ -43,23 +43,23 @@ message ConferenceUpdated {
 // The event propagated when a conference is made public.
 message ConferencePublished {
     // The ID of the conference.
-    lobby.contracts.common.ConferenceId conference_id = 1;
+    spine.samples.lobby.common.ConferenceId conference_id = 1;
 }
 
 // The event propagated when a previously public conference is made private by unpublishing it.
 message ConferenceUnpublished {
     // The ID of the conference.
-    lobby.contracts.common.ConferenceId conference_id = 1;
+    spine.samples.lobby.common.ConferenceId conference_id = 1;
 }
 
 // The event propagated when a seat type is created by a business customer.
 message SeatTypeCreated {
     // The new seat type.
-    lobby.contracts.common.SeatType seat_type = 2;
+    spine.samples.lobby.common.SeatType seat_type = 2;
 }
 
 // The event propagated when a seat type is updated by a business customer.
 message SeatTypeUpdated {
     // The type of the seat.
-    lobby.contracts.common.SeatType seat_type = 2;
+    spine.samples.lobby.common.SeatType seat_type = 2;
 }

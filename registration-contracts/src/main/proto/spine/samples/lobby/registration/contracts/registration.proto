@@ -19,19 +19,19 @@
 //
 syntax = "proto3";
 
-package lobby.registration.contracts;
+package spine.samples.lobby.registration.contracts;
 
-option java_package="sample.lobby.registration.contracts";
+option java_package="org.spine3.samples.lobby.registration.contracts";
 option java_outer_classname = "RegistrationContractsProto";
 option java_multiple_files = true;
 
-import "lobby/contracts/common/common.proto";
+import "spine/samples/lobby/common/common.proto";
 import "spine/money/money.proto";
 
 // The quantity of seats of the given type.
 message SeatQuantity {
     // The seat type ID.
-    lobby.contracts.common.SeatTypeId seat_type_id = 1;
+    spine.samples.lobby.common.SeatTypeId seat_type_id = 1;
 
     // The quantity of seats of the given type.
     int32 quantity = 2;
@@ -46,7 +46,7 @@ message SeatOrderLine {
     spine.money.Money unit_price = 2;
 
     // The ID of the type of the seats.
-    lobby.contracts.common.SeatTypeId seat_type_id = 3;
+    spine.samples.lobby.common.SeatTypeId seat_type_id = 3;
 
     // The quantity of the order units (seats).
     int32 quantity = 4;

@@ -25,44 +25,44 @@ option java_package="sample.lobby.registration.seat.availability";
 option java_outer_classname = "SeatsAvailabilityEventsProto";
 option java_multiple_files = true;
 
-import "lobby/contracts/common/common.proto";
-import "lobby/registration/contracts/registration.proto";
+import "spine/samples/lobby/common/common.proto";
+import "spine/samples/lobby/registration/contracts/registration.proto";
 
 // The event propagated when the availability of the seats is changed.
 message AvailableSeatsChanged  {
     // The ID of the reservation.
-    lobby.contracts.common.ReservationId reservation_id = 1;
+    spine.samples.lobby.common.ReservationId reservation_id = 1;
 
     // The items representing the quantity of seats of different types.
-    repeated lobby.registration.contracts.SeatQuantity seat = 2;
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity seat = 2;
 }
 
 // The event propagated when the reservation confirmation is received.
 message SeatsReserved {
     // The ID of the conference.
-    lobby.contracts.common.ConferenceId conference_id = 1;
+    spine.samples.lobby.common.ConferenceId conference_id = 1;
 
     // The ID of the reservation.
-    lobby.contracts.common.ReservationId reservation_id = 2;
+    spine.samples.lobby.common.ReservationId reservation_id = 2;
 
     // The items representing the quantity of reserved seats.
-    repeated lobby.registration.contracts.SeatQuantity reservation_details = 3;
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity reservation_details = 3;
 
     // The items representing the quantity of available seats.
-    repeated lobby.registration.contracts.SeatQuantity available_seats_changed = 4;
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity available_seats_changed = 4;
 }
 
 // The event propagated when the payment for the reservation is received and the reservation is committed.
 message SeatsReservationCommitted {
     // The ID of the reservation.
-    lobby.contracts.common.ReservationId reservation_id = 1;
+    spine.samples.lobby.common.ReservationId reservation_id = 1;
 }
 
 // The event propagated when the seats reservation is cancelled.
 message SeatsReservationCancelled {
     // The ID of the reservation.
-    lobby.contracts.common.ReservationId reservation_id = 1;
+    spine.samples.lobby.common.ReservationId reservation_id = 1;
 
     // The items representing the quantity of available seats.
-    repeated lobby.registration.contracts.SeatQuantity available_seats_changed = 2;
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity available_seats_changed = 2;
 }

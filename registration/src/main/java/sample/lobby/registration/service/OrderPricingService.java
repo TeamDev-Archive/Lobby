@@ -20,9 +20,9 @@
 
 package sample.lobby.registration.service;
 
-import sample.lobby.contracts.common.ConferenceId;
-import sample.lobby.contracts.registration.OrderTotal;
-import sample.lobby.contracts.registration.SeatQuantity;
+import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.registration.contracts.OrderTotal;
+import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 
 /**
  * The service which calculates prices of order seats.

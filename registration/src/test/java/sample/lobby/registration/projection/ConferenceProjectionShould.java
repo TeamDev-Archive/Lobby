@@ -27,6 +27,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.spine3.base.CommandContext;
 import org.spine3.eventbus.EventBus;
+import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.common.ConferenceSlug;
+import org.spine3.samples.lobby.common.SeatType;
+import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.server.Assign;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.CommandDispatcher;
@@ -36,11 +40,7 @@ import org.spine3.server.aggregate.Apply;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 import org.spine3.time.LocalDate;
 import org.spine3.util.Identifiers;
-import sample.lobby.contracts.common.ConferenceId;
-import sample.lobby.contracts.common.ConferenceSlug;
-import sample.lobby.contracts.common.SeatType;
-import sample.lobby.contracts.common.SeatTypeId;
-import sample.lobby.contracts.conference.*;
+import sample.lobby.conference.contracts.*;
 import sample.lobby.registration.Conference;
 import sample.lobby.registration.seat.availability.AddSeats;
 import sample.lobby.registration.seat.availability.RemoveSeats;
@@ -198,12 +198,12 @@ public class ConferenceProjectionShould {
     }
 
     private ConferenceCreated conferenceCreated() {
-        final sample.lobby.contracts.conference.Conference conference = buildConferenceForEvent();
+        final sample.lobby.conference.contracts.Conference conference = buildConferenceForEvent();
         return ConferenceCreated.newBuilder().setConference(conference).build();
     }
 
     private ConferenceUpdated conferenceUpdated() {
-        final sample.lobby.contracts.conference.Conference conference = buildConferenceForEvent();
+        final sample.lobby.conference.contracts.Conference conference = buildConferenceForEvent();
         return ConferenceUpdated.newBuilder().setConference(conference).build();
     }
 
@@ -235,8 +235,8 @@ public class ConferenceProjectionShould {
         return SeatTypeUpdated.newBuilder().setSeatType(seatType).build();
     }
 
-    private sample.lobby.contracts.conference.Conference buildConferenceForEvent() {
-        return sample.lobby.contracts.conference.Conference.newBuilder()
+    private sample.lobby.conference.contracts.Conference buildConferenceForEvent() {
+        return sample.lobby.conference.contracts.Conference.newBuilder()
                 .setId(id)
                 .setSlug(ConferenceSlug.newBuilder().setValue("slug"))
                 .setName("Test Conference")

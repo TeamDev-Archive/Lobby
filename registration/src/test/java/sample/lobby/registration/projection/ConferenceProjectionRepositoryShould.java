@@ -23,9 +23,9 @@ package sample.lobby.registration.projection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 import org.spine3.util.Identifiers;
-import sample.lobby.contracts.common.ConferenceId;
 
 import static org.junit.Assert.assertEquals;
 import static sample.lobby.registration.projection.ConferenceProjectionShould.buildBoundedContext;

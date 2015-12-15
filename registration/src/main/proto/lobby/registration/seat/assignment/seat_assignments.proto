@@ -25,8 +25,8 @@ option java_package="sample.lobby.registration.seat.assignment";
 option java_outer_classname = "SeatAssignmentsProto";
 option java_multiple_files = true;
 
-import "lobby/contracts/common/common.proto";
-import "lobby/registration/contracts/registration.proto";
+import "spine/samples/lobby/common/common.proto";
+import "spine/samples/lobby/registration/contracts/registration.proto";
 
 // The state of the seat assignments aggregate.
 message SeatAssignments {
@@ -47,11 +47,11 @@ message SeatAssignmentsId {
 // Associates an attendee with a seat in a confirmed order.
 message SeatAssignment {
     // The position of the seat.
-    lobby.registration.contracts.SeatPosition position = 1;
+    spine.samples.lobby.registration.contracts.SeatPosition position = 1;
 
     // The seat type for the attendee.
-    lobby.contracts.common.SeatTypeId seat_type_id = 2;
+    spine.samples.lobby.common.SeatTypeId seat_type_id = 2;
 
     // The personal info of the attendee.
-    lobby.contracts.common.PersonalInfo attendee = 3;
+    spine.samples.lobby.common.PersonalInfo attendee = 3;
 }

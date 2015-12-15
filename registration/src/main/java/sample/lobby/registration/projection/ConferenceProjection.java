@@ -27,12 +27,12 @@ import org.slf4j.LoggerFactory;
 import org.spine3.base.CommandContext;
 import org.spine3.client.CommandRequest;
 import org.spine3.eventbus.Subscribe;
+import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.common.SeatType;
+import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.projection.Projection;
-import sample.lobby.contracts.common.ConferenceId;
-import sample.lobby.contracts.common.SeatType;
-import sample.lobby.contracts.common.SeatTypeId;
-import sample.lobby.contracts.conference.*;
+import sample.lobby.conference.contracts.*;
 import sample.lobby.registration.Conference;
 import sample.lobby.registration.seat.availability.AddSeats;
 import sample.lobby.registration.seat.availability.RemoveSeats;
@@ -189,7 +189,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         return ImmutableList.copyOf(result);
     }
 
-    protected static Conference convert(sample.lobby.contracts.conference.Conference c) {
+    protected static Conference convert(sample.lobby.conference.contracts.Conference c) {
         final Conference.Builder newState = Conference.newBuilder()
                 .setId(c.getId())
                 .setSlug(c.getSlug())

@@ -20,9 +20,9 @@
 
 package sample.lobby.registration.projection;
 
+import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.projection.ProjectionRepository;
-import sample.lobby.contracts.common.ConferenceId;
 import sample.lobby.registration.Conference;
 
 import javax.annotation.Nonnull;

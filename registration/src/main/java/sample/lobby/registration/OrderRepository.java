@@ -20,8 +20,8 @@
 
 package sample.lobby.registration;
 
+import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.server.aggregate.AggregateRepositoryBase;
-import sample.lobby.contracts.common.OrderId;
 import sample.lobby.registration.service.OrderPricingService;
 
 import javax.annotation.Nonnull;
