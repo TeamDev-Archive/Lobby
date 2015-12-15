@@ -39,15 +39,21 @@ public class RandomPasswordGeneratorShould {
     private static final int PASSWORD_GENERATION_COUNT = 1000;
 
     @Test
-    public void generate_non_null_or_empty_password() {
+    public void generate_non_null_and_non_empty_password() {
         final String password = RandomPasswordGenerator.generate(PASSWORD_LENGTH);
         assertFalse(isNullOrEmpty(password));
     }
 
     @Test
+    public void generate_password_without_spaces() {
+        final String password = RandomPasswordGenerator.generate(PASSWORD_LENGTH);
+        assertFalse(password.contains(" "));
+    }
+
+    @Test
     public void generate_password_of_given_length() {
         final String password = RandomPasswordGenerator.generate(PASSWORD_LENGTH);
-        assertEquals(PASSWORD_LENGTH, password.trim().length());
+        assertEquals(PASSWORD_LENGTH, password.length());
     }
 
     @Test
