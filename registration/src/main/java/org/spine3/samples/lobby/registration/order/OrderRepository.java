@@ -18,10 +18,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration;
+package org.spine3.samples.lobby.registration.order;
 
 import org.spine3.samples.lobby.common.OrderId;
-import org.spine3.samples.lobby.registration.service.OrderPricingService;
 import org.spine3.server.aggregate.AggregateRepositoryBase;
 
 import javax.annotation.Nonnull;

@@ -18,7 +18,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-@ParametersAreNonnullByDefault
-package org.spine3.samples.lobby.registration.service;
+package org.spine3.samples.lobby.registration.order;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.registration.contracts.OrderTotal;
+import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
+
+/**
+ * The service which calculates prices of order seats.
+ *
+ * @author Alexander Litus
+ */
+public interface OrderPricingService {
+
+    /**
+     * Calculates the price of order seats.
+     *
+     * @param conferenceId the ID of the conference to which the {@code seats} are related
+     * @param seats the seats to calculate the price for
+     * @return the total price of the seats
+     */
+    OrderTotal calculateTotalOrderPrice(ConferenceId conferenceId, Iterable<SeatQuantity> seats);
+}

@@ -18,7 +18,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration;
+package org.spine3.samples.lobby.registration.order;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
@@ -33,8 +33,6 @@ import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.registration.contracts.*;
-import org.spine3.samples.lobby.registration.order.*;
-import org.spine3.samples.lobby.registration.service.OrderPricingService;
 import org.spine3.server.Assign;
 import org.spine3.server.Entity;
 import org.spine3.server.aggregate.Aggregate;

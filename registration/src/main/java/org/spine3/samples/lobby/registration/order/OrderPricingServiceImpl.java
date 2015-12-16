@@ -18,7 +18,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration.service;
+package org.spine3.samples.lobby.registration.order;
 
 import org.spine3.money.Money;
 import org.spine3.samples.lobby.common.ConferenceId;
