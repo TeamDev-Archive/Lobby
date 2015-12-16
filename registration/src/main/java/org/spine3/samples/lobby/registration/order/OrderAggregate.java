@@ -99,7 +99,8 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         Validator.validateCommand(command);
 
         final ImmutableList.Builder<Message> result = ImmutableList.builder();
-        if (isNew()) {
+        final boolean isNew = getVersion() == 0;
+        if (isNew) {
             final OrderPlaced placed = EventBuilder.buildOrderPlaced(command);
             result.add(placed);
         } else {
@@ -248,10 +249,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
             }
         }).or(SeatQuantity.getDefaultInstance());
         return result;
-    }
-
-    private boolean isNew() {
-        return getVersion() == 0;
     }
 
     @Override
