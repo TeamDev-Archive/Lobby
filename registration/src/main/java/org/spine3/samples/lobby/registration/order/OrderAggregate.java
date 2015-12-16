@@ -44,7 +44,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Collections2.filter;
-import static com.google.common.collect.Iterables.tryFind;
+import static com.google.common.collect.Iterables.find;
 import static com.google.protobuf.util.TimeUtil.add;
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static java.lang.String.format;
@@ -95,7 +95,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Assign
     public List<Message> handle(RegisterToConference command, CommandContext context) {
-        Validator.assertNotConfirmed(getState(), command);
+        Validator.checkNotConfirmed(getState(), command);
         Validator.validateCommand(command);
 
         final ImmutableList.Builder<Message> result = ImmutableList.builder();
@@ -115,7 +115,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Assign
     public List<Message> handle(MarkSeatsAsReserved command, CommandContext context) {
-        Validator.assertNotConfirmed(getState(), command);
+        Validator.checkNotConfirmed(getState(), command);
         Validator.validateCommand(command);
 
         final ImmutableList.Builder<Message> result = ImmutableList.builder();
@@ -137,7 +137,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Assign
     public OrderExpired handle(RejectOrder command, CommandContext context) {
-        Validator.assertNotConfirmed(getState(), command);
+        Validator.checkNotConfirmed(getState(), command);
         Validator.validateCommand(command);
         final OrderExpired result = OrderExpired.newBuilder()
                 .setOrderId(command.getOrderId())
@@ -147,7 +147,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Assign
     public OrderConfirmed handle(ConfirmOrder command, CommandContext context) {
-        Validator.assertNotConfirmed(getState(), command);
+        Validator.checkNotConfirmed(getState(), command);
         Validator.validateCommand(command);
         final OrderConfirmed result = OrderConfirmed.newBuilder()
                 .setOrderId(command.getOrderId())
@@ -219,9 +219,12 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     private boolean isOrderPartiallyReserved(final List<SeatQuantity> reservedSeats) {
         final List<SeatQuantity> requestedSeats = getState().getSeatList();
+        if (reservedSeats.size() < requestedSeats.size()) {
+            return true;
+        }
         final Collection<SeatQuantity> partlyReservedSeats = findPartlyReservedSeats(requestedSeats, reservedSeats);
-        final boolean result = partlyReservedSeats.size() > 0;
-        return result;
+        final boolean isPartlyReserved = partlyReservedSeats.size() > 0;
+        return isPartlyReserved;
     }
 
     private static Collection<SeatQuantity> findPartlyReservedSeats(final List<SeatQuantity> requestedSeats,
@@ -233,28 +236,36 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
                     return false;
                 }
                 final SeatQuantity reservedOne = findById(reservedSeats, requestedOne.getSeatTypeId());
-                final boolean isPartlyReserved = requestedOne.getQuantity() < reservedOne.getQuantity();
+                if (reservedOne == null) {
+                    return false;
+                }
+                final boolean isPartlyReserved = reservedOne.getQuantity() < requestedOne.getQuantity();
                 return isPartlyReserved;
             }
         });
         return result;
     }
 
+    @Nullable
     private static SeatQuantity findById(final List<SeatQuantity> seats, final SeatTypeId id) {
-        final SeatQuantity result = tryFind(seats, new Predicate<SeatQuantity>() {
+        final SeatQuantity defaultValue = null;
+        final SeatQuantity result = find(seats, new Predicate<SeatQuantity>() {
             @Override
-            public boolean apply(@Nullable SeatQuantity input) {
-                final boolean result = (input != null) && input.getSeatTypeId().equals(id);
+            public boolean apply(@Nullable SeatQuantity seat) {
+                final boolean result =
+                        (seat != null) &&
+                        seat.hasSeatTypeId() &&
+                        seat.getSeatTypeId().equals(id);
                 return result;
             }
-        }).or(SeatQuantity.getDefaultInstance());
+        }, defaultValue);
         return result;
     }
 
     @Override
     @SuppressWarnings("RefusedBequest") // method from superclass does nothing
     protected void validate(Order newState) throws IllegalStateException {
-        checkState(newState.hasId(), "No ID in a new order state.");
+        Validator.checkNewState(newState);
     }
 
     private OrderTotalsCalculated buildOrderTotalsCalculated(OrderId orderId, ConferenceId conferenceId, List<SeatQuantity> seats) {
@@ -300,7 +311,8 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         }
 
         private static OrderPartiallyReserved buildOrderPartiallyReserved(MarkSeatsAsReserved command) {
-            final OrderPartiallyReserved.Builder result = OrderPartiallyReserved.newBuilder().setOrderId(command.getOrderId())
+            final OrderPartiallyReserved.Builder result = OrderPartiallyReserved.newBuilder()
+                    .setOrderId(command.getOrderId())
                     .setReservationExpiration(command.getReservationExpiration())
                     .addAllSeat(command.getSeatList());
             return result.build();
@@ -317,11 +329,20 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     private static class Validator {
 
-        private static void assertNotConfirmed(Order order, Message cmd) {
+        private static void checkNotConfirmed(Order order, Message cmd) {
             final String message = format("Cannot modify a confirmed order with ID: %s; command: %s.",
                     order.getId().getUuid(), cmd.getClass().getName()
             );
             checkState(!order.getIsConfirmed(), message);
+        }
+
+        private static void checkNewState(Order order) {
+            checkState(order.hasId(), "No order ID in a new order state.");
+            final String orderId = order.getId().getUuid();
+            checkState(order.hasConferenceId(), "No conference ID in a new order state, ID: " + orderId);
+            if (order.getSeatList().isEmpty()) {
+                throw new IllegalArgumentException("No seats in a new order state, ID: " + orderId);
+            }
         }
 
         private static void validateCommand(RegisterToConference cmd) {

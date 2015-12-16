@@ -28,7 +28,7 @@ import org.spine3.server.storage.memory.InMemoryStorageFactory;
 import org.spine3.util.Identifiers;
 
 import static org.junit.Assert.assertEquals;
-import static org.spine3.samples.lobby.registration.conference.ConferenceProjectionShould.buildBoundedContext;
+import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.buildBoundedContext;
 
 /**
  * @author Alexander Litus
