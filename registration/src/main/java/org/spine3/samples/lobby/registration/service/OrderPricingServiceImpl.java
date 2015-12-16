@@ -23,11 +23,11 @@ package org.spine3.samples.lobby.registration.service;
 import org.spine3.money.Money;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.SeatType;
+import org.spine3.samples.lobby.registration.conference.ConferenceProjection;
+import org.spine3.samples.lobby.registration.conference.ConferenceProjectionRepository;
 import org.spine3.samples.lobby.registration.contracts.OrderTotal;
 import org.spine3.samples.lobby.registration.contracts.SeatOrderLine;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
-import org.spine3.samples.lobby.registration.projection.ConferenceProjection;
-import org.spine3.samples.lobby.registration.projection.ConferenceProjectionRepository;
 
 import java.util.List;
 

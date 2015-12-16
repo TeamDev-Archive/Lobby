@@ -18,7 +18,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration.projection;
+package org.spine3.samples.lobby.registration.conference;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,7 +28,7 @@ import org.spine3.server.storage.memory.InMemoryStorageFactory;
 import org.spine3.util.Identifiers;
 
 import static org.junit.Assert.assertEquals;
-import static org.spine3.samples.lobby.registration.projection.ConferenceProjectionShould.buildBoundedContext;
+import static org.spine3.samples.lobby.registration.conference.ConferenceProjectionShould.buildBoundedContext;
 
 /**
  * @author Alexander Litus

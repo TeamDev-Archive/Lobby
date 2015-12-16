@@ -18,7 +18,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration.projection;
+package org.spine3.samples.lobby.registration.conference;
 
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.StringValue;
