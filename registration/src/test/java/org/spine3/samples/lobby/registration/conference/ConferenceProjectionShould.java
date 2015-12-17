@@ -33,7 +33,6 @@ import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.lobby.registration.seat.availability.AddSeats;
 import org.spine3.samples.lobby.registration.seat.availability.RemoveSeats;
-import org.spine3.samples.lobby.registration.testdata.TestDataFactory;
 import org.spine3.samples.sample.lobby.conference.contracts.*;
 import org.spine3.server.Assign;
 import org.spine3.server.BoundedContext;
@@ -46,6 +45,8 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
+import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newConferenceId;
 
 /**
  * @author Alexander Litus
@@ -53,8 +54,8 @@ import static org.junit.Assert.*;
 @SuppressWarnings({"TypeMayBeWeakened", "InstanceMethodNamingConvention", "ClassWithTooManyMethods"})
 public class ConferenceProjectionShould {
 
-    private static final ConferenceId ID = TestDataFactory.newConferenceId();
-    private final BoundedContext boundedContext = TestDataFactory.newBoundedContext();
+    private static final ConferenceId ID = newConferenceId();
+    private final BoundedContext boundedContext = newBoundedContext();
 
     private final TestConferenceProjection projection = new TestConferenceProjection(ID);
 
@@ -71,7 +72,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_ConferenceCreated_event_and_update_state() {
-        final ConferenceCreated event = BuildHelper.conferenceCreated();
+        final ConferenceCreated event = Given.conferenceCreated();
 
         projection.on(event);
 
@@ -80,7 +81,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_ConferenceUpdated_event_and_update_state() {
-        final ConferenceUpdated event = BuildHelper.conferenceUpdated();
+        final ConferenceUpdated event = Given.conferenceUpdated();
 
         projection.on(event);
 
@@ -89,7 +90,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_ConferencePublished_event_and_update_state() {
-        final ConferencePublished event = BuildHelper.conferencePublished();
+        final ConferencePublished event = Given.conferencePublished();
 
         projection.on(event);
 
@@ -98,7 +99,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_ConferenceUnpublished_event_and_update_state() {
-        final ConferenceUnpublished event = BuildHelper.conferenceUnpublished();
+        final ConferenceUnpublished event = Given.conferenceUnpublished();
 
         projection.on(event);
 
@@ -107,8 +108,8 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeCreated_event_and_update_state() {
-        projection.incrementState(BuildHelper.newConference());
-        final SeatTypeCreated event = BuildHelper.seatTypeCreated(5);
+        projection.incrementState(Given.newConference());
+        final SeatTypeCreated event = Given.seatTypeCreated(5);
 
         projection.on(event);
 
@@ -117,8 +118,8 @@ public class ConferenceProjectionShould {
 
     @Test
     public void not_add_seat_type_with_the_same_id_on_SeatTypeCreated_event() {
-        projection.incrementState(BuildHelper.newConference());
-        final SeatTypeCreated event = BuildHelper.seatTypeCreated(5);
+        projection.incrementState(Given.newConference());
+        final SeatTypeCreated event = Given.seatTypeCreated(5);
 
         projection.on(event);
         projection.on(event);
@@ -128,10 +129,10 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_update_state() {
-        projection.incrementState(BuildHelper.newConference());
-        projection.on(BuildHelper.seatTypeCreated("old-description", 5));
+        projection.incrementState(Given.newConference());
+        projection.on(Given.seatTypeCreated("old-description", 5));
 
-        final SeatTypeUpdated updatedEvent = BuildHelper.seatTypeUpdated("new-description", 7);
+        final SeatTypeUpdated updatedEvent = Given.seatTypeUpdated("new-description", 7);
         projection.on(updatedEvent);
 
         assertSeatTypesConsistOf(updatedEvent.getSeatType());
@@ -139,33 +140,33 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_send_AddSeats_command_when_seats_added() {
-        projection.incrementState(BuildHelper.newConference());
+        projection.incrementState(Given.newConference());
 
-        projection.on(BuildHelper.seatTypeCreated(3));
-        projection.on(BuildHelper.seatTypeUpdated(7));
+        projection.on(Given.seatTypeCreated(3));
+        projection.on(Given.seatTypeUpdated(7));
 
         assertTrue(TestCommandHandler.isAddSeatsCommandHandled());
     }
 
     @Test
     public void handle_SeatTypeUpdated_event_and_send_AddSeats_command_when_seats_removed() {
-        projection.incrementState(BuildHelper.newConference());
+        projection.incrementState(Given.newConference());
 
-        projection.on(BuildHelper.seatTypeCreated(7));
-        projection.on(BuildHelper.seatTypeUpdated(3));
+        projection.on(Given.seatTypeCreated(7));
+        projection.on(Given.seatTypeUpdated(3));
 
         assertTrue(TestCommandHandler.isRemoveSeatsCommandHandled());
     }
 
     @Test
     public void handle_SeatTypeUpdated_event_and_do_not_send_commands_when_seat_quantity_not_changed() {
-        projection.incrementState(BuildHelper.newConference());
+        projection.incrementState(Given.newConference());
         final int seatQuantity = 5;
 
-        projection.on(BuildHelper.seatTypeCreated(seatQuantity));
+        projection.on(Given.seatTypeCreated(seatQuantity));
         TestCommandHandler.setIsAddSeatsCommandHandled(false);
 
-        projection.on(BuildHelper.seatTypeUpdated(seatQuantity));
+        projection.on(Given.seatTypeUpdated(seatQuantity));
 
         assertFalse(TestCommandHandler.isAddSeatsCommandHandled());
         assertFalse(TestCommandHandler.isRemoveSeatsCommandHandled());
@@ -178,7 +179,7 @@ public class ConferenceProjectionShould {
         assertTrue(actualTypes.containsAll(expectedTypes));
     }
 
-    private static class BuildHelper {
+    private static class Given {
 
         private static ConferenceCreated conferenceCreated() {
             final Conference conference = newConference();
