@@ -101,10 +101,10 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         final ImmutableList.Builder<Message> result = ImmutableList.builder();
         final boolean isNew = getVersion() == 0;
         if (isNew) {
-            final OrderPlaced placed = EventBuilder.buildOrderPlaced(command);
+            final OrderPlaced placed = EventFactory.orderPlaced(command);
             result.add(placed);
         } else {
-            final OrderUpdated updated = EventBuilder.buildOrderUpdated(command);
+            final OrderUpdated updated = EventFactory.orderUpdated(command);
             result.add(updated);
         }
         final OrderTotalsCalculated totalsCalculated = buildOrderTotalsCalculated(command.getOrderId(),
@@ -122,14 +122,14 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         final List<SeatQuantity> reservedSeats = command.getSeatList();
 
         if (isOrderPartiallyReserved(reservedSeats)) {
-            final OrderPartiallyReserved partiallyReserved = EventBuilder.buildOrderPartiallyReserved(command);
+            final OrderPartiallyReserved partiallyReserved = EventFactory.orderPartiallyReserved(command);
             result.add(partiallyReserved);
 
             final OrderTotalsCalculated newTotalsCalculated = buildOrderTotalsCalculated(command.getOrderId(),
                     getState().getConferenceId(), command.getSeatList());
             result.add(newTotalsCalculated);
         } else {
-            final OrderReservationCompleted reservationCompleted = EventBuilder.buildOrderReservationCompleted(command);
+            final OrderReservationCompleted reservationCompleted = EventFactory.orderReservationCompleted(command);
             result.add(reservationCompleted);
         }
         return result.build();
@@ -274,12 +274,12 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     private OrderTotalsCalculated buildOrderTotalsCalculated(OrderId orderId, ConferenceId conferenceId, List<SeatQuantity> seats) {
         final OrderTotal total = pricingService.calculateTotalOrderPrice(conferenceId, seats);
-        return EventBuilder.buildOrderTotalsCalculated(orderId, total);
+        return EventFactory.orderTotalsCalculated(orderId, total);
     }
 
-    private static class EventBuilder {
+    private static class EventFactory {
 
-        private static OrderTotalsCalculated buildOrderTotalsCalculated(OrderId orderId, OrderTotal total) {
+        private static OrderTotalsCalculated orderTotalsCalculated(OrderId orderId, OrderTotal total) {
             final OrderTotalsCalculated.Builder result = OrderTotalsCalculated.newBuilder()
                     .setOrderId(orderId)
                     .addAllOrderLine(total.getOrderLineList());
@@ -293,7 +293,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
             return result.build();
         }
 
-        private static OrderPlaced buildOrderPlaced(RegisterToConference command) {
+        private static OrderPlaced orderPlaced(RegisterToConference command) {
             final Timestamp expirationTime = add(getCurrentTime(), RESERVATION_EXPIRATION_PERIOD);
             final String code = RandomPasswordGenerator.generate(ACCESS_CODE_LENGTH);
             final OrderAccessCode accessCode = OrderAccessCode.newBuilder().setValue(code).build();
@@ -307,14 +307,14 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
             return result.build();
         }
 
-        private static OrderUpdated buildOrderUpdated(RegisterToConference command) {
+        private static OrderUpdated orderUpdated(RegisterToConference command) {
             final OrderUpdated.Builder result = OrderUpdated.newBuilder()
                     .setOrderId(command.getOrderId())
                     .addAllSeat(command.getSeatList());
             return result.build();
         }
 
-        private static OrderPartiallyReserved buildOrderPartiallyReserved(MarkSeatsAsReserved command) {
+        private static OrderPartiallyReserved orderPartiallyReserved(MarkSeatsAsReserved command) {
             final OrderPartiallyReserved.Builder result = OrderPartiallyReserved.newBuilder()
                     .setOrderId(command.getOrderId())
                     .setReservationExpiration(command.getReservationExpiration())
@@ -322,7 +322,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
             return result.build();
         }
 
-        private static OrderReservationCompleted buildOrderReservationCompleted(MarkSeatsAsReserved command) {
+        private static OrderReservationCompleted orderReservationCompleted(MarkSeatsAsReserved command) {
             final OrderReservationCompleted.Builder result = OrderReservationCompleted.newBuilder()
                     .setOrderId(command.getOrderId())
                     .setReservationExpiration(command.getReservationExpiration())
@@ -384,7 +384,9 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
         private static void checkField(boolean hasField, String fieldName, Message cmd) {
             if (!hasField) {
-                throw new IllegalArgumentException("No " + fieldName + " in the command: " + cmd.getClass().getName());
+                final String message = format("The field '%s' must be defined in all commands of class: %s.",
+                        fieldName, cmd.getClass().getName());
+                throw new IllegalArgumentException(message);
             }
         }
     }
