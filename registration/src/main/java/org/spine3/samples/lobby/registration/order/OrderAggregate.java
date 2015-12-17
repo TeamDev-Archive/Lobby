@@ -176,23 +176,17 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Apply
     private void apply(OrderUpdated event) {
-        final Order.Builder state = getState().toBuilder();
-        state.addAllSeat(event.getSeatList());
-        incrementState(state.build());
+        updateSeats(event.getSeatList());
     }
 
     @Apply
     private void apply(OrderPartiallyReserved event) {
-        final Order.Builder state = getState().toBuilder();
-        state.addAllSeat(event.getSeatList());
-        incrementState(state.build());
+        updateSeats(event.getSeatList());
     }
 
     @Apply
     private void apply(OrderReservationCompleted event) {
-        final Order.Builder state = getState().toBuilder();
-        state.addAllSeat(event.getSeatList());
-        incrementState(state.build());
+        updateSeats(event.getSeatList());
     }
 
     @Apply
@@ -215,6 +209,13 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     @Apply
     private void apply(OrderRegistrantAssigned event) {
         // NOP
+    }
+
+    private void updateSeats(List<SeatQuantity> newSeats) {
+        final Order.Builder state = getState().toBuilder();
+        state.clearSeat();
+        state.addAllSeat(newSeats);
+        incrementState(state.build());
     }
 
     private boolean isOrderPartiallyReserved(final List<SeatQuantity> reservedSeats) {
