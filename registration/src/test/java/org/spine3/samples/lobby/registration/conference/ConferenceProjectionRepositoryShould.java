@@ -24,8 +24,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.conference.contracts.Conference;
+import org.spine3.samples.lobby.registration.testdata.TestDataFactory;
+import org.spine3.server.storage.EntityStorage;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
-import org.spine3.util.Identifiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
@@ -37,11 +39,12 @@ import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.new
 public class ConferenceProjectionRepositoryShould {
 
     private final ConferenceProjectionRepository repository = new ConferenceProjectionRepository(newBoundedContext());
-    private final ConferenceId id = ConferenceId.newBuilder().setUuid(Identifiers.newUuid()).build();
+    private final ConferenceId id = TestDataFactory.newConferenceId();
 
     @Before
     public void setUpTest() {
-        repository.assignStorage(InMemoryStorageFactory.getInstance().createEntityStorage(null));
+        final EntityStorage<ConferenceId, Conference> storage = InMemoryStorageFactory.getInstance().createEntityStorage(null);
+        repository.assignStorage(storage);
     }
 
     @After
