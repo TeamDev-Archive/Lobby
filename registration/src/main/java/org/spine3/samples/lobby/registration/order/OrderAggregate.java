@@ -54,7 +54,7 @@ import static java.lang.String.format;
  *
  * @author Alexander Litus
  */
-@SuppressWarnings({"TypeMayBeWeakened", "OverlyCoupledClass"})
+@SuppressWarnings({"TypeMayBeWeakened", "OverlyCoupledClass", "ClassWithTooManyMethods"})
 public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     /**
@@ -266,7 +266,10 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     @Override
     @SuppressWarnings("RefusedBequest") // method from superclass does nothing
     protected void validate(Order newState) throws IllegalStateException {
-        Validator.checkNewState(newState);
+        final int version = getVersion();
+        if (version > 0) {
+            Validator.checkNewState(newState);
+        }
     }
 
     private OrderTotalsCalculated buildOrderTotalsCalculated(OrderId orderId, ConferenceId conferenceId, List<SeatQuantity> seats) {
