@@ -28,7 +28,7 @@ import org.spine3.server.storage.memory.InMemoryStorageFactory;
 import org.spine3.util.Identifiers;
 
 import static org.junit.Assert.assertEquals;
-import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.buildBoundedContext;
+import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
 
 /**
  * @author Alexander Litus
@@ -36,7 +36,7 @@ import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.bui
 @SuppressWarnings("InstanceMethodNamingConvention")
 public class ConferenceProjectionRepositoryShould {
 
-    private final ConferenceProjectionRepository repository = new ConferenceProjectionRepository(buildBoundedContext());
+    private final ConferenceProjectionRepository repository = new ConferenceProjectionRepository(newBoundedContext());
     private final ConferenceId id = ConferenceId.newBuilder().setUuid(Identifiers.newUuid()).build();
 
     @Before

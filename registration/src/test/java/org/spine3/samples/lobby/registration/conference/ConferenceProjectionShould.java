@@ -54,7 +54,7 @@ import static org.junit.Assert.*;
 public class ConferenceProjectionShould {
 
     private static final ConferenceId ID = TestDataFactory.newConferenceId();
-    private final BoundedContext boundedContext = TestDataFactory.buildBoundedContext();
+    private final BoundedContext boundedContext = TestDataFactory.newBoundedContext();
 
     private final TestConferenceProjection projection = new TestConferenceProjection(ID);
 
