@@ -76,6 +76,13 @@ public class TestDataFactory {
     }
 
     /**
+     * Creates a new {@link SeatTypeId} with a random UUID value.
+     */
+    public static SeatTypeId newSeatTypeId() {
+        return SeatTypeId.newBuilder().setUuid(Identifiers.newUuid()).build();
+    }
+
+    /**
      * Creates a new {@link Money} instance with the given {@code amount} and {@code currency}.
      */
     public static Money newMoney(int amount, Currency currency) {

@@ -45,19 +45,16 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
-import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newConferenceId;
+import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.*;
 
 /**
  * @author Alexander Litus
  */
-@SuppressWarnings({"TypeMayBeWeakened", "InstanceMethodNamingConvention", "ClassWithTooManyMethods"})
+@SuppressWarnings({"TypeMayBeWeakened", "InstanceMethodNamingConvention", "ClassWithTooManyMethods", "UtilityClass"})
 public class ConferenceProjectionShould {
 
-    private static final ConferenceId ID = newConferenceId();
     private final BoundedContext boundedContext = newBoundedContext();
-
-    private final TestConferenceProjection projection = new TestConferenceProjection(ID);
+    private final TestConferenceProjection projection = new TestConferenceProjection(Given.CONFERENCE_ID);
 
     @Before
     public void setUpTest() {
@@ -181,63 +178,70 @@ public class ConferenceProjectionShould {
 
     private static class Given {
 
-        private static ConferenceCreated conferenceCreated() {
+        static final ConferenceId CONFERENCE_ID = newConferenceId();
+        private static final ConferenceUnpublished CONFERENCE_UNPUBLISHED = ConferenceUnpublished.newBuilder().setConferenceId(CONFERENCE_ID).build();
+        private static final ConferencePublished CONFERENCE_PUBLISHED = ConferencePublished.newBuilder().setConferenceId(CONFERENCE_ID).build();
+        static final SeatTypeId SEAT_TYPE_ID = newSeatTypeId();
+
+        static ConferenceCreated conferenceCreated() {
             final Conference conference = newConference();
             return ConferenceCreated.newBuilder().setConference(conference).build();
         }
 
-        private static ConferenceUpdated conferenceUpdated() {
+        static ConferenceUpdated conferenceUpdated() {
             final Conference conference = newConference();
             return ConferenceUpdated.newBuilder().setConference(conference).build();
         }
 
-        private static ConferencePublished conferencePublished() {
-            return ConferencePublished.newBuilder().setConferenceId(ID).build();
+        static ConferencePublished conferencePublished() {
+            return CONFERENCE_PUBLISHED;
         }
 
-        private static ConferenceUnpublished conferenceUnpublished() {
-            return ConferenceUnpublished.newBuilder().setConferenceId(ID).build();
+        static ConferenceUnpublished conferenceUnpublished() {
+            return CONFERENCE_UNPUBLISHED;
         }
 
-        private static SeatTypeCreated seatTypeCreated(int seatQuantity) {
-            final SeatType seatType = newSeatType("description-256", seatQuantity);
+        static SeatTypeCreated seatTypeCreated(int seatQuantity) {
+            final SeatType seatType = newSeatType("descriptionForSeatTypeCreatedEvent", seatQuantity);
             return SeatTypeCreated.newBuilder().setSeatType(seatType).build();
         }
 
-        private static SeatTypeUpdated seatTypeUpdated(int seatQuantity) {
-            final SeatType seatType = newSeatType("description-512", seatQuantity);
+        static SeatTypeUpdated seatTypeUpdated(int seatQuantity) {
+            final SeatType seatType = newSeatType("descriptionForSeatTypeUpdatedEvent", seatQuantity);
             return SeatTypeUpdated.newBuilder().setSeatType(seatType).build();
         }
 
-        private static SeatTypeCreated seatTypeCreated(String description, int seatQuantity) {
+        static SeatTypeCreated seatTypeCreated(String description, int seatQuantity) {
             final SeatType seatType = newSeatType(description, seatQuantity);
             return SeatTypeCreated.newBuilder().setSeatType(seatType).build();
         }
 
-        private static SeatTypeUpdated seatTypeUpdated(String description, int seatQuantity) {
+        static SeatTypeUpdated seatTypeUpdated(String description, int seatQuantity) {
             final SeatType seatType = newSeatType(description, seatQuantity);
             return SeatTypeUpdated.newBuilder().setSeatType(seatType).build();
         }
 
-        private static Conference newConference() {
-            return Conference.newBuilder()
-                    .setId(ID)
+        static Conference newConference() {
+            final String name = "Test Conference";
+            final Conference.Builder result = Conference.newBuilder()
+                    .setId(CONFERENCE_ID)
                     .setSlug(ConferenceSlug.newBuilder().setValue("slug"))
-                    .setName("Test Conference")
-                    .setDescription("Test Conference description")
-                    .setLocation("Test Conference location")
-                    .setTagline("Test Conference tagline")
-                    .setTwitterSearch("Test Conference twitter")
-                    .setStartDate(LocalDate.getDefaultInstance())
-                    .build();
+                    .setName(name)
+                    .setDescription(name + " description")
+                    .setLocation(name + " location")
+                    .setTagline(name + " tagline")
+                    .setTwitterSearch(name + " twitter")
+                    .setStartDate(LocalDate.getDefaultInstance());
+            return result.build();
         }
 
-        private static SeatType newSeatType(String description, int seatQuantity) {
-            return SeatType.newBuilder()
-                    .setConferenceId(ID)
-                    .setId(SeatTypeId.newBuilder().setUuid("testSeatType"))
+        static SeatType newSeatType(String description, int seatQuantity) {
+            final SeatType.Builder result = SeatType.newBuilder()
+                    .setConferenceId(CONFERENCE_ID)
+                    .setId(SEAT_TYPE_ID)
                     .setDescription(description)
-                    .setQuantityTotal(seatQuantity).build();
+                    .setQuantityTotal(seatQuantity);
+            return result.build();
         }
     }
 
