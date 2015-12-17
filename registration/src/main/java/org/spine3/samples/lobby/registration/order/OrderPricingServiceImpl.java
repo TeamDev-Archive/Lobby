@@ -18,16 +18,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration.service;
+package org.spine3.samples.lobby.registration.order;
 
 import org.spine3.money.Money;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.SeatType;
+import org.spine3.samples.lobby.registration.conference.ConferenceProjection;
+import org.spine3.samples.lobby.registration.conference.ConferenceProjectionRepository;
 import org.spine3.samples.lobby.registration.contracts.OrderTotal;
 import org.spine3.samples.lobby.registration.contracts.SeatOrderLine;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
-import org.spine3.samples.lobby.registration.projection.ConferenceProjection;
-import org.spine3.samples.lobby.registration.projection.ConferenceProjectionRepository;
 
 import java.util.List;
 
@@ -40,6 +40,11 @@ public class OrderPricingServiceImpl implements OrderPricingService {
 
     private final ConferenceProjectionRepository conferenceRepository;
 
+    /**
+     * Creates a new pricing service instance.
+     *
+     * @param conferenceRepository the conference repository to use for obtaining conference projections
+     */
     public OrderPricingServiceImpl(ConferenceProjectionRepository conferenceRepository) {
         this.conferenceRepository = conferenceRepository;
     }

@@ -18,30 +18,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration.projection;
+package org.spine3.samples.lobby.registration.order;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.common.OrderId;
+import org.spine3.samples.lobby.registration.testdata.TestDataFactory;
+import org.spine3.server.storage.AggregateStorage;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
-import org.spine3.util.Identifiers;
 
 import static org.junit.Assert.assertEquals;
-import static org.spine3.samples.lobby.registration.projection.ConferenceProjectionShould.buildBoundedContext;
 
 /**
  * @author Alexander Litus
  */
 @SuppressWarnings("InstanceMethodNamingConvention")
-public class ConferenceProjectionRepositoryShould {
+public class OrderRepositoryShould {
 
-    private final ConferenceProjectionRepository repository = new ConferenceProjectionRepository(buildBoundedContext());
-    private final ConferenceId id = ConferenceId.newBuilder().setUuid(Identifiers.newUuid()).build();
+    private final OrderRepository repository = new OrderRepository(new OrderAggregateShould.PricingServiceStub());
+    private final OrderId id = TestDataFactory.newOrderId();
 
     @Before
     public void setUpTest() {
-        repository.assignStorage(InMemoryStorageFactory.getInstance().createEntityStorage(null));
+        final AggregateStorage<OrderId> storage = InMemoryStorageFactory.getInstance().createAggregateStorage(null);
+        repository.assignStorage(storage);
     }
 
     @After
@@ -50,12 +51,12 @@ public class ConferenceProjectionRepositoryShould {
     }
 
     @Test
-    public void store_and_load_projection() {
-        final ConferenceProjection expected = new ConferenceProjection(id);
+    public void store_and_load_aggregate() {
+        final OrderAggregate expected = new OrderAggregate(id);
 
         repository.store(expected);
 
-        final ConferenceProjection actual = repository.load(id);
+        final OrderAggregate actual = repository.load(id);
         assertEquals(expected.getState(), actual.getState());
     }
 }

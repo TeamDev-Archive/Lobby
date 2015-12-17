@@ -19,6 +19,6 @@
  */
 
 @ParametersAreNonnullByDefault
-package org.spine3.samples.lobby.registration.projection;
+package org.spine3.samples.lobby.registration.conference;
 
 import javax.annotation.ParametersAreNonnullByDefault;

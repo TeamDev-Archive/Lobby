@@ -19,6 +19,6 @@
  */
 
 @ParametersAreNonnullByDefault
-package org.spine3.samples.lobby.registration;
+package org.spine3.samples.lobby.registration.order;
 
 import javax.annotation.ParametersAreNonnullByDefault;
