@@ -64,7 +64,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
      * Creates a new instance.
      *
      * @param id the ID for the new instance
-     * @throws IllegalArgumentException if the ID is not of one of the supported types
+     * @throws IllegalArgumentException if the ID type is not supported
      */
     public ConferenceProjection(ConferenceId id) {
         super(id);

@@ -72,7 +72,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
      * Creates a new instance.
      *
      * @param id the ID for the new instance
-     * @throws IllegalArgumentException if the ID is not of one of the supported types
+     * @throws IllegalArgumentException if the ID type is not supported
      * @see Entity
      */
     public OrderAggregate(OrderId id) {
