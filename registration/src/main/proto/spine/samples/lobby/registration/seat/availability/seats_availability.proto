@@ -32,10 +32,12 @@ message SeatsAvailability {
     // The id of the seats availability aggregate.
     SeatsAvailabilityId id = 1;
 
-    // The map from a seat type id value to an available quantity of seats.
+    // The map from a seat type ID value to an available quantity of seats.
+    // NOTE: SeatTypeId cannot be used as a key due to Protobuf restrictions.
     map<string, int32> seats_available = 2;
 
-    // The map from a reservation request id value to seat items.
+    // The map from a reservation request ID value to seat items.
+    // NOTE: ReservationId cannot be used as a key due to Protobuf restrictions.
     map<string, SeatQuantities> pending_reservations = 3;
 }
 
