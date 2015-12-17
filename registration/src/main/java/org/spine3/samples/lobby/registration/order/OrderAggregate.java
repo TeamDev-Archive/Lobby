@@ -166,7 +166,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     }
 
     @Apply
-    private void event(OrderPlaced event) {
+    private void apply(OrderPlaced event) {
         final Order.Builder state = Order.newBuilder()
                 .setId(event.getOrderId())
                 .setConferenceId(event.getConferenceId())
@@ -175,45 +175,45 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     }
 
     @Apply
-    private void event(OrderUpdated event) {
+    private void apply(OrderUpdated event) {
         final Order.Builder state = getState().toBuilder();
         state.addAllSeat(event.getSeatList());
         incrementState(state.build());
     }
 
     @Apply
-    private void event(OrderPartiallyReserved event) {
+    private void apply(OrderPartiallyReserved event) {
         final Order.Builder state = getState().toBuilder();
         state.addAllSeat(event.getSeatList());
         incrementState(state.build());
     }
 
     @Apply
-    private void event(OrderReservationCompleted event) {
+    private void apply(OrderReservationCompleted event) {
         final Order.Builder state = getState().toBuilder();
         state.addAllSeat(event.getSeatList());
         incrementState(state.build());
     }
 
     @Apply
-    private void event(OrderTotalsCalculated event) {
+    private void apply(OrderTotalsCalculated event) {
         // NOP
     }
 
     @Apply
-    private void event(OrderExpired event) {
+    private void apply(OrderExpired event) {
         // NOP
     }
 
     @Apply
-    private void event(OrderConfirmed event) {
+    private void apply(OrderConfirmed event) {
         final Order.Builder state = getState().toBuilder();
         state.setIsConfirmed(true);
         incrementState(state.build());
     }
 
     @Apply
-    private void event(OrderRegistrantAssigned event) {
+    private void apply(OrderRegistrantAssigned event) {
         // NOP
     }
 
