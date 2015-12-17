@@ -384,7 +384,9 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
         private static void checkField(boolean hasField, String fieldName, Message cmd) {
             if (!hasField) {
-                throw new IllegalArgumentException("No " + fieldName + " in the command: " + cmd.getClass().getName());
+                final String message = format("The field '%s' must be defined in all commands of class: %s.",
+                        fieldName, cmd.getClass().getName());
+                throw new IllegalArgumentException(message);
             }
         }
     }
