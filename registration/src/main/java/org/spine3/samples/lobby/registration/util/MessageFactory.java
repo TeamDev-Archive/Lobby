@@ -22,11 +22,6 @@ package org.spine3.samples.lobby.registration.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Message;
-import org.spine3.money.Currency;
-import org.spine3.money.Money;
-import org.spine3.samples.lobby.common.ConferenceId;
-import org.spine3.samples.lobby.common.OrderId;
-import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.seat.availability.SeatQuantities;
@@ -35,6 +30,7 @@ import org.spine3.util.Identifiers;
 
 /**
  * The utility class containing convenience methods for messages creation.
+ * Note: works with the messages from this bounded context only.
  *
  * @see Message
  * @author Alexander Litus
@@ -46,52 +42,11 @@ public class MessageFactory {
     }
 
     /**
-     * Creates a new {@code OrderId} with a random UUID value.
-     */
-    public static OrderId newOrderId() {
-        final String id = Identifiers.newUuid();
-        return OrderId.newBuilder().setUuid(id).build();
-    }
-
-    /**
      * Creates a new {@code SeatsAvailabilityId} with a random UUID value.
      */
     public static SeatsAvailabilityId newSeatsAvailabilityId() {
         final String id = Identifiers.newUuid();
         return SeatsAvailabilityId.newBuilder().setUuid(id).build();
-    }
-
-    /**
-     * Creates a new {@code ReservationId} with a random UUID value.
-     */
-    public static ReservationId newReservationId() {
-        final String id = Identifiers.newUuid();
-        return ReservationId.newBuilder().setUuid(id).build();
-    }
-
-    /**
-     * Creates a new {@code ConferenceId} with a random UUID value.
-     */
-    public static ConferenceId newConferenceId() {
-        final String id = Identifiers.newUuid();
-        return ConferenceId.newBuilder().setUuid(id).build();
-    }
-
-    /**
-     * Creates a new {@code SeatTypeId} with a random UUID value.
-     */
-    public static SeatTypeId newSeatTypeId() {
-        return SeatTypeId.newBuilder().setUuid(Identifiers.newUuid()).build();
-    }
-
-    /**
-     * Creates a new {@code Money} instance with the given {@code amount} and {@code currency}.
-     */
-    public static Money newMoney(int amount, Currency currency) {
-        final Money.Builder result = Money.newBuilder()
-                .setAmount(amount)
-                .setCurrency(currency);
-        return result.build();
     }
 
     /**
@@ -106,6 +61,7 @@ public class MessageFactory {
     /**
      * Creates a new {@code SeatQuantities} instance from the given {@code seats}.
      */
+    @SuppressWarnings("OverloadedVarargsMethod") // OK in this case
     public static SeatQuantities newSeatQuantities(SeatQuantity... seats) {
         final SeatQuantities result = newSeatQuantities(ImmutableList.copyOf(seats));
         return result;

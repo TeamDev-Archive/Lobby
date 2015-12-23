@@ -29,8 +29,8 @@ import org.spine3.server.storage.EntityStorage;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.spine3.samples.lobby.common.util.CommonMessageFactory.newConferenceId;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
-import static org.spine3.samples.lobby.registration.util.MessageFactory.newConferenceId;
 
 /**
  * @author Alexander Litus

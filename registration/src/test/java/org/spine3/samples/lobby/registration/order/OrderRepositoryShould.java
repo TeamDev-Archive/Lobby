@@ -28,7 +28,7 @@ import org.spine3.server.storage.AggregateStorage;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.spine3.samples.lobby.registration.util.MessageFactory.newOrderId;
+import static org.spine3.samples.lobby.common.util.CommonMessageFactory.newOrderId;
 
 /**
  * @author Alexander Litus

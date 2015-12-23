@@ -41,8 +41,11 @@ import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.spine3.money.Currency.USD;
+import static org.spine3.samples.lobby.common.util.CommonMessageFactory.newConferenceId;
+import static org.spine3.samples.lobby.common.util.CommonMessageFactory.newOrderId;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newPersonalInfo;
-import static org.spine3.samples.lobby.registration.util.MessageFactory.*;
+import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatQuantity;
+import static org.spine3.samples.lobby.registration.util.MoneyMessageFactory.newMoney;
 
 /**
  * @author Alexander Litus
