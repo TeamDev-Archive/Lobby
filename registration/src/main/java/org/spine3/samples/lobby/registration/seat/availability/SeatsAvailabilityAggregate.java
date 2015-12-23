@@ -146,6 +146,9 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         incrementState(state.build());
     }
 
+    /**
+     * The Method Object for handling {@link MakeSeatReservation} commands.
+     */
     protected static class MakeSeatReservationCommandHandler {
 
         private final List<SeatQuantity> reservedSeatsUpdated = newLinkedList();
@@ -156,12 +159,19 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
             this.state = state;
         }
 
-        protected void handle(MakeSeatReservation cmd) {
-            final List<SeatQuantity> requestedSeats = cmd.getSeatList();
+        /**
+         * Performs all the checks needed and calculates new reserved and available quantities of seats.
+         *
+         * @param command a validated command to handle
+         * @see #getReservedSeatsUpdated()
+         * @see #getAvailableSeatsUpdated()
+         */
+        protected void handle(MakeSeatReservation command) {
+            final List<SeatQuantity> requestedSeats = command.getSeatList();
             checkAllSeatTypesAreAvailable(requestedSeats);
 
             for (SeatQuantity requestedSeat : requestedSeats) {
-                calculateNewSeatCount(requestedSeat, cmd.getReservationId());
+                calculateNewSeatCount(requestedSeat, command.getReservationId());
             }
         }
 
