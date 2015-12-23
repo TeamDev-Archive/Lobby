@@ -30,7 +30,6 @@ import org.spine3.money.Money;
 import org.spine3.protobuf.Durations;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
-import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.registration.contracts.*;
 import org.spine3.server.Assign;
@@ -44,10 +43,11 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Collections2.filter;
-import static com.google.common.collect.Iterables.find;
 import static com.google.protobuf.util.TimeUtil.add;
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static java.lang.String.format;
+import static org.spine3.samples.lobby.registration.util.CollectionUtils.findById;
+import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
 
 /**
  * The order aggregate root.
@@ -236,7 +236,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
                 if (requestedOne == null) {
                     return false;
                 }
-                final SeatQuantity reservedOne = findById(reservedSeats, requestedOne.getSeatTypeId());
+                final SeatQuantity reservedOne = findById(reservedSeats, requestedOne.getSeatTypeId(), null);
                 if (reservedOne == null) {
                     return false;
                 }
@@ -244,22 +244,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
                 return isPartlyReserved;
             }
         });
-        return result;
-    }
-
-    @Nullable
-    private static SeatQuantity findById(final List<SeatQuantity> seats, final SeatTypeId id) {
-        final SeatQuantity defaultValue = null;
-        final SeatQuantity result = find(seats, new Predicate<SeatQuantity>() {
-            @Override
-            public boolean apply(@Nullable SeatQuantity seat) {
-                final boolean result =
-                        (seat != null) &&
-                        seat.hasSeatTypeId() &&
-                        seat.getSeatTypeId().equals(id);
-                return result;
-            }
-        }, defaultValue);
         return result;
     }
 
@@ -351,13 +335,13 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
         private static void validateCommand(RegisterToConference cmd) {
             checkOrderId(cmd.hasOrderId(), cmd);
-            checkField(cmd.hasConferenceId(), "conference ID", cmd);
+            checkConferenceId(cmd.hasConferenceId(), cmd);
             checkSeats(cmd.getSeatList(), cmd);
         }
 
         private static void validateCommand(MarkSeatsAsReserved cmd) {
             checkOrderId(cmd.hasOrderId(), cmd);
-            checkField(cmd.hasReservationExpiration(), "reservation expiration", cmd);
+            checkMessageField(cmd.hasReservationExpiration(), "reservation expiration", cmd);
             checkSeats(cmd.getSeatList(), cmd);
         }
 
@@ -371,23 +355,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
         private static void validateCommand(AssignRegistrantDetails cmd) {
             checkOrderId(cmd.hasOrderId(), cmd);
-            checkField(cmd.hasRegistrant(), "registrant", cmd);
-        }
-
-        private static void checkOrderId(boolean hasId, Message cmd) {
-            checkField(hasId, "order ID", cmd);
-        }
-
-        private static void checkSeats(List<SeatQuantity> seats, Message cmd) {
-            checkField(!seats.isEmpty(), "seats", cmd);
-        }
-
-        private static void checkField(boolean hasField, String fieldName, Message cmd) {
-            if (!hasField) {
-                final String message = format("The field '%s' must be defined in all commands of class: %s.",
-                        fieldName, cmd.getClass().getName());
-                throw new IllegalArgumentException(message);
-            }
+            checkMessageField(cmd.hasRegistrant(), "registrant", cmd);
         }
     }
 }
