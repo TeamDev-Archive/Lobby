@@ -24,11 +24,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.spine3.samples.lobby.common.OrderId;
-import org.spine3.samples.lobby.registration.testdata.TestDataFactory;
 import org.spine3.server.storage.AggregateStorage;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.spine3.samples.lobby.registration.util.MessageFactory.newOrderId;
 
 /**
  * @author Alexander Litus
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 public class OrderRepositoryShould {
 
     private final OrderRepository repository = new OrderRepository(new OrderAggregateShould.PricingServiceStub());
-    private final OrderId id = TestDataFactory.newOrderId();
+    private final OrderId id = newOrderId();
 
     @Before
     public void setUpTest() {

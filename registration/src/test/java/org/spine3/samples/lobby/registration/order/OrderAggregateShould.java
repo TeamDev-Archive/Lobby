@@ -41,7 +41,8 @@ import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.spine3.money.Currency.USD;
-import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.*;
+import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newPersonalInfo;
+import static org.spine3.samples.lobby.registration.util.MessageFactory.*;
 
 /**
  * @author Alexander Litus
@@ -527,6 +528,7 @@ public class OrderAggregateShould {
 
         private void invokeApplyMethod(Message event) {
             try {
+                //noinspection DuplicateStringLiteralInspection
                 final Method apply = OrderAggregate.class.getDeclaredMethod("apply", event.getClass());
                 apply.setAccessible(true);
                 apply.invoke(this, event);

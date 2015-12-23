@@ -45,7 +45,9 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.*;
+import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
+import static org.spine3.samples.lobby.registration.util.MessageFactory.newConferenceId;
+import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatTypeId;
 
 /**
  * @author Alexander Litus
