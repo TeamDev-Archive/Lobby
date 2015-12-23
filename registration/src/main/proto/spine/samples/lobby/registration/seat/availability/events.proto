@@ -45,11 +45,11 @@ message SeatsReserved {
     // The ID of the reservation.
     spine.samples.lobby.common.ReservationId reservation_id = 2;
 
-    // The items representing the quantity of reserved seats.
-    repeated spine.samples.lobby.registration.contracts.SeatQuantity reservation_details = 3;
+    // The collection of reserved seats quantity items which were updated.
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity reserved_seat_updated = 3;
 
-    // The items representing the quantity of available seats.
-    repeated spine.samples.lobby.registration.contracts.SeatQuantity available_seats_changed = 4;
+    // The collection of available seat quantity items which were updated.
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity available_seat_updated = 4;
 }
 
 // The event propagated when the payment for the reservation is received and the reservation is committed.
@@ -63,6 +63,6 @@ message SeatsReservationCancelled {
     // The ID of the reservation.
     spine.samples.lobby.common.ReservationId reservation_id = 1;
 
-    // The items representing the quantity of available seats.
-    repeated spine.samples.lobby.registration.contracts.SeatQuantity available_seats_changed = 2;
+    // The collection of available seat quantity items which were updated.
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity available_seat_updated = 2;
 }
