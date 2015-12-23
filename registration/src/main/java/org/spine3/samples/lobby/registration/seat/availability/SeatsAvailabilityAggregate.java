@@ -43,7 +43,7 @@ import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatQ
 import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
 
 /**
- * The aggregate root which manages the availability of conference seats.
+ * The aggregate which manages the availability of conference seats.
  *
  * @author Alexander Litus
  */

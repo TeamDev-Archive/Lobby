@@ -26,7 +26,7 @@ import org.spine3.server.aggregate.AggregateRepositoryBase;
 import javax.annotation.Nonnull;
 
 /**
- * The repository for order aggregate roots.
+ * The repository for order aggregates.
  *
  * @see OrderAggregate
  * @see AggregateRepositoryBase
@@ -39,7 +39,7 @@ public class OrderRepository extends AggregateRepositoryBase<OrderId, OrderAggre
     /**
      * Creates a new repository instance.
      *
-     * @param orderPricingService the pricing service to inject to order aggregate roots
+     * @param orderPricingService the pricing service to inject to order aggregates
      */
     public OrderRepository(OrderPricingService orderPricingService) {
         super();

@@ -50,7 +50,7 @@ import static org.spine3.samples.lobby.registration.util.CollectionUtils.findByI
 import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
 
 /**
- * The order aggregate root.
+ * The order aggregate which manages the state of the order.
  *
  * @author Alexander Litus
  */
