@@ -97,7 +97,7 @@ public class OrderAggregateShould {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void handle_empty_RegisterToConference_command_and_throw_exception() {
+    public void handle_RegisterToConference_command_and_throw_exception_if_it_is_empty() {
         final TestOrderAggregate aggregate = given.newOrder();
         final RegisterToConference cmd = RegisterToConference.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
@@ -137,7 +137,7 @@ public class OrderAggregateShould {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void handle_empty_MarkSeatsAsReserved_command_and_throw_exception() {
+    public void handle_MarkSeatsAsReserved_command_and_throw_exception_if_it_is_empty() {
         final TestOrderAggregate aggregate = given.newOrder();
         final MarkSeatsAsReserved cmd = MarkSeatsAsReserved.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
@@ -161,7 +161,7 @@ public class OrderAggregateShould {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void handle_empty_RejectOrder_command_and_throw_exception() {
+    public void handle_RejectOrder_command_and_throw_exception_if_it_is_empty() {
         final TestOrderAggregate aggregate = given.newOrder();
         final RejectOrder cmd = RejectOrder.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
@@ -185,7 +185,7 @@ public class OrderAggregateShould {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void handle_empty_ConfirmOrder_command_and_throw_exception() {
+    public void handle_ConfirmOrder_command_and_throw_exception_if_it_is_empty() {
         final TestOrderAggregate aggregate = given.newOrder();
         final ConfirmOrder cmd = ConfirmOrder.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
@@ -202,7 +202,7 @@ public class OrderAggregateShould {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void handle_empty_AssignRegistrantDetails_command_and_throw_exception() {
+    public void handle_AssignRegistrantDetails_command_and_throw_exception_if_it_is_empty() {
         final TestOrderAggregate aggregate = given.newOrder();
         final AssignRegistrantDetails cmd = AssignRegistrantDetails.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
