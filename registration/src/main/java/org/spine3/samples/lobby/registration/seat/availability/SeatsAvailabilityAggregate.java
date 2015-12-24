@@ -261,7 +261,7 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         }
 
         private static void validateState(SeatsAvailability state, CommitSeatReservation cmd) {
-            checkExistsPendingReservationsWithId(cmd.getReservationId(), state);
+            checkExistPendingReservationsWithId(cmd.getReservationId(), state);
         }
 
         private static void validateCommand(CancelSeatReservation cmd) {
@@ -270,10 +270,10 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         }
 
         private static void validateState(SeatsAvailability state, CancelSeatReservation cmd) {
-            checkExistsPendingReservationsWithId(cmd.getReservationId(), state);
+            checkExistPendingReservationsWithId(cmd.getReservationId(), state);
         }
 
-        private static void checkExistsPendingReservationsWithId(ReservationId reservationId, SeatsAvailability state) {
+        private static void checkExistPendingReservationsWithId(ReservationId reservationId, SeatsAvailability state) {
             final String id = reservationId.getUuid();
             final Map<String, SeatQuantities> pendingReservations = state.getPendingReservations();
             checkState(pendingReservations.containsKey(id), "No such pending reservation with the ID: " + id);
