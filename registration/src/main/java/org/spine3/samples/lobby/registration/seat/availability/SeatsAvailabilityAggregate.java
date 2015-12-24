@@ -85,9 +85,9 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         Validator.validateCommand(cmd);
         Validator.validateState(getState(), cmd);
 
-        final SeatsReservationCommitted.Builder reserved = SeatsReservationCommitted.newBuilder()
+        final SeatsReservationCommitted.Builder event = SeatsReservationCommitted.newBuilder()
                 .setReservationId(cmd.getReservationId());
-        return reserved.build();
+        return event.build();
     }
 
     @Assign
@@ -101,11 +101,11 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         final SeatQuantities unreservedSeats = getState().getPendingReservations().get(reservationId.getUuid());
         availableSeatsUpdated.addAll(unreservedSeats.getItemList());
 
-        final SeatsReservationCancelled.Builder reserved = SeatsReservationCancelled.newBuilder()
+        final SeatsReservationCancelled.Builder event = SeatsReservationCancelled.newBuilder()
                 .setReservationId(reservationId)
                 .setConferenceId(cmd.getConferenceId())
                 .addAllAvailableSeatUpdated(availableSeatsUpdated);
-        return reserved.build();
+        return event.build();
     }
 
     @Apply
