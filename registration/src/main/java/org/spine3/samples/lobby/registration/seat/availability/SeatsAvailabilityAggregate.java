@@ -103,6 +103,7 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
 
         final SeatsReservationCancelled.Builder reserved = SeatsReservationCancelled.newBuilder()
                 .setReservationId(reservationId)
+                .setConferenceId(cmd.getConferenceId())
                 .addAllAvailableSeatUpdated(availableSeatsUpdated);
         return reserved.build();
     }
