@@ -28,13 +28,16 @@ option java_multiple_files = true;
 import "spine/samples/lobby/common/common.proto";
 import "spine/samples/lobby/registration/contracts/registration.proto";
 
-// The event propagated when the availability of the seats is changed.
-message AvailableSeatsChanged  {
-    // The ID of the reservation.
-    spine.samples.lobby.common.ReservationId reservation_id = 1;
+// The event propagated when new seats are added.
+message AddedAvailableSeats {
+    // The added seat quantity.
+    spine.samples.lobby.registration.contracts.SeatQuantity quantity = 1;
+}
 
-    // The items representing the quantity of seats of different types.
-    repeated spine.samples.lobby.registration.contracts.SeatQuantity seat = 2;
+// The event propagated when seats are removed.
+message RemovedAvailableSeats {
+    // The removed seat quantity.
+    spine.samples.lobby.registration.contracts.SeatQuantity quantity = 1;
 }
 
 // The event propagated when the reservation confirmation is received.

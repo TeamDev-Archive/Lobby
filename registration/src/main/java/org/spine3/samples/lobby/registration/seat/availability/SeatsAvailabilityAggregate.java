@@ -22,6 +22,7 @@ package org.spine3.samples.lobby.registration.seat.availability;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+import com.google.protobuf.Message;
 import org.spine3.base.CommandContext;
 import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
@@ -47,7 +48,7 @@ import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
  *
  * @author Alexander Litus
  */
-@SuppressWarnings("TypeMayBeWeakened") // "OrBuilder" parameters are not applicable
+@SuppressWarnings({"TypeMayBeWeakened"/** "OrBuilder" parameters are not applicable*/, "OverlyCoupledClass"})
 public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, SeatsAvailability> {
 
     /**
@@ -97,7 +98,7 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
 
         final ReservationId reservationId = cmd.getReservationId();
         //noinspection LocalVariableNamingConvention
-        final List<SeatQuantity> availableSeatsUpdated = getState().getAvailableSeatList();
+        final List<SeatQuantity> availableSeatsUpdated = newLinkedList(getState().getAvailableSeatList());
         final SeatQuantities unreservedSeats = getState().getPendingReservations().get(reservationId.getUuid());
         availableSeatsUpdated.addAll(unreservedSeats.getItemList());
 
@@ -105,6 +106,25 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
                 .setReservationId(reservationId)
                 .setConferenceId(cmd.getConferenceId())
                 .addAllAvailableSeatUpdated(availableSeatsUpdated);
+        return event.build();
+    }
+
+    @Assign
+    public AddedAvailableSeats handle(AddSeats cmd, CommandContext context) {
+        Validator.validateCommand(cmd);
+
+        final AddedAvailableSeats.Builder event = AddedAvailableSeats.newBuilder()
+                .setQuantity(cmd.getQuantity());
+        return event.build();
+    }
+
+    @Assign
+    public RemovedAvailableSeats handle(RemoveSeats cmd, CommandContext context) {
+        Validator.validateCommand(cmd);
+        Validator.validateState(getState(), cmd);
+
+        final RemovedAvailableSeats.Builder event = RemovedAvailableSeats.newBuilder()
+                .setQuantity(cmd.getQuantity());
         return event.build();
     }
 
@@ -145,6 +165,48 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         state.addAllAvailableSeat(event.getAvailableSeatUpdatedList());
 
         incrementState(state.build());
+    }
+
+    @Apply
+    private void apply(AddedAvailableSeats event) {
+        final SeatsAvailability.Builder state = getState().toBuilder();
+
+        final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
+        final SeatQuantity addedQuantity = event.getQuantity();
+        final SeatTypeId seatTypeId = addedQuantity.getSeatTypeId();
+        final SeatQuantity existingOne = findById(availableSeats, seatTypeId, null);
+        if (existingOne != null) {
+            final int indexOfOldValue = availableSeats.indexOf(existingOne);
+            final int newQuantity = existingOne.getQuantity() + addedQuantity.getQuantity();
+            state.setAvailableSeat(indexOfOldValue, newSeatQuantity(seatTypeId, newQuantity));
+        } else {
+            state.addAvailableSeat(addedQuantity);
+        }
+
+        incrementState(state.build());
+    }
+
+    @Apply
+    private void apply(RemovedAvailableSeats event) {
+        final SeatsAvailability.Builder state = getState().toBuilder();
+
+        final SeatQuantity removedQuantity = event.getQuantity();
+        final SeatTypeId seatTypeId = removedQuantity.getSeatTypeId();
+        final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
+        final SeatQuantity existingOne = findById(availableSeats, seatTypeId);
+        final int indexOfOldValue = availableSeats.indexOf(existingOne);
+        final int newQuantity = calculateNewQuantity(removedQuantity, existingOne);
+        state.setAvailableSeat(indexOfOldValue, newSeatQuantity(seatTypeId, newQuantity));
+
+        incrementState(state.build());
+    }
+
+    private static int calculateNewQuantity(SeatQuantity removedQuantity, SeatQuantity existingOne) {
+        final int newQuantity = existingOne.getQuantity() - removedQuantity.getQuantity();
+        if (newQuantity < 0) {
+            return 0;
+        }
+        return newQuantity;
     }
 
     /**
@@ -271,6 +333,28 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
 
         private static void validateState(SeatsAvailability state, CancelSeatReservation cmd) {
             checkExistPendingReservationsWithId(cmd.getReservationId(), state);
+        }
+
+        private static void validateCommand(AddSeats cmd) {
+            checkSeatQuantity(cmd.hasQuantity(), cmd.getQuantity(), cmd);
+        }
+
+        private static void validateCommand(RemoveSeats cmd) {
+            checkSeatQuantity(cmd.hasQuantity(), cmd.getQuantity(), cmd);
+        }
+
+        private static void checkSeatQuantity(boolean hasQuantity, SeatQuantity quantity, Message cmd) {
+            checkMessageField(hasQuantity, "seat quantity", cmd);
+            checkMessageField(quantity.hasSeatTypeId(), "seat type id", quantity);
+            checkMessageField(quantity.getQuantity() > 0, "quantity", quantity);
+        }
+
+        private static void validateState(SeatsAvailability state, RemoveSeats cmd) {
+            final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
+            final SeatQuantity quantityToRemove = cmd.getQuantity();
+            final SeatTypeId id = quantityToRemove.getSeatTypeId();
+            final SeatQuantity existingOne = findById(availableSeats, id, null);
+            checkState(existingOne != null, "No such available seat, seat type ID: " + id.getUuid());
         }
 
         private static void checkExistPendingReservationsWithId(ReservationId reservationId, SeatsAvailability state) {
