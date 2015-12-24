@@ -478,7 +478,7 @@ public class OrderAggregateShould {
         }
     }
 
-    static class PricingServiceStub implements OrderPricingService {
+    private static class PricingServiceStub implements OrderPricingService {
 
         private static final Money TOTAL_PRICE = newMoney(100, USD);
         private static final SeatOrderLine ORDER_LINE = SeatOrderLine.newBuilder()

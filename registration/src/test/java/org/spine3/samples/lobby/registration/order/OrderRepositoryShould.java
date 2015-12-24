@@ -23,7 +23,10 @@ package org.spine3.samples.lobby.registration.order;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
+import org.spine3.samples.lobby.registration.contracts.OrderTotal;
+import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.server.storage.AggregateStorage;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
@@ -36,7 +39,7 @@ import static org.spine3.samples.lobby.common.util.CommonMessageFactory.newOrder
 @SuppressWarnings("InstanceMethodNamingConvention")
 public class OrderRepositoryShould {
 
-    private final OrderRepository repository = new OrderRepository(new OrderAggregateShould.PricingServiceStub());
+    private final OrderRepository repository = new OrderRepository(new PricingServiceMock());
     private final OrderId id = newOrderId();
 
     @Before
@@ -58,5 +61,13 @@ public class OrderRepositoryShould {
 
         final OrderAggregate actual = repository.load(id);
         assertEquals(expected.getState(), actual.getState());
+    }
+
+    private static class PricingServiceMock implements OrderPricingService {
+
+        @Override
+        public OrderTotal calculateTotalOrderPrice(ConferenceId conferenceId, Iterable<SeatQuantity> seats) {
+            return OrderTotal.getDefaultInstance();
+        }
     }
 }
