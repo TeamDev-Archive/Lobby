@@ -328,9 +328,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
             checkState(order.hasId(), "No order ID in a new order state.");
             final String orderId = order.getId().getUuid();
             checkState(order.hasConferenceId(), "No conference ID in a new order state, ID: " + orderId);
-            if (order.getSeatList().isEmpty()) {
-                throw new IllegalArgumentException("No seats in a new order state, ID: " + orderId);
-            }
+            checkSeats(order.getSeatList(), order);
         }
 
         private static void validateCommand(RegisterToConference cmd) {
