@@ -63,6 +63,9 @@ message SeatsReservationCancelled {
     // The ID of the reservation.
     spine.samples.lobby.common.ReservationId reservation_id = 1;
 
+    // The conference id the seats reservation associated with.
+    spine.samples.lobby.common.ConferenceId conference_id = 2;
+
     // The collection of available seat quantity items which were updated.
-    repeated spine.samples.lobby.registration.contracts.SeatQuantity available_seat_updated = 2;
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity available_seat_updated = 3;
 }
