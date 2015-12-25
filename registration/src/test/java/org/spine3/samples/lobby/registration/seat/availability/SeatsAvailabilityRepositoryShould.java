@@ -22,17 +22,14 @@ package org.spine3.samples.lobby.registration.seat.availability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Message;
-import com.google.protobuf.util.TimeUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.spine3.base.CommandId;
-import org.spine3.base.EventContext;
-import org.spine3.base.EventId;
 import org.spine3.base.EventRecord;
 import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
+import org.spine3.samples.lobby.registration.testdata.TestDataFactory;
 import org.spine3.server.storage.AggregateStorage;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
@@ -41,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.spine3.protobuf.Messages.toAny;
 import static org.spine3.samples.lobby.common.util.CommonMessageFactory.*;
 import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatQuantity;
 import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatsAvailabilityId;
@@ -112,16 +108,7 @@ public class SeatsAvailabilityRepositoryShould {
         }
 
         private static EventRecord newEventRecord(Message event) {
-            final CommandId commandId = CommandId.newBuilder().setTimestamp(TimeUtil.getCurrentTime()).build();
-            final EventId eventId = EventId.newBuilder().setCommandId(commandId).build();
-            final EventContext context = EventContext.newBuilder()
-                    .setAggregateId(toAny(ID))
-                    .setEventId(eventId)
-                    .build();
-            final EventRecord.Builder result = EventRecord.newBuilder()
-                    .setContext(context)
-                    .setEvent(toAny(event));
-            return result.build();
+            return TestDataFactory.newEventRecord(event, ID);
         }
 
         public List<SeatQuantity> getAvailableSeats() {

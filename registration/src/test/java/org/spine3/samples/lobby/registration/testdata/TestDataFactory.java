@@ -20,13 +20,16 @@
 
 package org.spine3.samples.lobby.registration.testdata;
 
-import org.spine3.base.EmailAddress;
-import org.spine3.base.PersonName;
+import com.google.protobuf.Message;
+import com.google.protobuf.util.TimeUtil;
+import org.spine3.base.*;
 import org.spine3.eventbus.EventBus;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.CommandDispatcher;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
+
+import static org.spine3.protobuf.Messages.toAny;
 
 /**
  * The utility class which is used for creating objects needed in tests.
@@ -62,4 +65,19 @@ public class TestDataFactory {
         return result.build();
     }
 
+    /**
+     * Creates a new {@link EventRecord} instance with the given {@code event}, and {@code aggregateId}.
+     */
+    public static EventRecord newEventRecord(Message event, Message aggregateId) {
+        final CommandId commandId = CommandId.newBuilder().setTimestamp(TimeUtil.getCurrentTime()).build();
+        final EventId eventId = EventId.newBuilder().setCommandId(commandId).build();
+        final EventContext context = EventContext.newBuilder()
+                .setAggregateId(toAny(aggregateId))
+                .setEventId(eventId)
+                .build();
+        final EventRecord.Builder result = EventRecord.newBuilder()
+                .setContext(context)
+                .setEvent(toAny(event));
+        return result.build();
+    }
 }
