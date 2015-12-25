@@ -29,7 +29,6 @@ import javax.annotation.Nonnull;
  * The repository for order aggregates.
  *
  * @see OrderAggregate
- * @see AggregateRepositoryBase
  * @author Alexander Litus
  */
 public class OrderRepository extends AggregateRepositoryBase<OrderId, OrderAggregate> {

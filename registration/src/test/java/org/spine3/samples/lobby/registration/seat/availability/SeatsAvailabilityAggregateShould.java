@@ -50,7 +50,7 @@ import static org.spine3.util.Identifiers.newUuid;
         "AbstractClassWithoutAbstractMethods", "NoopMethodInAbstractClass", "LocalVariableNamingConvention"})
 public class SeatsAvailabilityAggregateShould {
 
-    private final TestSeatsAvailabilityAggregate defaultAggregate = new DefaultState().givenAggregate();
+    private final TestSeatsAvailabilityAggregate defaultAggregate = new TestCase().givenAggregate();
 
     /**
      * MakeSeatReservation command handling tests.
@@ -399,7 +399,7 @@ public class SeatsAvailabilityAggregateShould {
      * Test cases.
      */
 
-    private abstract static class TestCase {
+    private static class TestCase {
 
         private final TestSeatsAvailabilityAggregate aggregate;
 
@@ -754,9 +754,6 @@ public class SeatsAvailabilityAggregateShould {
         }
     }
 
-    private static class DefaultState extends TestCase {
-    }
-
     private static class ExistAvailableSeatsAndPendingReservations extends TestCase {
 
         private static final ReservationId RESERVATION_ID = newReservationId();
@@ -773,12 +770,10 @@ public class SeatsAvailabilityAggregateShould {
 
         @Override
         protected TestSeatsAvailabilityAggregate givenAggregate() {
-
-            final ImmutableMap<String, SeatQuantities> pendingReservations = PENDING_RESERVATIONS;
             final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .addAllAvailableSeat(AVAILABLE_SEATS)
-                    .putAllPendingReservations(pendingReservations)
+                    .putAllPendingReservations(PENDING_RESERVATIONS)
                     .build();
             aggregate.incrementState(state);
             return aggregate;
