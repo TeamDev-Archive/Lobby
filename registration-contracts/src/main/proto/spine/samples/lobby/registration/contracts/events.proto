@@ -126,8 +126,8 @@ message OrderTotalsCalculated {
 
 // The event propagated when a seat assignment is created.
 message SeatAssignmentsCreated {
-    // The ID of the reservation.
-    spine.samples.lobby.common.ReservationId reservation_id = 1;
+    // The ID of the seat assignments aggregate.
+    spine.samples.lobby.registration.contracts.SeatAssignmentsId assignments_id = 1;
 
     // The ID of the order.
     spine.samples.lobby.common.OrderId order_id = 2;
@@ -147,8 +147,8 @@ message SeatAssignmentsCreated {
 
 // The event propagated when a seat assignment is updated.
 message SeatAssignmentUpdated {
-    // The ID of the reservation.
-    spine.samples.lobby.common.ReservationId reservation_id = 1;
+    // The ID of the seat assignments aggregate.
+    spine.samples.lobby.registration.contracts.SeatAssignmentsId assignments_id = 1;
 
     // The position of the seat.
     spine.samples.lobby.registration.contracts.SeatPosition position = 2;
@@ -159,8 +159,8 @@ message SeatAssignmentUpdated {
 
 // The event propagated when a seat is assigned to an attendee.
 message SeatAssigned {
-    // The ID of the reservation.
-    spine.samples.lobby.common.ReservationId reservation_id = 1;
+    // The ID of the seat assignments aggregate.
+        spine.samples.lobby.registration.contracts.SeatAssignmentsId assignments_id = 1;
 
     // The position of the seat.
     spine.samples.lobby.registration.contracts.SeatPosition position = 2;
@@ -174,8 +174,8 @@ message SeatAssigned {
 
 // The event propagated when a seat is unassigned from an attendee.
 message SeatUnassigned {
-    // The ID of the reservation.
-    spine.samples.lobby.common.ReservationId reservation_id = 1;
+    // The ID of the seat assignments aggregate.
+        spine.samples.lobby.registration.contracts.SeatAssignmentsId assignments_id = 1;
 
     // The position of the seat.
     spine.samples.lobby.registration.contracts.SeatPosition position = 2;

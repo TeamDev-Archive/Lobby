@@ -74,3 +74,9 @@ message OrderTotal {
     // The lines of the order.
     repeated SeatOrderLine order_line = 2;
 }
+
+// The ID of the seat assignments aggregate.
+message SeatAssignmentsId {
+    // The UUID-based value of the seat assignments ID.
+    string uuid = 1;
+}

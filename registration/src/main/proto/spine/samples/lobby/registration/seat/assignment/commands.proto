@@ -33,7 +33,7 @@ import "spine/samples/lobby/registration/seat/assignment/seat_assignments.proto"
 // Is sent as the result of a registrant interaction with the UI.
 message AssignSeat {
     // The ID of the seat assignments aggregate.
-    lobby.registration.seat.assignment.SeatAssignmentsId seat_assignments_id = 1;
+    spine.samples.lobby.registration.contracts.SeatAssignmentsId seat_assignments_id = 1;
 
     // The info about an attendee.
     spine.samples.lobby.common.PersonalInfo attendee = 2;
@@ -45,7 +45,7 @@ message AssignSeat {
 // The request to unassign the seat from the attendee.
 message UnassignSeat {
     // The ID of the seat assignments aggregate.
-    lobby.registration.seat.assignment.SeatAssignmentsId seat_assignments_id = 1;
+    spine.samples.lobby.registration.contracts.SeatAssignmentsId seat_assignments_id = 1;
 
     // The position of the seat to unassign.
     spine.samples.lobby.registration.contracts.SeatPosition position = 2;
