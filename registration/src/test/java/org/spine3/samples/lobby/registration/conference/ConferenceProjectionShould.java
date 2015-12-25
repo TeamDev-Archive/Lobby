@@ -39,7 +39,6 @@ import org.spine3.server.BoundedContext;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.AggregateRepositoryBase;
 import org.spine3.server.aggregate.Apply;
-import org.spine3.time.LocalDate;
 
 import java.io.IOException;
 import java.util.List;
@@ -107,7 +106,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeCreated_event_and_update_state() {
-        projection.incrementState(Given.newConference());
+        projection.incrementState(Given.conference());
         final SeatTypeCreated event = Given.seatTypeCreated(5);
 
         projection.on(event);
@@ -117,7 +116,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void not_add_seat_type_with_the_same_id_on_SeatTypeCreated_event() {
-        projection.incrementState(Given.newConference());
+        projection.incrementState(Given.conference());
         final SeatTypeCreated event = Given.seatTypeCreated(5);
 
         projection.on(event);
@@ -128,7 +127,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_update_state() {
-        projection.incrementState(Given.newConference());
+        projection.incrementState(Given.conference());
         projection.on(Given.seatTypeCreated("old-description", 5));
 
         final SeatTypeUpdated updatedEvent = Given.seatTypeUpdated("new-description", 7);
@@ -139,7 +138,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_send_AddSeats_command_when_seats_added() {
-        projection.incrementState(Given.newConference());
+        projection.incrementState(Given.conference());
 
         projection.on(Given.seatTypeCreated(3));
         projection.on(Given.seatTypeUpdated(7));
@@ -149,7 +148,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_send_AddSeats_command_when_seats_removed() {
-        projection.incrementState(Given.newConference());
+        projection.incrementState(Given.conference());
 
         projection.on(Given.seatTypeCreated(7));
         projection.on(Given.seatTypeUpdated(3));
@@ -159,7 +158,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_do_not_send_commands_when_seat_quantity_not_changed() {
-        projection.incrementState(Given.newConference());
+        projection.incrementState(Given.conference());
         final int seatQuantity = 5;
 
         projection.on(Given.seatTypeCreated(seatQuantity));
@@ -178,20 +177,36 @@ public class ConferenceProjectionShould {
         assertTrue(actualTypes.containsAll(expectedTypes));
     }
 
-    private static class Given {
+    static class Given {
 
         static final ConferenceId CONFERENCE_ID = newConferenceId();
         private static final ConferenceUnpublished CONFERENCE_UNPUBLISHED = ConferenceUnpublished.newBuilder().setConferenceId(CONFERENCE_ID).build();
         private static final ConferencePublished CONFERENCE_PUBLISHED = ConferencePublished.newBuilder().setConferenceId(CONFERENCE_ID).build();
         static final SeatTypeId SEAT_TYPE_ID = newSeatTypeId();
+        private static final String CONFERENCE_NAME = "Test Conference";
+        private static final String TWITTER_SEARCH = CONFERENCE_NAME + " twitter";
+        private static final String TAGLINE = CONFERENCE_NAME + " tagline";
+        private static final String LOCATION = CONFERENCE_NAME + " location";
+        private static final String DESCRIPTION = CONFERENCE_NAME + " description";
+        private static final ConferenceSlug.Builder SLUG = ConferenceSlug.newBuilder().setValue("slug");
+        private static final Conference CONFERENCE = Conference.newBuilder()
+                .setId(CONFERENCE_ID)
+                .setSlug(SLUG)
+                .setName(CONFERENCE_NAME)
+                .setDescription(DESCRIPTION)
+                .setLocation(LOCATION)
+                .setTagline(TAGLINE)
+                .setTwitterSearch(TWITTER_SEARCH).build();
+
+        private Given() {}
 
         static ConferenceCreated conferenceCreated() {
-            final Conference conference = newConference();
+            final Conference conference = conference();
             return ConferenceCreated.newBuilder().setConference(conference).build();
         }
 
         static ConferenceUpdated conferenceUpdated() {
-            final Conference conference = newConference();
+            final Conference conference = conference();
             return ConferenceUpdated.newBuilder().setConference(conference).build();
         }
 
@@ -223,18 +238,8 @@ public class ConferenceProjectionShould {
             return SeatTypeUpdated.newBuilder().setSeatType(seatType).build();
         }
 
-        static Conference newConference() {
-            final String name = "Test Conference";
-            final Conference.Builder result = Conference.newBuilder()
-                    .setId(CONFERENCE_ID)
-                    .setSlug(ConferenceSlug.newBuilder().setValue("slug"))
-                    .setName(name)
-                    .setDescription(name + " description")
-                    .setLocation(name + " location")
-                    .setTagline(name + " tagline")
-                    .setTwitterSearch(name + " twitter")
-                    .setStartDate(LocalDate.getDefaultInstance());
-            return result.build();
+        static Conference conference() {
+            return CONFERENCE;
         }
 
         static SeatType newSeatType(String description, int seatQuantity) {

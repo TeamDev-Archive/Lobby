@@ -54,11 +54,31 @@ public class ConferenceProjectionRepositoryShould {
 
     @Test
     public void store_and_load_projection() {
-        final ConferenceProjection expected = new ConferenceProjection(id);
+        final ConferenceProjection expected = givenConferenceProjection();
 
         repository.store(expected);
 
         final ConferenceProjection actual = repository.load(id);
         assertEquals(expected.getState(), actual.getState());
+    }
+
+    private ConferenceProjection givenConferenceProjection() {
+        final TestConferenceProjection projection = new TestConferenceProjection(id);
+        final Conference conference = ConferenceProjectionShould.Given.conference();
+        projection.incrementState(conference);
+        return projection;
+    }
+
+    public static class TestConferenceProjection extends ConferenceProjection {
+
+        public TestConferenceProjection(ConferenceId id) {
+            super(id);
+        }
+
+        // Is overridden to make it accessible in tests.
+        @Override
+        public void incrementState(Conference newState) {
+            super.incrementState(newState);
+        }
     }
 }
