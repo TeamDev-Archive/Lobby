@@ -22,6 +22,7 @@ package org.spine3.samples.lobby.registration.order;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.Duration;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
@@ -40,6 +41,7 @@ import org.spine3.server.aggregate.Apply;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Collections2.filter;
@@ -65,6 +67,10 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     private static final Duration RESERVATION_EXPIRATION_PERIOD = Durations.ofMinutes(EXPIRATION_PERIOD_MINUTES);
 
     private static final int ACCESS_CODE_LENGTH = 8;
+
+    private static final ImmutableSet<Class<? extends Message>> STATE_NEUTRAL_EVENT_CLASSES =
+            ImmutableSet.<Class<? extends Message>>of(
+                    OrderTotalsCalculated.class, OrderExpired.class, OrderRegistrantAssigned.class);
 
     private OrderPricingService pricingService;
 
@@ -190,25 +196,10 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     }
 
     @Apply
-    private void apply(OrderTotalsCalculated event) {
-        // NOP
-    }
-
-    @Apply
-    private void apply(OrderExpired event) {
-        // NOP
-    }
-
-    @Apply
     private void apply(OrderConfirmed event) {
         final Order.Builder state = getState().toBuilder();
         state.setIsConfirmed(true);
         incrementState(state.build());
-    }
-
-    @Apply
-    private void apply(OrderRegistrantAssigned event) {
-        // NOP
     }
 
     private void updateSeats(List<SeatQuantity> newSeats) {
@@ -246,6 +237,13 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         });
         return result;
     }
+
+    @Override
+    @SuppressWarnings({"RefusedBequest", "ReturnOfCollectionOrArrayField"/**it is immutable*/})
+    protected Set<Class<? extends Message>> getStateNeutralEventClasses() {
+        return STATE_NEUTRAL_EVENT_CLASSES;
+    }
+
 
     @Override
     @SuppressWarnings("RefusedBequest") // method from superclass does nothing
