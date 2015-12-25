@@ -29,15 +29,14 @@ import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
-import org.spine3.samples.lobby.registration.order.OrderAggregate;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Throwables.propagate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.spine3.samples.lobby.common.util.CommonMessageFactory.*;
 import static org.spine3.samples.lobby.registration.util.CollectionUtils.findById;
 import static org.spine3.samples.lobby.registration.util.MessageFactory.*;
@@ -46,13 +45,12 @@ import static org.spine3.util.Identifiers.newUuid;
 /**
  * @author Alexander Litus
  */
-@SuppressWarnings({"InstanceMethodNamingConvention", "TypeMayBeWeakened", "UtilityClass", "OverlyCoupledClass",
+@SuppressWarnings({"InstanceMethodNamingConvention", "TypeMayBeWeakened", "UtilityClass",
         "MagicNumber", "ClassWithTooManyMethods", "UtilityClassWithoutPrivateConstructor", "RefusedBequest", "EmptyClass",
-        "AbstractClassWithoutAbstractMethods", "NoopMethodInAbstractClass",
-        "LocalVariableNamingConvention", "MethodParameterNamingConvention" /*long precise names are required*/})
+        "AbstractClassWithoutAbstractMethods", "NoopMethodInAbstractClass", "LocalVariableNamingConvention"})
 public class SeatsAvailabilityAggregateShould {
 
-    private final TestSeatsAvailabilityAggregate defaultAggregate = new TestSeatsAvailabilityAggregate(newSeatsAvailabilityId());
+    private final TestSeatsAvailabilityAggregate defaultAggregate = new DefaultState().givenAggregate();
 
     /**
      * MakeSeatReservation command handling tests.
@@ -289,6 +287,115 @@ public class SeatsAvailabilityAggregateShould {
     }
 
     /**
+     * Event applying tests.
+     */
+
+    @Test
+    public void apply_SeatsReserved_event_and_update_state() {
+        final SeatsReservedEventApplying testCase = new SeatsReservedEventApplying();
+        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsReserved event = testCase.givenEvent();
+        final String reservationId = event.getReservationId().getUuid();
+
+        aggregate.apply(event);
+
+        final SeatsAvailability state = aggregate.getState();
+        assertEquals(event.getAvailableSeatUpdatedList(), state.getAvailableSeatList());
+        final SeatQuantities reservedSeats = state.getPendingReservations().get(reservationId);
+        assertEquals(event.getReservedSeatUpdatedList(), reservedSeats.getItemList());
+    }
+
+    @Test
+    public void apply_SeatsReservationCommitted_event_and_remove_pending_reservation() {
+        final SeatsReservationCommittedEventApplying testCase = new SeatsReservationCommittedEventApplying();
+        final SeatsReservationCommitted event = testCase.givenEvent();
+        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+
+        aggregate.apply(event);
+
+        final Map<String, SeatQuantities> pendingReservations = aggregate.getState().getPendingReservations();
+        assertEquals(0, pendingReservations.size());
+    }
+
+    @Test
+    public void apply_SeatsReservationCancelled_event_and_remove_pending_reservation_and_update_available_seats() {
+        final SeatsReservationCancelledEventApplying testCase = new SeatsReservationCancelledEventApplying();
+        final SeatsReservationCancelled event = testCase.givenEvent();
+        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+
+        aggregate.apply(event);
+
+        final SeatsAvailability state = aggregate.getState();
+        final Map<String, SeatQuantities> pendingReservations = state.getPendingReservations();
+        assertEquals(0, pendingReservations.size());
+
+        final List<SeatQuantity> availableSeatsExpected = event.getAvailableSeatUpdatedList();
+        final List<SeatQuantity> availableSeatsActual = state.getAvailableSeatList();
+        assertEquals(availableSeatsExpected, availableSeatsActual);
+    }
+
+    @Test
+    public void apply_AddedAvailableSeats_event_and_add_new_seat_type_if_no_such_type_existed() {
+        final AddedAvailableSeatsEventApplying testCase = new AddedAvailableSeatsEventApplying.AddingNewSeatType();
+        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final AddedAvailableSeats event = testCase.givenEvent();
+
+        aggregate.apply(event);
+
+        final SeatsAvailability state = aggregate.getState();
+        final SeatQuantity addedQuantity = event.getQuantity();
+        final List<SeatQuantity> availableSeatsUpdated = state.getAvailableSeatList();
+        assertTrue(availableSeatsUpdated.contains(addedQuantity));
+    }
+
+    @Test
+    public void apply_AddedAvailableSeats_event_and_update_existing_seat_type() {
+        final AddedAvailableSeatsEventApplying testCase = new AddedAvailableSeatsEventApplying.UpdatingSeatType();
+        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final AddedAvailableSeats event = testCase.givenEvent();
+
+        aggregate.apply(event);
+
+        final List<SeatQuantity> availableSeatsUpdated = aggregate.getState().getAvailableSeatList();
+        final SeatQuantity primarySeat = testCase.getPrimarySeat();
+        final SeatQuantity addedQuantity = event.getQuantity();
+        final int expectedNewQuantity = primarySeat.getQuantity() + addedQuantity.getQuantity();
+        final SeatQuantity expectedResult = newSeatQuantity(primarySeat.getSeatTypeId(), expectedNewQuantity);
+        assertTrue(availableSeatsUpdated.contains(expectedResult));
+    }
+
+    @Test
+    public void apply_RemovedAvailableSeats_event_when_removing_less_seats_than_remaining() {
+        final RemovedAvailableSeatsEventApplying testCase =
+                new RemovedAvailableSeatsEventApplying.RemovingLessSeatsThanRemaining();
+        final int removedQuantity = testCase.givenEvent().getQuantity().getQuantity();
+        final int expectedNewQuantity = testCase.getPrimarySeat().getQuantity() - removedQuantity;
+
+        applyRemovedAvailableSeatsEventTest(testCase, expectedNewQuantity);
+    }
+
+    @Test
+    public void apply_RemovedAvailableSeats_event_when_removing_more_seats_than_remaining() {
+        final RemovedAvailableSeatsEventApplying testCase =
+                new RemovedAvailableSeatsEventApplying.RemovingMoreSeatsThanRemaining();
+        final int expectedNewQuantity = 0;
+        applyRemovedAvailableSeatsEventTest(testCase, expectedNewQuantity);
+    }
+
+    private static void applyRemovedAvailableSeatsEventTest(RemovedAvailableSeatsEventApplying testCase,
+                                                            int expectedNewQuantity) {
+        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final RemovedAvailableSeats event = testCase.givenEvent();
+
+        aggregate.apply(event);
+
+        final List<SeatQuantity> availableSeatsUpdated = aggregate.getState().getAvailableSeatList();
+        final SeatQuantity primaryQuantity = testCase.getPrimarySeat();
+        final SeatQuantity expectedResult = newSeatQuantity(primaryQuantity.getSeatTypeId(), expectedNewQuantity);
+        assertTrue(availableSeatsUpdated.contains(expectedResult));
+    }
+
+    /**
      * Test cases.
      */
 
@@ -299,10 +406,6 @@ public class SeatsAvailabilityAggregateShould {
         protected TestCase() {
             final SeatsAvailabilityId id = newSeatsAvailabilityId();
             aggregate = new TestSeatsAvailabilityAggregate(id);
-        }
-
-        protected TestSeatsAvailabilityAggregate aggregate() {
-            return aggregate;
         }
 
         protected TestSeatsAvailabilityAggregate givenAggregate() {
@@ -341,19 +444,6 @@ public class SeatsAvailabilityAggregateShould {
                     .addSeat(newSeatQuantity(MAIN_SEAT_TYPE_ID, MAIN_SEAT_COUNT_REQUESTED))
                     .addSeat(newSeatQuantity(WORKSHOP_SEAT_TYPE_ID, WORKSHOP_SEAT_COUNT_REQUESTED))
                     .build();
-        }
-
-        protected static class Event {
-
-            static SeatsReserved seatsReserved(Iterable<SeatQuantity> reservedSeatsUpdated,
-                                               Iterable<SeatQuantity> availableSeatsUpdated) {
-                final SeatsReserved.Builder result = SeatsReserved.newBuilder()
-                        .setConferenceId(CONFERENCE_ID)
-                        .setReservationId(RESERVATION_ID)
-                        .addAllReservedSeatUpdated(reservedSeatsUpdated)
-                        .addAllAvailableSeatUpdated(availableSeatsUpdated);
-                return result.build();
-            }
         }
         
         protected MakeSeatReservation givenCommand() {
@@ -399,7 +489,7 @@ public class SeatsAvailabilityAggregateShould {
 
         @Override
         protected TestSeatsAvailabilityAggregate givenAggregate() {
-            final TestSeatsAvailabilityAggregate aggregate = aggregate();
+            final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .addAllAvailableSeat(getAvailableSeats())
                     .build();
@@ -430,7 +520,7 @@ public class SeatsAvailabilityAggregateShould {
 
         @Override
         protected TestSeatsAvailabilityAggregate givenAggregate() {
-            final TestSeatsAvailabilityAggregate aggregate = aggregate();
+            final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .addAllAvailableSeat(getAvailableSeats())
                     .putAllPendingReservations(PENDING_RESERVATIONS)
@@ -465,7 +555,7 @@ public class SeatsAvailabilityAggregateShould {
 
         @Override
         protected TestSeatsAvailabilityAggregate givenAggregate() {
-            final TestSeatsAvailabilityAggregate aggregate = aggregate();
+            final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .addAllAvailableSeat(AVAILABLE_SEATS)
                     .build();
@@ -524,7 +614,7 @@ public class SeatsAvailabilityAggregateShould {
 
             @Override
             protected TestSeatsAvailabilityAggregate givenAggregate() {
-                final TestSeatsAvailabilityAggregate aggregate = aggregate();
+                final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
                 final SeatsAvailability state = aggregate.getState().toBuilder()
                         .putAllPendingReservations(PENDING_RESERVATIONS)
                         .build();
@@ -568,7 +658,7 @@ public class SeatsAvailabilityAggregateShould {
 
             @Override
             protected TestSeatsAvailabilityAggregate givenAggregate() {
-                final TestSeatsAvailabilityAggregate aggregate = aggregate();
+                final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
                 final SeatsAvailability state = aggregate.getState().toBuilder()
                         .putAllPendingReservations(PENDING_RESERVATIONS)
                         .build();
@@ -607,7 +697,7 @@ public class SeatsAvailabilityAggregateShould {
 
         @Override
         protected TestSeatsAvailabilityAggregate givenAggregate() {
-            final TestSeatsAvailabilityAggregate aggregate = aggregate();
+            final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .addAvailableSeat(newSeatQuantity(20))
                     .build();
@@ -644,7 +734,7 @@ public class SeatsAvailabilityAggregateShould {
 
         @Override
         protected TestSeatsAvailabilityAggregate givenAggregate() {
-            final TestSeatsAvailabilityAggregate aggregate = aggregate();
+            final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .addAvailableSeat(AVAILABLE_QUANTITY)
                     .build();
@@ -657,10 +747,178 @@ public class SeatsAvailabilityAggregateShould {
         }
 
         static class EmptyState extends RemoveSeatsCmdHandling {
-
             @Override
             protected TestSeatsAvailabilityAggregate givenAggregate() {
-                return aggregate();
+                return new TestSeatsAvailabilityAggregate(newSeatsAvailabilityId());
+            }
+        }
+    }
+
+    private static class DefaultState extends TestCase {
+    }
+
+    private static class ExistAvailableSeatsAndPendingReservations extends TestCase {
+
+        private static final ReservationId RESERVATION_ID = newReservationId();
+
+        private static final SeatQuantities RESERVED_SEATS = newSeatQuantities(
+                newSeatQuantity(56), newSeatQuantity(38));
+
+        private static final ImmutableMap<String, SeatQuantities> PENDING_RESERVATIONS = ImmutableMap.<String, SeatQuantities>builder()
+                .put(RESERVATION_ID.getUuid(), RESERVED_SEATS).build();
+
+        private static final List<SeatQuantity> AVAILABLE_SEATS = ImmutableList.of(
+                newSeatQuantity(110),
+                newSeatQuantity(220));
+
+        @Override
+        protected TestSeatsAvailabilityAggregate givenAggregate() {
+
+            final ImmutableMap<String, SeatQuantities> pendingReservations = PENDING_RESERVATIONS;
+            final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
+            final SeatsAvailability state = aggregate.getState().toBuilder()
+                    .addAllAvailableSeat(AVAILABLE_SEATS)
+                    .putAllPendingReservations(pendingReservations)
+                    .build();
+            aggregate.incrementState(state);
+            return aggregate;
+        }
+
+        protected static List<SeatQuantity> getAvailableSeats() {
+            //noinspection ReturnOfCollectionOrArrayField
+            return AVAILABLE_SEATS;
+        }
+
+        protected static SeatQuantities getReservedSeats() {
+            return RESERVED_SEATS;
+        }
+
+        protected static ReservationId getReservationId() {
+            return RESERVATION_ID;
+        }
+    }
+
+    private static class SeatsReservedEventApplying extends ExistAvailableSeatsAndPendingReservations {
+
+        private static final SeatsReserved SEATS_RESERVED = SeatsReserved.newBuilder()
+                .setConferenceId(newConferenceId())
+                .setReservationId(getReservationId())
+                .addReservedSeatUpdated(newSeatQuantity(256))
+                .addAvailableSeatUpdated(newSeatQuantity(24)).build();
+
+        static {
+            assertNotEquals(getAvailableSeats(), SEATS_RESERVED.getAvailableSeatUpdatedList());
+            assertNotEquals(getReservedSeats(), SEATS_RESERVED.getReservedSeatUpdatedList());
+        }
+
+        public SeatsReserved givenEvent() {
+            return SEATS_RESERVED;
+        }
+    }
+
+    private static class SeatsReservationCommittedEventApplying extends ExistAvailableSeatsAndPendingReservations {
+
+        private static final SeatsReservationCommitted SEATS_RESERVATION_COMMITTED = SeatsReservationCommitted.newBuilder()
+                .setReservationId(getReservationId()).build();
+
+        public SeatsReservationCommitted givenEvent() {
+            return SEATS_RESERVATION_COMMITTED;
+        }
+    }
+
+    private static class SeatsReservationCancelledEventApplying extends ExistAvailableSeatsAndPendingReservations {
+
+        private static final SeatsReservationCancelled SEATS_RESERVATION_CANCELLED = SeatsReservationCancelled.newBuilder()
+                .setReservationId(getReservationId())
+                .setConferenceId(newConferenceId())
+                .addAvailableSeatUpdated(newSeatQuantity(32))
+                .build();
+
+        static {
+            assertNotEquals(getAvailableSeats(), SEATS_RESERVATION_CANCELLED.getAvailableSeatUpdatedList());
+        }
+
+        public SeatsReservationCancelled givenEvent() {
+            return SEATS_RESERVATION_CANCELLED;
+        }
+    }
+
+    private abstract static class AddedAvailableSeatsEventApplying extends ExistAvailableSeatsAndPendingReservations {
+
+        private static final SeatQuantity PRIMARY_SEAT = getAvailableSeats().get(0);
+
+        protected SeatQuantity getPrimarySeat() {
+            return PRIMARY_SEAT;
+        }
+
+        protected AddedAvailableSeats givenEvent() {
+            final AddedAvailableSeats event = AddedAvailableSeats.newBuilder()
+                    .setQuantity(getQuantityToAdd())
+                    .build();
+            return event;
+        }
+
+        protected abstract SeatQuantity getQuantityToAdd();
+
+        private static class AddingNewSeatType extends AddedAvailableSeatsEventApplying {
+
+            private final SeatQuantity quantityToAdd = newSeatQuantity(12);
+
+            protected AddingNewSeatType() {
+                assertFalse(getAvailableSeats().contains(quantityToAdd));
+            }
+
+            @Override
+            protected SeatQuantity getQuantityToAdd() {
+                return quantityToAdd;
+            }
+        }
+
+        private static class UpdatingSeatType extends AddedAvailableSeatsEventApplying {
+
+            private final SeatQuantity quantityToAdd = newSeatQuantity(getPrimarySeat().getSeatTypeId(), 10);
+
+            @Override
+            protected SeatQuantity getQuantityToAdd() {
+                return quantityToAdd;
+            }
+        }
+    }
+
+    private abstract static class RemovedAvailableSeatsEventApplying extends ExistAvailableSeatsAndPendingReservations {
+
+        private SeatQuantity primarySeat;
+
+        protected RemovedAvailableSeats givenEvent() {
+            primarySeat = getAvailableSeats().get(0);
+            final int quantityToRemove = getQuantityToRemove();
+            final RemovedAvailableSeats event = RemovedAvailableSeats.newBuilder()
+                    .setQuantity(newSeatQuantity(primarySeat.getSeatTypeId(), quantityToRemove))
+                    .build();
+            return event;
+        }
+
+        protected SeatQuantity getPrimarySeat() {
+            return primarySeat;
+        }
+
+        protected abstract int getQuantityToRemove();
+
+        private static class RemovingLessSeatsThanRemaining extends RemovedAvailableSeatsEventApplying {
+
+            @Override
+            protected int getQuantityToRemove() {
+                final int quantityToRemove = getPrimarySeat().getQuantity() / 2;
+                return quantityToRemove;
+            }
+        }
+
+        private static class RemovingMoreSeatsThanRemaining extends RemovedAvailableSeatsEventApplying {
+
+            @Override
+            protected int getQuantityToRemove() {
+                final int quantityToRemove = getPrimarySeat().getQuantity() + 5;
+                return quantityToRemove;
             }
         }
     }
@@ -681,10 +939,26 @@ public class SeatsAvailabilityAggregateShould {
             invokeApplyMethod(event);
         }
 
+        void apply(SeatsReservationCommitted event) {
+            invokeApplyMethod(event);
+        }
+
+        void apply(SeatsReservationCancelled event) {
+            invokeApplyMethod(event);
+        }
+
+        void apply(AddedAvailableSeats event) {
+            invokeApplyMethod(event);
+        }
+
+        void apply(RemovedAvailableSeats event) {
+            invokeApplyMethod(event);
+        }
+
         private void invokeApplyMethod(Message event) {
             try {
                 //noinspection DuplicateStringLiteralInspection
-                final Method apply = OrderAggregate.class.getDeclaredMethod("apply", event.getClass());
+                final Method apply = SeatsAvailabilityAggregate.class.getDeclaredMethod("apply", event.getClass());
                 apply.setAccessible(true);
                 apply.invoke(this, event);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
