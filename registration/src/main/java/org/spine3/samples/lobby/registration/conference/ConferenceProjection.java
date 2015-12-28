@@ -43,7 +43,7 @@ import java.util.List;
 import static com.google.common.collect.Iterables.filter;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
-import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatQuantity;
+import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 import static org.spine3.util.Commands.newCommandRequest;
 
 /**

@@ -33,6 +33,7 @@ import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.registration.contracts.*;
+import org.spine3.samples.lobby.registration.util.Seats;
 import org.spine3.server.Assign;
 import org.spine3.server.Entity;
 import org.spine3.server.aggregate.Aggregate;
@@ -43,13 +44,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Collections2.filter;
 import static com.google.protobuf.util.TimeUtil.add;
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
-import static java.lang.String.format;
-import static org.spine3.samples.lobby.registration.util.CollectionUtils.findById;
-import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
+import static org.spine3.samples.lobby.registration.order.OrderValidator.*;
 
 /**
  * The order aggregate which manages the state of the order.
@@ -101,8 +99,8 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Assign
     public List<Message> handle(RegisterToConference command, CommandContext context) {
-        Validator.checkNotConfirmed(getState(), command);
-        Validator.validateCommand(command);
+        checkNotConfirmed(getState(), command);
+        validateCommand(command);
 
         final ImmutableList.Builder<Message> result = ImmutableList.builder();
         final boolean isNew = getVersion() == 0;
@@ -121,8 +119,8 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Assign
     public List<Message> handle(MarkSeatsAsReserved command, CommandContext context) {
-        Validator.checkNotConfirmed(getState(), command);
-        Validator.validateCommand(command);
+        checkNotConfirmed(getState(), command);
+        validateCommand(command);
 
         final ImmutableList.Builder<Message> result = ImmutableList.builder();
         final List<SeatQuantity> reservedSeats = command.getSeatList();
@@ -143,8 +141,8 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Assign
     public OrderExpired handle(RejectOrder command, CommandContext context) {
-        Validator.checkNotConfirmed(getState(), command);
-        Validator.validateCommand(command);
+        checkNotConfirmed(getState(), command);
+        validateCommand(command);
         final OrderExpired result = OrderExpired.newBuilder()
                 .setOrderId(command.getOrderId())
                 .build();
@@ -153,8 +151,8 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Assign
     public OrderConfirmed handle(ConfirmOrder command, CommandContext context) {
-        Validator.checkNotConfirmed(getState(), command);
-        Validator.validateCommand(command);
+        checkNotConfirmed(getState(), command);
+        validateCommand(command);
         final OrderConfirmed result = OrderConfirmed.newBuilder()
                 .setOrderId(command.getOrderId())
                 .build();
@@ -163,13 +161,15 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Assign
     public OrderRegistrantAssigned handle(AssignRegistrantDetails command, CommandContext context) {
-        Validator.validateCommand(command);
+        validateCommand(command);
         final OrderRegistrantAssigned result = OrderRegistrantAssigned.newBuilder()
                 .setOrderId(command.getOrderId())
                 .setPersonalInfo(command.getRegistrant())
                 .build();
         return result;
     }
+
+    /* Event Appliers */
 
     @Apply
     private void apply(OrderPlaced event) {
@@ -227,7 +227,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
                 if (requestedOne == null) {
                     return false;
                 }
-                final SeatQuantity reservedOne = findById(reservedSeats, requestedOne.getSeatTypeId(), null);
+                final SeatQuantity reservedOne = Seats.findById(reservedSeats, requestedOne.getSeatTypeId(), null);
                 if (reservedOne == null) {
                     return false;
                 }
@@ -239,7 +239,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     }
 
     @Override
-    @SuppressWarnings({"RefusedBequest", "ReturnOfCollectionOrArrayField"/**it is immutable*/})
+    @SuppressWarnings({"RefusedBequest", "ReturnOfCollectionOrArrayField"/*it is immutable*/})
     protected Set<Class<? extends Message>> getStateNeutralEventClasses() {
         return STATE_NEUTRAL_EVENT_CLASSES;
     }
@@ -250,7 +250,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     protected void validate(Order newState) throws IllegalStateException {
         final int version = getVersion();
         if (version > 0) {
-            Validator.checkNewState(newState);
+            checkNewState(newState);
         }
     }
 
@@ -310,48 +310,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
                     .setReservationExpiration(command.getReservationExpiration())
                     .addAllSeat(command.getSeatList());
             return result.build();
-        }
-    }
-
-    private static class Validator {
-
-        private static void checkNotConfirmed(Order order, Message cmd) {
-            final String message = format("Cannot modify a confirmed order with ID: %s; command: %s.",
-                    order.getId().getUuid(), cmd.getClass().getName()
-            );
-            checkState(!order.getIsConfirmed(), message);
-        }
-
-        private static void checkNewState(Order order) {
-            checkState(order.hasId(), "No order ID in a new order state.");
-            final String orderId = order.getId().getUuid();
-            checkState(order.hasConferenceId(), "No conference ID in a new order state, ID: " + orderId);
-            checkSeats(order.getSeatList(), order);
-        }
-
-        private static void validateCommand(RegisterToConference cmd) {
-            checkOrderId(cmd.hasOrderId(), cmd);
-            checkConferenceId(cmd.hasConferenceId(), cmd);
-            checkSeats(cmd.getSeatList(), cmd);
-        }
-
-        private static void validateCommand(MarkSeatsAsReserved cmd) {
-            checkOrderId(cmd.hasOrderId(), cmd);
-            checkMessageField(cmd.hasReservationExpiration(), "reservation expiration", cmd);
-            checkSeats(cmd.getSeatList(), cmd);
-        }
-
-        private static void validateCommand(RejectOrder cmd) {
-            checkOrderId(cmd.hasOrderId(), cmd);
-        }
-
-        private static void validateCommand(ConfirmOrder cmd) {
-            checkOrderId(cmd.hasOrderId(), cmd);
-        }
-
-        private static void validateCommand(AssignRegistrantDetails cmd) {
-            checkOrderId(cmd.hasOrderId(), cmd);
-            checkMessageField(cmd.hasRegistrant(), "registrant", cmd);
         }
     }
 }

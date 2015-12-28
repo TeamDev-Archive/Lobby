@@ -21,22 +21,80 @@
 package org.spine3.samples.lobby.registration.util;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
+import org.spine3.samples.lobby.registration.seat.availability.SeatQuantities;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityId;
+import org.spine3.util.Identifiers;
 
 import javax.annotation.Nullable;
 
 import static com.google.common.collect.Iterables.find;
 
 /**
- * The utility class for working with collections.
+ * The utility class for working with objects related to seats.
  *
+ * @see SeatQuantity
  * @author Alexander Litus
  */
 @SuppressWarnings("UtilityClass")
-public class CollectionUtils {
+public class Seats {
 
-    private CollectionUtils() {
+    private Seats() {
+    }
+
+    /**
+     * Creates a new {@code SeatsAvailabilityId} with a random UUID value.
+     */
+    public static SeatsAvailabilityId newSeatsAvailabilityId() {
+        final String id = Identifiers.newUuid();
+        return SeatsAvailabilityId.newBuilder().setUuid(id).build();
+    }
+
+    /**
+     * Creates a new {@code SeatQuantity} instance with the given {@code quantity} and a random UUID.
+     */
+    public static SeatQuantity newSeatQuantity(int quantity) {
+        final String id = Identifiers.newUuid();
+        final SeatQuantity result = newSeatQuantity(id, quantity);
+        return result;
+    }
+
+    /**
+     * Creates a new {@code SeatQuantities} instance from the given {@code seats}.
+     */
+    @SuppressWarnings("OverloadedVarargsMethod") // OK in this case
+    public static SeatQuantities newSeatQuantities(SeatQuantity... seats) {
+        final SeatQuantities result = newSeatQuantities(ImmutableList.copyOf(seats));
+        return result;
+    }
+
+    /**
+     * Creates a new {@code SeatQuantities} instance from the given {@code seats}.
+     */
+    public static SeatQuantities newSeatQuantities(Iterable<SeatQuantity> seats) {
+        final SeatQuantities result = SeatQuantities.newBuilder().addAllItem(seats).build();
+        return result;
+    }
+
+    /**
+     * Creates a new {@code SeatQuantity} instance with the given {@code uuid} and {@code quantity}.
+     */
+    public static SeatQuantity newSeatQuantity(String uuid, int quantity) {
+        final SeatTypeId id = SeatTypeId.newBuilder().setUuid(uuid).build();
+        final SeatQuantity result = newSeatQuantity(id, quantity);
+        return result;
+    }
+
+    /**
+     * Creates a new {@code SeatQuantity} instance with the given {@code id} and {@code quantity}.
+     */
+    public static SeatQuantity newSeatQuantity(SeatTypeId id, int quantity) {
+        final SeatQuantity.Builder result = SeatQuantity.newBuilder()
+                .setSeatTypeId(id)
+                .setQuantity(quantity);
+        return result.build();
     }
 
     /**

@@ -27,9 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.spine3.base.CommandContext;
 import org.spine3.samples.lobby.common.ConferenceId;
-import org.spine3.samples.lobby.common.ConferenceSlug;
 import org.spine3.samples.lobby.common.SeatType;
-import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.lobby.registration.seat.availability.AddSeats;
 import org.spine3.samples.lobby.registration.seat.availability.RemoveSeats;
@@ -44,8 +42,6 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.spine3.samples.lobby.common.util.CommonMessageFactory.newConferenceId;
-import static org.spine3.samples.lobby.common.util.CommonMessageFactory.newSeatTypeId;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
 
 /**
@@ -175,81 +171,6 @@ public class ConferenceProjectionShould {
         final List<SeatType> actualTypes = projection.getState().getSeatTypeList();
         assertEquals(expectedTypes.size(), actualTypes.size());
         assertTrue(actualTypes.containsAll(expectedTypes));
-    }
-
-    static class Given {
-
-        static final ConferenceId CONFERENCE_ID = newConferenceId();
-        private static final ConferenceUnpublished CONFERENCE_UNPUBLISHED = ConferenceUnpublished.newBuilder().setConferenceId(CONFERENCE_ID).build();
-        private static final ConferencePublished CONFERENCE_PUBLISHED = ConferencePublished.newBuilder().setConferenceId(CONFERENCE_ID).build();
-        static final SeatTypeId SEAT_TYPE_ID = newSeatTypeId();
-        private static final String CONFERENCE_NAME = "Test Conference";
-        private static final String TWITTER_SEARCH = CONFERENCE_NAME + " twitter";
-        private static final String TAGLINE = CONFERENCE_NAME + " tagline";
-        private static final String LOCATION = CONFERENCE_NAME + " location";
-        private static final String DESCRIPTION = CONFERENCE_NAME + " description";
-        private static final ConferenceSlug.Builder SLUG = ConferenceSlug.newBuilder().setValue("slug");
-        private static final Conference CONFERENCE = Conference.newBuilder()
-                .setId(CONFERENCE_ID)
-                .setSlug(SLUG)
-                .setName(CONFERENCE_NAME)
-                .setDescription(DESCRIPTION)
-                .setLocation(LOCATION)
-                .setTagline(TAGLINE)
-                .setTwitterSearch(TWITTER_SEARCH).build();
-
-        private Given() {}
-
-        static ConferenceCreated conferenceCreated() {
-            final Conference conference = conference();
-            return ConferenceCreated.newBuilder().setConference(conference).build();
-        }
-
-        static ConferenceUpdated conferenceUpdated() {
-            final Conference conference = conference();
-            return ConferenceUpdated.newBuilder().setConference(conference).build();
-        }
-
-        static ConferencePublished conferencePublished() {
-            return CONFERENCE_PUBLISHED;
-        }
-
-        static ConferenceUnpublished conferenceUnpublished() {
-            return CONFERENCE_UNPUBLISHED;
-        }
-
-        static SeatTypeCreated seatTypeCreated(int seatQuantity) {
-            final SeatType seatType = newSeatType("descriptionForSeatTypeCreatedEvent", seatQuantity);
-            return SeatTypeCreated.newBuilder().setSeatType(seatType).build();
-        }
-
-        static SeatTypeUpdated seatTypeUpdated(int seatQuantity) {
-            final SeatType seatType = newSeatType("descriptionForSeatTypeUpdatedEvent", seatQuantity);
-            return SeatTypeUpdated.newBuilder().setSeatType(seatType).build();
-        }
-
-        static SeatTypeCreated seatTypeCreated(String description, int seatQuantity) {
-            final SeatType seatType = newSeatType(description, seatQuantity);
-            return SeatTypeCreated.newBuilder().setSeatType(seatType).build();
-        }
-
-        static SeatTypeUpdated seatTypeUpdated(String description, int seatQuantity) {
-            final SeatType seatType = newSeatType(description, seatQuantity);
-            return SeatTypeUpdated.newBuilder().setSeatType(seatType).build();
-        }
-
-        static Conference conference() {
-            return CONFERENCE;
-        }
-
-        static SeatType newSeatType(String description, int seatQuantity) {
-            final SeatType.Builder result = SeatType.newBuilder()
-                    .setConferenceId(CONFERENCE_ID)
-                    .setId(SEAT_TYPE_ID)
-                    .setDescription(description)
-                    .setQuantityTotal(seatQuantity);
-            return result.build();
-        }
     }
 
     public static class TestConferenceProjection extends ConferenceProjection {

@@ -38,9 +38,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.spine3.samples.lobby.common.util.CommonMessageFactory.*;
-import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatQuantity;
-import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatsAvailabilityId;
+import static org.spine3.samples.lobby.common.util.IdFactory.*;
+import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
+import static org.spine3.samples.lobby.registration.util.Seats.newSeatsAvailabilityId;
 
 /**
  * @author Alexander Litus
@@ -65,7 +65,8 @@ public class SeatsAvailabilityRepositoryShould {
 
     @Test
     public void store_and_load_aggregate() throws InvocationTargetException {
-        final TestSeatsAvailabilityAggregate expected = new TestSeatsAvailabilityAggregate();
+        final SeatsAvailabilityRepositoryShould.TestSeatsAvailabilityAggregate expected =
+                new SeatsAvailabilityRepositoryShould.TestSeatsAvailabilityAggregate();
 
         repository.store(expected);
 

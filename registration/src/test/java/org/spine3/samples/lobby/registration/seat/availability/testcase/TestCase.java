@@ -18,31 +18,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration.util;
+package org.spine3.samples.lobby.registration.seat.availability.testcase;
 
-import com.google.protobuf.Message;
-import org.spine3.money.Currency;
-import org.spine3.money.Money;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityId;
+import org.spine3.samples.lobby.registration.seat.availability.TestSeatsAvailabilityAggregate;
+
+import static org.spine3.samples.lobby.registration.util.Seats.newSeatsAvailabilityId;
 
 /**
- * The utility class containing convenience methods for messages creation.
- *
- * @see Message
- * @author Alexander Litus
+ * The default test case which contains a {@link TestSeatsAvailabilityAggregate} with the default state.
  */
-@SuppressWarnings("UtilityClass")
-public class MoneyMessageFactory {
+public class TestCase {
 
-    private MoneyMessageFactory() {
+    private final TestSeatsAvailabilityAggregate aggregate;
+
+    public TestCase() {
+        final SeatsAvailabilityId id = newSeatsAvailabilityId();
+        aggregate = new TestSeatsAvailabilityAggregate(id);
     }
 
-    /**
-     * Creates a new {@code Money} instance with the given {@code amount} and {@code currency}.
-     */
-    public static Money newMoney(int amount, Currency currency) {
-        final Money.Builder result = Money.newBuilder()
-                .setAmount(amount)
-                .setCurrency(currency);
-        return result.build();
+    public TestSeatsAvailabilityAggregate givenAggregate() {
+        return aggregate;
     }
 }

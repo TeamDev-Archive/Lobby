@@ -29,7 +29,7 @@ import org.spine3.server.storage.EntityStorage;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.spine3.samples.lobby.common.util.CommonMessageFactory.newConferenceId;
+import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
 
 /**
@@ -64,7 +64,7 @@ public class ConferenceProjectionRepositoryShould {
 
     private ConferenceProjection givenConferenceProjection() {
         final TestConferenceProjection projection = new TestConferenceProjection(id);
-        final Conference conference = ConferenceProjectionShould.Given.conference();
+        final Conference conference = Given.conference();
         projection.incrementState(conference);
         return projection;
     }

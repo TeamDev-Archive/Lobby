@@ -38,9 +38,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.spine3.samples.lobby.common.util.CommonMessageFactory.*;
+import static org.spine3.samples.lobby.common.util.IdFactory.*;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newEventRecord;
-import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatQuantity;
+import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
 /**
  * @author Alexander Litus
