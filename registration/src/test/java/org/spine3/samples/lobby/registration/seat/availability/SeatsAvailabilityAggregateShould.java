@@ -22,20 +22,17 @@ package org.spine3.samples.lobby.registration.seat.availability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.protobuf.Message;
 import org.junit.Test;
 import org.spine3.base.CommandContext;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.TestCase;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.base.Throwables.propagate;
 import static org.junit.Assert.*;
 import static org.spine3.samples.lobby.common.util.IdFactory.*;
 import static org.spine3.samples.lobby.registration.util.Seats.*;
@@ -394,24 +391,6 @@ public class SeatsAvailabilityAggregateShould {
         assertTrue(availableSeatsUpdated.contains(expectedResult));
     }
 
-    /**
-     * Test cases.
-     */
-
-    private static class TestCase {
-
-        private final TestSeatsAvailabilityAggregate aggregate;
-
-        protected TestCase() {
-            final SeatsAvailabilityId id = newSeatsAvailabilityId();
-            aggregate = new TestSeatsAvailabilityAggregate(id);
-        }
-
-        protected TestSeatsAvailabilityAggregate givenAggregate() {
-            return aggregate;
-        }
-    }
-
     private abstract static class MakeSeatReservationCmdHandling extends TestCase {
 
         protected static final ConferenceId CONFERENCE_ID = newConferenceId();
@@ -487,7 +466,7 @@ public class SeatsAvailabilityAggregateShould {
     private static class EnoughSeatsAndNoPendingReservations extends MakeSeatReservationCmdHandling {
 
         @Override
-        protected TestSeatsAvailabilityAggregate givenAggregate() {
+        public TestSeatsAvailabilityAggregate givenAggregate() {
             final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .addAllAvailableSeat(getAvailableSeats())
@@ -518,7 +497,7 @@ public class SeatsAvailabilityAggregateShould {
                         ).build();
 
         @Override
-        protected TestSeatsAvailabilityAggregate givenAggregate() {
+        public TestSeatsAvailabilityAggregate givenAggregate() {
             final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .addAllAvailableSeat(getAvailableSeats())
@@ -553,7 +532,7 @@ public class SeatsAvailabilityAggregateShould {
                 newSeatQuantity(WORKSHOP_SEAT_TYPE_ID, WORKSHOP_SEAT_COUNT_AVAILABLE));
 
         @Override
-        protected TestSeatsAvailabilityAggregate givenAggregate() {
+        public TestSeatsAvailabilityAggregate givenAggregate() {
             final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .addAllAvailableSeat(AVAILABLE_SEATS)
@@ -612,7 +591,7 @@ public class SeatsAvailabilityAggregateShould {
                             .put(RESERVATION_ID.getUuid(), newSeatQuantities(newSeatQuantity(20))).build();
 
             @Override
-            protected TestSeatsAvailabilityAggregate givenAggregate() {
+            public TestSeatsAvailabilityAggregate givenAggregate() {
                 final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
                 final SeatsAvailability state = aggregate.getState().toBuilder()
                         .putAllPendingReservations(PENDING_RESERVATIONS)
@@ -656,7 +635,7 @@ public class SeatsAvailabilityAggregateShould {
                             .put(RESERVATION_ID.getUuid(), TMP_RESERVED_SEATS).build();
 
             @Override
-            protected TestSeatsAvailabilityAggregate givenAggregate() {
+            public TestSeatsAvailabilityAggregate givenAggregate() {
                 final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
                 final SeatsAvailability state = aggregate.getState().toBuilder()
                         .putAllPendingReservations(PENDING_RESERVATIONS)
@@ -695,7 +674,7 @@ public class SeatsAvailabilityAggregateShould {
         }
 
         @Override
-        protected TestSeatsAvailabilityAggregate givenAggregate() {
+        public TestSeatsAvailabilityAggregate givenAggregate() {
             final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .addAvailableSeat(newSeatQuantity(20))
@@ -732,7 +711,7 @@ public class SeatsAvailabilityAggregateShould {
         }
 
         @Override
-        protected TestSeatsAvailabilityAggregate givenAggregate() {
+        public TestSeatsAvailabilityAggregate givenAggregate() {
             final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .addAvailableSeat(AVAILABLE_QUANTITY)
@@ -747,7 +726,7 @@ public class SeatsAvailabilityAggregateShould {
 
         static class EmptyState extends RemoveSeatsCmdHandling {
             @Override
-            protected TestSeatsAvailabilityAggregate givenAggregate() {
+            public TestSeatsAvailabilityAggregate givenAggregate() {
                 return new TestSeatsAvailabilityAggregate(newSeatsAvailabilityId());
             }
         }
@@ -768,7 +747,7 @@ public class SeatsAvailabilityAggregateShould {
                 newSeatQuantity(220));
 
         @Override
-        protected TestSeatsAvailabilityAggregate givenAggregate() {
+        public TestSeatsAvailabilityAggregate givenAggregate() {
             final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .addAllAvailableSeat(AVAILABLE_SEATS)
@@ -913,50 +892,6 @@ public class SeatsAvailabilityAggregateShould {
             protected int getQuantityToRemove() {
                 final int quantityToRemove = getPrimarySeat().getQuantity() + 5;
                 return quantityToRemove;
-            }
-        }
-    }
-
-    public static class TestSeatsAvailabilityAggregate extends SeatsAvailabilityAggregate {
-
-        public TestSeatsAvailabilityAggregate(SeatsAvailabilityId id) {
-            super(id);
-        }
-
-        // Is overridden to make it accessible in tests.
-        @Override
-        public void incrementState(SeatsAvailability newState) {
-            super.incrementState(newState);
-        }
-
-        void apply(SeatsReserved event) {
-            invokeApplyMethod(event);
-        }
-
-        void apply(SeatsReservationCommitted event) {
-            invokeApplyMethod(event);
-        }
-
-        void apply(SeatsReservationCancelled event) {
-            invokeApplyMethod(event);
-        }
-
-        void apply(AddedAvailableSeats event) {
-            invokeApplyMethod(event);
-        }
-
-        void apply(RemovedAvailableSeats event) {
-            invokeApplyMethod(event);
-        }
-
-        private void invokeApplyMethod(Message event) {
-            try {
-                //noinspection DuplicateStringLiteralInspection
-                final Method apply = SeatsAvailabilityAggregate.class.getDeclaredMethod("apply", event.getClass());
-                apply.setAccessible(true);
-                apply.invoke(this, event);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                propagate(e);
             }
         }
     }

@@ -65,7 +65,8 @@ public class SeatsAvailabilityRepositoryShould {
 
     @Test
     public void store_and_load_aggregate() throws InvocationTargetException {
-        final TestSeatsAvailabilityAggregate expected = new TestSeatsAvailabilityAggregate();
+        final SeatsAvailabilityRepositoryShould.TestSeatsAvailabilityAggregate expected =
+                new SeatsAvailabilityRepositoryShould.TestSeatsAvailabilityAggregate();
 
         repository.store(expected);
 
