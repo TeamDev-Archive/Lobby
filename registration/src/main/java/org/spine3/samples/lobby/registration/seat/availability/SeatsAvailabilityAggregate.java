@@ -94,12 +94,13 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
     @Assign
     public SeatsReservationCancelled handle(CancelSeatReservation cmd, CommandContext context) {
         Validator.validateCommand(cmd);
-        Validator.validateState(getState(), cmd);
+        final SeatsAvailability state = getState();
+        Validator.validateState(state, cmd);
 
         final ReservationId reservationId = cmd.getReservationId();
         //noinspection LocalVariableNamingConvention
-        final List<SeatQuantity> availableSeatsUpdated = newLinkedList(getState().getAvailableSeatList());
-        final SeatQuantities unreservedSeats = getState().getPendingReservations().get(reservationId.getUuid());
+        final List<SeatQuantity> availableSeatsUpdated = newLinkedList(state.getAvailableSeatList());
+        final SeatQuantities unreservedSeats = state.getPendingReservations().get(reservationId.getUuid());
         availableSeatsUpdated.addAll(unreservedSeats.getItemList());
 
         final SeatsReservationCancelled.Builder event = SeatsReservationCancelled.newBuilder()
