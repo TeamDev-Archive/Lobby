@@ -64,7 +64,7 @@ public class ConferenceProjectionRepositoryShould {
 
     private ConferenceProjection givenConferenceProjection() {
         final TestConferenceProjection projection = new TestConferenceProjection(id);
-        final Conference conference = ConferenceProjectionShould.Given.conference();
+        final Conference conference = Given.conference();
         projection.incrementState(conference);
         return projection;
     }
