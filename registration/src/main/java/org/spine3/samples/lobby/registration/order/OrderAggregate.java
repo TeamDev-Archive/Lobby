@@ -239,7 +239,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     }
 
     @Override
-    @SuppressWarnings({"RefusedBequest", "ReturnOfCollectionOrArrayField"/**it is immutable*/})
+    @SuppressWarnings({"RefusedBequest", "ReturnOfCollectionOrArrayField"/*it is immutable*/})
     protected Set<Class<? extends Message>> getStateNeutralEventClasses() {
         return STATE_NEUTRAL_EVENT_CLASSES;
     }
