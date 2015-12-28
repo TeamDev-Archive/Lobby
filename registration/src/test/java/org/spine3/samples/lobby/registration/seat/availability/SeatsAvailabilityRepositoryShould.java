@@ -103,7 +103,7 @@ public class SeatsAvailabilityRepositoryShould {
         }
 
         @Override
-        public List<EventRecord> getUncommittedEvents() {
+        public List<EventRecord> getStateChangingUncommittedEvents() {
             return uncommittedEvents;
         }
 

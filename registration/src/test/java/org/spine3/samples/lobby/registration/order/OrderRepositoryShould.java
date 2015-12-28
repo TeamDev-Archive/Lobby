@@ -95,7 +95,7 @@ public class OrderRepositoryShould {
 
         @Override
         @SuppressWarnings("RefusedBequest")
-        public List<EventRecord> getUncommittedEvents() {
+        public List<EventRecord> getStateChangingUncommittedEvents() {
             return uncommittedEvents;
         }
 
