@@ -36,9 +36,9 @@ import org.spine3.util.Identifiers;
  * @author Alexander Litus
  */
 @SuppressWarnings("UtilityClass")
-public class MessageFactory {
+public class Seats {
 
-    private MessageFactory() {
+    private Seats() {
     }
 
     /**

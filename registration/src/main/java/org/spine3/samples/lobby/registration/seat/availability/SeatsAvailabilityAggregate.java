@@ -39,8 +39,8 @@ import java.util.NoSuchElementException;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
 import static org.spine3.samples.lobby.registration.util.CollectionUtils.findById;
-import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatQuantities;
-import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatQuantity;
+import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantities;
+import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
 
 /**

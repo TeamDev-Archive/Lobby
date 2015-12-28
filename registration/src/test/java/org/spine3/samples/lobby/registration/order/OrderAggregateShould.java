@@ -44,8 +44,8 @@ import static org.spine3.money.Currency.USD;
 import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
 import static org.spine3.samples.lobby.common.util.IdFactory.newOrderId;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newPersonalInfo;
-import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatQuantity;
 import static org.spine3.samples.lobby.registration.util.MoneyMessageFactory.newMoney;
+import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
 /**
  * @author Alexander Litus
