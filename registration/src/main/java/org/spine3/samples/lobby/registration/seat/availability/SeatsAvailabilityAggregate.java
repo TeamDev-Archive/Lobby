@@ -20,7 +20,6 @@
 
 package org.spine3.samples.lobby.registration.seat.availability;
 
-import com.google.protobuf.Message;
 import org.spine3.base.CommandContext;
 import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
@@ -32,12 +31,12 @@ import org.spine3.server.aggregate.Apply;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
+import static org.spine3.samples.lobby.registration.seat.availability.Validator.validateCommand;
+import static org.spine3.samples.lobby.registration.seat.availability.Validator.validateState;
 import static org.spine3.samples.lobby.registration.util.CollectionUtils.findById;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantities;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
-import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
 
 /**
  * The aggregate which manages the availability of conference seats.
@@ -64,7 +63,7 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
 
     @Assign
     public SeatsReserved handle(MakeSeatReservation cmd, CommandContext context) {
-        Validator.validateCommand(cmd);
+        validateCommand(cmd);
 
         final MakeSeatReservationCommandHandler handler = new MakeSeatReservationCommandHandler(getState());
         handler.handle(cmd);
@@ -79,8 +78,8 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
 
     @Assign
     public SeatsReservationCommitted handle(CommitSeatReservation cmd, CommandContext context) {
-        Validator.validateCommand(cmd);
-        Validator.validateState(getState(), cmd);
+        validateCommand(cmd);
+        validateState(getState(), cmd);
 
         final SeatsReservationCommitted.Builder event = SeatsReservationCommitted.newBuilder()
                 .setReservationId(cmd.getReservationId());
@@ -89,9 +88,9 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
 
     @Assign
     public SeatsReservationCancelled handle(CancelSeatReservation cmd, CommandContext context) {
-        Validator.validateCommand(cmd);
+        validateCommand(cmd);
         final SeatsAvailability state = getState();
-        Validator.validateState(state, cmd);
+        validateState(state, cmd);
 
         final ReservationId reservationId = cmd.getReservationId();
         //noinspection LocalVariableNamingConvention
@@ -108,7 +107,7 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
 
     @Assign
     public AddedAvailableSeats handle(AddSeats cmd, CommandContext context) {
-        Validator.validateCommand(cmd);
+        validateCommand(cmd);
 
         final AddedAvailableSeats.Builder event = AddedAvailableSeats.newBuilder()
                 .setQuantity(cmd.getQuantity());
@@ -117,8 +116,8 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
 
     @Assign
     public RemovedAvailableSeats handle(RemoveSeats cmd, CommandContext context) {
-        Validator.validateCommand(cmd);
-        Validator.validateState(getState(), cmd);
+        validateCommand(cmd);
+        validateState(getState(), cmd);
 
         final RemovedAvailableSeats.Builder event = RemovedAvailableSeats.newBuilder()
                 .setQuantity(cmd.getQuantity());
@@ -206,59 +205,5 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
             return 0;
         }
         return newQuantity;
-    }
-
-    private static class Validator {
-
-        private static void validateCommand(MakeSeatReservation cmd) {
-            checkReservationId(cmd.hasReservationId(), cmd);
-            checkConferenceId(cmd.hasConferenceId(), cmd);
-            checkSeats(cmd.getSeatList(), cmd);
-        }
-
-        private static void validateCommand(CommitSeatReservation cmd) {
-            checkReservationId(cmd.hasReservationId(), cmd);
-        }
-
-        private static void validateState(SeatsAvailability state, CommitSeatReservation cmd) {
-            checkExistPendingReservationsWithId(cmd.getReservationId(), state);
-        }
-
-        private static void validateCommand(CancelSeatReservation cmd) {
-            checkReservationId(cmd.hasReservationId(), cmd);
-            checkConferenceId(cmd.hasConferenceId(), cmd);
-        }
-
-        private static void validateState(SeatsAvailability state, CancelSeatReservation cmd) {
-            checkExistPendingReservationsWithId(cmd.getReservationId(), state);
-        }
-
-        private static void validateCommand(AddSeats cmd) {
-            checkSeatQuantity(cmd.hasQuantity(), cmd.getQuantity(), cmd);
-        }
-
-        private static void validateCommand(RemoveSeats cmd) {
-            checkSeatQuantity(cmd.hasQuantity(), cmd.getQuantity(), cmd);
-        }
-
-        private static void checkSeatQuantity(boolean hasQuantity, SeatQuantity quantity, Message cmd) {
-            checkMessageField(hasQuantity, "seat quantity", cmd);
-            checkMessageField(quantity.hasSeatTypeId(), "seat type id", quantity);
-            checkMessageField(quantity.getQuantity() > 0, "quantity", quantity);
-        }
-
-        private static void validateState(SeatsAvailability state, RemoveSeats cmd) {
-            final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
-            final SeatQuantity quantityToRemove = cmd.getQuantity();
-            final SeatTypeId id = quantityToRemove.getSeatTypeId();
-            final SeatQuantity existingOne = findById(availableSeats, id, null);
-            checkState(existingOne != null, "No such available seat, seat type ID: " + id.getUuid());
-        }
-
-        private static void checkExistPendingReservationsWithId(ReservationId reservationId, SeatsAvailability state) {
-            final String id = reservationId.getUuid();
-            final Map<String, SeatQuantities> pendingReservations = state.getPendingReservations();
-            checkState(pendingReservations.containsKey(id), "No such pending reservation with the ID: " + id);
-        }
     }
 }
