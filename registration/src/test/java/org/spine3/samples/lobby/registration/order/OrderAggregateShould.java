@@ -37,7 +37,7 @@ import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.spine3.money.Currency.USD;
-import static org.spine3.util.MoneyUtil.newMoney;
+import static org.spine3.money.MoneyUtil.newMoney;
 
 /**
  * @author Alexander Litus
