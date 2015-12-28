@@ -20,8 +20,6 @@
 
 package org.spine3.samples.lobby.registration.seat.availability;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Message;
 import org.spine3.base.CommandContext;
 import org.spine3.samples.lobby.common.ReservationId;
@@ -31,10 +29,8 @@ import org.spine3.server.Assign;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
@@ -210,107 +206,6 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
             return 0;
         }
         return newQuantity;
-    }
-
-    /**
-     * The Method Object for handling {@link MakeSeatReservation} commands.
-     */
-    protected static class MakeSeatReservationCommandHandler {
-
-        private final List<SeatQuantity> reservedSeatsUpdated = newLinkedList();
-        private final List<SeatQuantity> availableSeatsUpdated = newLinkedList();
-        private final SeatsAvailability state;
-
-        protected MakeSeatReservationCommandHandler(SeatsAvailability state) {
-            this.state = state;
-        }
-
-        /**
-         * Performs all the checks needed and calculates new reserved and available quantities of seats.
-         *
-         * @param command a validated command to handle
-         * @see #getReservedSeatsUpdated()
-         * @see #getAvailableSeatsUpdated()
-         */
-        protected void handle(MakeSeatReservation command) {
-            final List<SeatQuantity> requestedSeats = command.getSeatList();
-            checkAllSeatTypesAreAvailable(requestedSeats);
-
-            for (SeatQuantity requestedSeat : requestedSeats) {
-                calculateNewSeatCount(requestedSeat, command.getReservationId());
-            }
-        }
-
-        private void calculateNewSeatCount(SeatQuantity requestedSeat, ReservationId reservationId) {
-            final SeatTypeId seatTypeId = requestedSeat.getSeatTypeId();
-            final int availableCount = findAvailableSeatCount(seatTypeId);
-            final int oldReservedCount = findReservedSeatCount(seatTypeId, reservationId);
-            final int newReservedCount = calculateNewReservedSeatCount(availableCount, requestedSeat.getQuantity(), oldReservedCount);
-
-            final SeatQuantity reservedSeatUpdated = newSeatQuantity(seatTypeId, newReservedCount);
-            reservedSeatsUpdated.add(reservedSeatUpdated);
-
-            final int newAvailableCount = calculateNewAvailableSeatCount(availableCount, oldReservedCount, newReservedCount);
-            final SeatQuantity availableUpdatedSeat = newSeatQuantity(seatTypeId, newAvailableCount);
-            availableSeatsUpdated.add(availableUpdatedSeat);
-        }
-
-        @VisibleForTesting
-        protected int calculateNewReservedSeatCount(int availableCount, int requestedCount, int reservedCount) {
-            if (requestedCount > availableCount) {
-                final int remainingCount = availableCount + reservedCount;
-                return remainingCount;
-            }
-            final int newReservedCount = reservedCount + requestedCount;
-            return newReservedCount;
-        }
-
-        @VisibleForTesting
-        protected int calculateNewAvailableSeatCount(int availableCount, int oldReservedCount, int newReservedCount) {
-            //noinspection LocalVariableNamingConvention
-            final int reservedOnThisRequestCount = newReservedCount - oldReservedCount;
-            final int newAvailableCount = availableCount - reservedOnThisRequestCount;
-            if (newAvailableCount < 0) {
-                return 0;
-            }
-            return newAvailableCount;
-        }
-
-        private int findAvailableSeatCount(SeatTypeId seatTypeId) {
-            final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
-            final SeatQuantity availableOne = findById(availableSeats, seatTypeId);
-            final int seatCount = availableOne.getQuantity();
-            return seatCount;
-        }
-
-        private int findReservedSeatCount(SeatTypeId seatTypeId, ReservationId reservationId) {
-            final SeatQuantities quantities = state.getPendingReservations().get(reservationId.getUuid());
-            final List<SeatQuantity> reservedSeats = (quantities != null) ?
-                    quantities.getItemList() :
-                    Collections.<SeatQuantity>emptyList();
-            final SeatQuantity reservedOne = findById(reservedSeats, seatTypeId);
-            final int reservedCount = reservedOne.getQuantity();
-            return reservedCount;
-        }
-
-        private void checkAllSeatTypesAreAvailable(Iterable<SeatQuantity> requestedSeats) {
-            final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
-            for (SeatQuantity requestedSeat : requestedSeats) {
-                final SeatTypeId id = requestedSeat.getSeatTypeId();
-                final SeatQuantity availableSeat = findById(availableSeats, id, null);
-                if (availableSeat == null) {
-                    throw new NoSuchElementException("No seat found with such an ID: " + id.getUuid());
-                }
-            }
-        }
-
-        protected List<SeatQuantity> getReservedSeatsUpdated() {
-            return ImmutableList.copyOf(reservedSeatsUpdated);
-        }
-
-        protected List<SeatQuantity> getAvailableSeatsUpdated() {
-            return ImmutableList.copyOf(availableSeatsUpdated);
-        }
     }
 
     private static class Validator {

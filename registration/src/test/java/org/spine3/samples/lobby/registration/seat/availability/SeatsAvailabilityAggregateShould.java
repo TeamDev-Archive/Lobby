@@ -92,8 +92,8 @@ public class SeatsAvailabilityAggregateShould {
 
     @Test
     public void calculate_new_reserved_seat_count_if_request_less_seats_than_available() {
-        final SeatsAvailabilityAggregate.MakeSeatReservationCommandHandler handler =
-                new SeatsAvailabilityAggregate.MakeSeatReservationCommandHandler(SeatsAvailability.getDefaultInstance());
+        final MakeSeatReservationCommandHandler handler =
+                new MakeSeatReservationCommandHandler(SeatsAvailability.getDefaultInstance());
         final int availableCount = 100;
         final int requestedCount = 20;
         final int reservedCount = 10;
@@ -105,8 +105,8 @@ public class SeatsAvailabilityAggregateShould {
 
     @Test
     public void calculate_new_reserved_seat_count_if_request_all_available_seats() {
-        final SeatsAvailabilityAggregate.MakeSeatReservationCommandHandler handler =
-                new SeatsAvailabilityAggregate.MakeSeatReservationCommandHandler(SeatsAvailability.getDefaultInstance());
+        final MakeSeatReservationCommandHandler handler =
+                new MakeSeatReservationCommandHandler(SeatsAvailability.getDefaultInstance());
         final int availableCount = 30;
         final int requestedCount = 30;
         final int reservedCount = 10;
@@ -118,8 +118,8 @@ public class SeatsAvailabilityAggregateShould {
 
     @Test
     public void calculate_new_reserved_seat_count_if_request_more_seats_than_available() {
-        final SeatsAvailabilityAggregate.MakeSeatReservationCommandHandler handler =
-                new SeatsAvailabilityAggregate.MakeSeatReservationCommandHandler(SeatsAvailability.getDefaultInstance());
+        final MakeSeatReservationCommandHandler handler =
+                new MakeSeatReservationCommandHandler(SeatsAvailability.getDefaultInstance());
         final int availableCount = 20;
         final int requestedCount = 30;
         final int reservedCount = 5;
@@ -131,8 +131,8 @@ public class SeatsAvailabilityAggregateShould {
 
     @Test
     public void calculate_new_available_seat_count_if_reserved_less_seats_than_available() {
-        final SeatsAvailabilityAggregate.MakeSeatReservationCommandHandler handler =
-                new SeatsAvailabilityAggregate.MakeSeatReservationCommandHandler(SeatsAvailability.getDefaultInstance());
+        final MakeSeatReservationCommandHandler handler =
+                new MakeSeatReservationCommandHandler(SeatsAvailability.getDefaultInstance());
         final int availableCount = 100;
         final int oldReservedCount = 10;
         final int newReservedCount = 20;
@@ -144,8 +144,8 @@ public class SeatsAvailabilityAggregateShould {
 
     @Test
     public void calculate_new_available_seat_count_if_reserved_all_available_seats() {
-        final SeatsAvailabilityAggregate.MakeSeatReservationCommandHandler handler =
-                new SeatsAvailabilityAggregate.MakeSeatReservationCommandHandler(SeatsAvailability.getDefaultInstance());
+        final MakeSeatReservationCommandHandler handler =
+                new MakeSeatReservationCommandHandler(SeatsAvailability.getDefaultInstance());
         final int availableCount = 30;
         final int oldReservedCount = 10;
         final int newReservedCount = 40;
@@ -157,8 +157,8 @@ public class SeatsAvailabilityAggregateShould {
 
     @Test
     public void calculate_new_available_seat_count_if_reserved_more_seats_than_available() {
-        final SeatsAvailabilityAggregate.MakeSeatReservationCommandHandler handler =
-                new SeatsAvailabilityAggregate.MakeSeatReservationCommandHandler(SeatsAvailability.getDefaultInstance());
+        final MakeSeatReservationCommandHandler handler =
+                new MakeSeatReservationCommandHandler(SeatsAvailability.getDefaultInstance());
         final int availableCount = 30;
         final int oldReservedCount = 10;
         final int newReservedCount = 999;
