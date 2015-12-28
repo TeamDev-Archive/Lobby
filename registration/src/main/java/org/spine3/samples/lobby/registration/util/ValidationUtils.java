@@ -41,34 +41,12 @@ public class ValidationUtils {
     /**
      * Ensures the truth of a {@code hasId} expression.
      *
-     * @param hasId a boolean expression stating that the {@code message} has an order ID
-     * @param message a checked message
-     * @throws IllegalArgumentException if {@code hasId} expression is false
-     */
-    public static void checkOrderId(boolean hasId, Message message) {
-        checkMessageField(hasId, "order ID", message);
-    }
-
-    /**
-     * Ensures the truth of a {@code hasId} expression.
-     *
      * @param hasId a boolean expression stating that the {@code message} has an conference ID
      * @param message a checked message
      * @throws IllegalArgumentException if {@code hasId} expression is false
      */
     public static void checkConferenceId(boolean hasId, Message message) {
         checkMessageField(hasId, "conference ID", message);
-    }
-
-    /**
-     * Ensures the truth of a {@code hasId} expression.
-     *
-     * @param hasId a boolean expression stating that the {@code message} has an reservation ID
-     * @param message a checked message
-     * @throws IllegalArgumentException if {@code hasId} expression is false
-     */
-    public static void checkReservationId(boolean hasId, Message message) {
-        checkMessageField(hasId, "reservation ID", message);
     }
 
     /**

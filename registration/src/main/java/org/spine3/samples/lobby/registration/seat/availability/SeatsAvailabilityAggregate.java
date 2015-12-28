@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Lists.newLinkedList;
-import static org.spine3.samples.lobby.registration.seat.availability.Validator.validateCommand;
-import static org.spine3.samples.lobby.registration.seat.availability.Validator.validateState;
+import static org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityValidator.validateCommand;
+import static org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityValidator.validateState;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantities;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 

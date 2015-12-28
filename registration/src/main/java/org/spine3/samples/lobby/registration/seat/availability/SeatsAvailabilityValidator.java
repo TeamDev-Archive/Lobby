@@ -38,9 +38,9 @@ import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
  * @author Alexander Litus
  */
 @SuppressWarnings({"TypeMayBeWeakened"/** "OrBuilder" parameters are not applicable*/, "UtilityClass"})
-class Validator {
+class SeatsAvailabilityValidator {
 
-    private Validator() {}
+    private SeatsAvailabilityValidator() {}
 
     static void validateCommand(MakeSeatReservation cmd) {
         checkReservationId(cmd.hasReservationId(), cmd);
@@ -91,5 +91,16 @@ class Validator {
         final String id = reservationId.getUuid();
         final Map<String, SeatQuantities> pendingReservations = state.getPendingReservations();
         checkState(pendingReservations.containsKey(id), "No such pending reservation with the ID: " + id);
+    }
+
+    /**
+     * Ensures the truth of a {@code hasId} expression.
+     *
+     * @param hasId a boolean expression stating that the {@code message} has an reservation ID
+     * @param message a checked message
+     * @throws IllegalArgumentException if {@code hasId} expression is false
+     */
+    static void checkReservationId(boolean hasId, Message message) {
+        checkMessageField(hasId, "reservation ID", message);
     }
 }

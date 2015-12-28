@@ -32,9 +32,9 @@ import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
  * @author Alexander Litus
  */
 @SuppressWarnings({"TypeMayBeWeakened"/** "OrBuilder" parameters are not applicable*/, "UtilityClass"})
-class Validator {
+class OrderValidator {
 
-    private Validator() {}
+    private OrderValidator() {}
 
     static void checkNotConfirmed(Order order, Message cmd) {
         final String message = format("Cannot modify a confirmed order with ID: %s; command: %s.",
@@ -73,5 +73,16 @@ class Validator {
     static void validateCommand(AssignRegistrantDetails cmd) {
         checkOrderId(cmd.hasOrderId(), cmd);
         checkMessageField(cmd.hasRegistrant(), "registrant", cmd);
+    }
+
+    /**
+     * Ensures the truth of a {@code hasId} expression.
+     *
+     * @param hasId a boolean expression stating that the {@code message} has an order ID
+     * @param message a checked message
+     * @throws IllegalArgumentException if {@code hasId} expression is false
+     */
+    static void checkOrderId(boolean hasId, Message message) {
+        checkMessageField(hasId, "order ID", message);
     }
 }

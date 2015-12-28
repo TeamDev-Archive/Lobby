@@ -47,7 +47,7 @@ import java.util.Set;
 import static com.google.common.collect.Collections2.filter;
 import static com.google.protobuf.util.TimeUtil.add;
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
-import static org.spine3.samples.lobby.registration.order.Validator.*;
+import static org.spine3.samples.lobby.registration.order.OrderValidator.*;
 
 /**
  * The order aggregate which manages the state of the order.
