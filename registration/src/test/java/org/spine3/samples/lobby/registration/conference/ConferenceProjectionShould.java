@@ -44,8 +44,8 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.spine3.samples.lobby.common.util.CommonMessageFactory.newConferenceId;
-import static org.spine3.samples.lobby.common.util.CommonMessageFactory.newSeatTypeId;
+import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
+import static org.spine3.samples.lobby.common.util.IdFactory.newSeatTypeId;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
 
 /**

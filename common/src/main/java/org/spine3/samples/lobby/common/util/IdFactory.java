@@ -28,15 +28,15 @@ import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.util.Identifiers;
 
 /**
- * The utility class containing convenience methods for messages creation.
+ * The utility class containing convenience methods for identifiers creation.
  *
  * @see Message
  * @author Alexander Litus
  */
 @SuppressWarnings("UtilityClass")
-public class CommonMessageFactory {
+public class IdFactory {
 
-    private CommonMessageFactory() {
+    private IdFactory() {
     }
 
     /**

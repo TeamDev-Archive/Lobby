@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.spine3.samples.lobby.common.util.CommonMessageFactory.*;
+import static org.spine3.samples.lobby.common.util.IdFactory.*;
 import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatQuantity;
 import static org.spine3.samples.lobby.registration.util.MessageFactory.newSeatsAvailabilityId;
 
