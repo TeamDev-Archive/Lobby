@@ -129,6 +129,8 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         return event.build();
     }
 
+    /* Event Appliers */
+
     @Apply
     private void apply(SeatsReserved event) {
         final SeatsAvailability.Builder state = getState().toBuilder();

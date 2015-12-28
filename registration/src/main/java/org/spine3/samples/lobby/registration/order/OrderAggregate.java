@@ -171,6 +171,8 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         return result;
     }
 
+    /* Event Appliers */
+
     @Apply
     private void apply(OrderPlaced event) {
         final Order.Builder state = Order.newBuilder()
