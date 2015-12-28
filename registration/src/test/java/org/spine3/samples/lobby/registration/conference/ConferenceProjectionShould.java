@@ -27,9 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.spine3.base.CommandContext;
 import org.spine3.samples.lobby.common.ConferenceId;
-import org.spine3.samples.lobby.common.ConferenceSlug;
 import org.spine3.samples.lobby.common.SeatType;
-import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.lobby.registration.seat.availability.AddSeats;
 import org.spine3.samples.lobby.registration.seat.availability.RemoveSeats;
@@ -39,25 +37,21 @@ import org.spine3.server.BoundedContext;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.AggregateRepositoryBase;
 import org.spine3.server.aggregate.Apply;
-import org.spine3.time.LocalDate;
 
 import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
-import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newConferenceId;
 
 /**
  * @author Alexander Litus
  */
-@SuppressWarnings({"TypeMayBeWeakened", "InstanceMethodNamingConvention", "ClassWithTooManyMethods"})
+@SuppressWarnings({"TypeMayBeWeakened", "InstanceMethodNamingConvention", "ClassWithTooManyMethods", "UtilityClass"})
 public class ConferenceProjectionShould {
 
-    private static final ConferenceId ID = newConferenceId();
     private final BoundedContext boundedContext = newBoundedContext();
-
-    private final TestConferenceProjection projection = new TestConferenceProjection(ID);
+    private final TestConferenceProjection projection = new TestConferenceProjection(Given.CONFERENCE_ID);
 
     @Before
     public void setUpTest() {
@@ -108,7 +102,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeCreated_event_and_update_state() {
-        projection.incrementState(Given.newConference());
+        projection.incrementState(Given.conference());
         final SeatTypeCreated event = Given.seatTypeCreated(5);
 
         projection.on(event);
@@ -118,7 +112,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void not_add_seat_type_with_the_same_id_on_SeatTypeCreated_event() {
-        projection.incrementState(Given.newConference());
+        projection.incrementState(Given.conference());
         final SeatTypeCreated event = Given.seatTypeCreated(5);
 
         projection.on(event);
@@ -129,7 +123,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_update_state() {
-        projection.incrementState(Given.newConference());
+        projection.incrementState(Given.conference());
         projection.on(Given.seatTypeCreated("old-description", 5));
 
         final SeatTypeUpdated updatedEvent = Given.seatTypeUpdated("new-description", 7);
@@ -140,7 +134,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_send_AddSeats_command_when_seats_added() {
-        projection.incrementState(Given.newConference());
+        projection.incrementState(Given.conference());
 
         projection.on(Given.seatTypeCreated(3));
         projection.on(Given.seatTypeUpdated(7));
@@ -150,7 +144,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_send_AddSeats_command_when_seats_removed() {
-        projection.incrementState(Given.newConference());
+        projection.incrementState(Given.conference());
 
         projection.on(Given.seatTypeCreated(7));
         projection.on(Given.seatTypeUpdated(3));
@@ -160,7 +154,7 @@ public class ConferenceProjectionShould {
 
     @Test
     public void handle_SeatTypeUpdated_event_and_do_not_send_commands_when_seat_quantity_not_changed() {
-        projection.incrementState(Given.newConference());
+        projection.incrementState(Given.conference());
         final int seatQuantity = 5;
 
         projection.on(Given.seatTypeCreated(seatQuantity));
@@ -177,68 +171,6 @@ public class ConferenceProjectionShould {
         final List<SeatType> actualTypes = projection.getState().getSeatTypeList();
         assertEquals(expectedTypes.size(), actualTypes.size());
         assertTrue(actualTypes.containsAll(expectedTypes));
-    }
-
-    private static class Given {
-
-        private static ConferenceCreated conferenceCreated() {
-            final Conference conference = newConference();
-            return ConferenceCreated.newBuilder().setConference(conference).build();
-        }
-
-        private static ConferenceUpdated conferenceUpdated() {
-            final Conference conference = newConference();
-            return ConferenceUpdated.newBuilder().setConference(conference).build();
-        }
-
-        private static ConferencePublished conferencePublished() {
-            return ConferencePublished.newBuilder().setConferenceId(ID).build();
-        }
-
-        private static ConferenceUnpublished conferenceUnpublished() {
-            return ConferenceUnpublished.newBuilder().setConferenceId(ID).build();
-        }
-
-        private static SeatTypeCreated seatTypeCreated(int seatQuantity) {
-            final SeatType seatType = newSeatType("description-256", seatQuantity);
-            return SeatTypeCreated.newBuilder().setSeatType(seatType).build();
-        }
-
-        private static SeatTypeUpdated seatTypeUpdated(int seatQuantity) {
-            final SeatType seatType = newSeatType("description-512", seatQuantity);
-            return SeatTypeUpdated.newBuilder().setSeatType(seatType).build();
-        }
-
-        private static SeatTypeCreated seatTypeCreated(String description, int seatQuantity) {
-            final SeatType seatType = newSeatType(description, seatQuantity);
-            return SeatTypeCreated.newBuilder().setSeatType(seatType).build();
-        }
-
-        private static SeatTypeUpdated seatTypeUpdated(String description, int seatQuantity) {
-            final SeatType seatType = newSeatType(description, seatQuantity);
-            return SeatTypeUpdated.newBuilder().setSeatType(seatType).build();
-        }
-
-        private static Conference newConference() {
-            return Conference.newBuilder()
-                    .setId(ID)
-                    .setSlug(ConferenceSlug.newBuilder().setValue("slug"))
-                    .setName("Test Conference")
-                    .setDescription("Test Conference description")
-                    .setLocation("Test Conference location")
-                    .setTagline("Test Conference tagline")
-                    .setTwitterSearch("Test Conference twitter")
-                    .setStartDate(LocalDate.getDefaultInstance())
-                    .build();
-        }
-
-        private static SeatType newSeatType(String description, int seatQuantity) {
-            return SeatType.newBuilder()
-                    .setConferenceId(ID)
-                    .setId(SeatTypeId.newBuilder().setUuid("testSeatType"))
-                    .setDescription(description)
-                    .setQuantityTotal(seatQuantity).build();
-        }
     }
 
     public static class TestConferenceProjection extends ConferenceProjection {

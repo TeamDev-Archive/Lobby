@@ -20,12 +20,9 @@
 
 package org.spine3.samples.lobby.registration.order;
 
-import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Message;
-import com.google.protobuf.util.TimeUtil;
 import org.junit.Before;
 import org.junit.Test;
-import org.spine3.base.CommandContext;
 import org.spine3.money.Money;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
@@ -36,12 +33,11 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import static com.google.common.base.Throwables.propagate;
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.spine3.money.Currency.USD;
-import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.*;
+import static org.spine3.money.MoneyUtil.newMoney;
 
 /**
  * @author Alexander Litus
@@ -93,7 +89,7 @@ public class OrderAggregateShould {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void handle_empty_RegisterToConference_command_and_throw_exception() {
+    public void handle_RegisterToConference_command_and_throw_exception_if_it_is_empty() {
         final TestOrderAggregate aggregate = given.newOrder();
         final RegisterToConference cmd = RegisterToConference.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
@@ -133,7 +129,7 @@ public class OrderAggregateShould {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void handle_empty_MarkSeatsAsReserved_command_and_throw_exception() {
+    public void handle_MarkSeatsAsReserved_command_and_throw_exception_if_it_is_empty() {
         final TestOrderAggregate aggregate = given.newOrder();
         final MarkSeatsAsReserved cmd = MarkSeatsAsReserved.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
@@ -157,7 +153,7 @@ public class OrderAggregateShould {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void handle_empty_RejectOrder_command_and_throw_exception() {
+    public void handle_RejectOrder_command_and_throw_exception_if_it_is_empty() {
         final TestOrderAggregate aggregate = given.newOrder();
         final RejectOrder cmd = RejectOrder.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
@@ -181,7 +177,7 @@ public class OrderAggregateShould {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void handle_empty_ConfirmOrder_command_and_throw_exception() {
+    public void handle_ConfirmOrder_command_and_throw_exception_if_it_is_empty() {
         final TestOrderAggregate aggregate = given.newOrder();
         final ConfirmOrder cmd = ConfirmOrder.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
@@ -198,7 +194,7 @@ public class OrderAggregateShould {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void handle_empty_AssignRegistrantDetails_command_and_throw_exception() {
+    public void handle_AssignRegistrantDetails_command_and_throw_exception_if_it_is_empty() {
         final TestOrderAggregate aggregate = given.newOrder();
         final AssignRegistrantDetails cmd = AssignRegistrantDetails.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
@@ -314,166 +310,6 @@ public class OrderAggregateShould {
         }
     }
 
-    private static class Given {
-
-        static final OrderId ORDER_ID = newOrderId();
-        static final ConferenceId CONFERENCE_ID = newConferenceId();
-        static final List<SeatQuantity> SEATS = ImmutableList.of(newSeatQuantity(5), newSeatQuantity(10));
-
-        private final TestOrderAggregate aggregate;
-
-        private Given() {
-            aggregate = new TestOrderAggregate(ORDER_ID);
-            aggregate.setOrderPricingService(new PricingServiceStub());
-        }
-
-        TestOrderAggregate newOrder() {
-            return aggregate;
-        }
-
-        TestOrderAggregate confirmedOrder() {
-            final Order state = orderState(seats(), true);
-            aggregate.incrementState(state);
-            return aggregate;
-        }
-
-        TestOrderAggregate placedOrder() {
-            final Order state = orderState(seats());
-            aggregate.incrementState(state);
-            return aggregate;
-        }
-
-        TestOrderAggregate completelyReservedOrder(List<SeatQuantity> reservedSeats) {
-            final Order state = orderState(reservedSeats);
-            aggregate.incrementState(state);
-            return aggregate;
-        }
-
-        TestOrderAggregate partiallyReservedOrder(List<SeatQuantity> reservedSeats) {
-            final List<SeatQuantity> requestedSeats = newArrayList(reservedSeats);
-            //noinspection LocalVariableNamingConvention
-            final int partlyReservedSeatIndex = 0;
-            final SeatQuantity.Builder seat = requestedSeats.get(partlyReservedSeatIndex).toBuilder();
-            seat.setQuantity(seat.getQuantity() + 5);
-            requestedSeats.set(partlyReservedSeatIndex, seat.build());
-            final Order state = orderState(requestedSeats);
-            aggregate.incrementState(state);
-            return aggregate;
-        }
-
-        static List<SeatQuantity> seats() {
-            //noinspection ReturnOfCollectionOrArrayField
-            return SEATS;
-        }
-
-        static Order orderState(Iterable<SeatQuantity> seats) {
-            final Order.Builder order = Order.newBuilder()
-                    .setId(ORDER_ID)
-                    .setConferenceId(CONFERENCE_ID)
-                    .addAllSeat(ImmutableList.copyOf(seats));
-            return order.build();
-        }
-
-        static Order orderState(Iterable<SeatQuantity> seats, boolean isConfirmed) {
-            final Order.Builder order = orderState(seats).toBuilder();
-            order.setIsConfirmed(isConfirmed);
-            return order.build();
-        }
-
-        private static class Command {
-
-            static final CommandContext CMD_CONTEXT = CommandContext.getDefaultInstance();
-
-            static final RegisterToConference REGISTER_TO_CONFERENCE = RegisterToConference.newBuilder()
-                    .setOrderId(ORDER_ID)
-                    .setConferenceId(CONFERENCE_ID)
-                    .addAllSeat(SEATS)
-                    .build();
-
-            static final MarkSeatsAsReserved MARK_SEATS_AS_RESERVED = MarkSeatsAsReserved.newBuilder()
-                    .setOrderId(ORDER_ID)
-                    .setReservationExpiration(TimeUtil.getCurrentTime())
-                    .addAllSeat(SEATS)
-                    .build();
-
-            static final RejectOrder REJECT_ORDER = RejectOrder.newBuilder().setOrderId(ORDER_ID).build();
-
-            static final ConfirmOrder CONFIRM_ORDER = ConfirmOrder.newBuilder().setOrderId(ORDER_ID).build();
-
-            static final AssignRegistrantDetails ASSIGN_REGISTRANT_DETAILS = AssignRegistrantDetails.newBuilder()
-                    .setOrderId(ORDER_ID)
-                    .setRegistrant(newPersonalInfo("John", "Black", "jblack@gmail.com"))
-                    .build();
-
-            static CommandContext context() {
-                return CMD_CONTEXT;
-            }
-
-            static RegisterToConference registerToConference() {
-                return REGISTER_TO_CONFERENCE;
-            }
-
-            static MarkSeatsAsReserved markSeatsAsReserved() {
-                return MARK_SEATS_AS_RESERVED;
-            }
-
-            static ConfirmOrder confirmOrder() {
-                return CONFIRM_ORDER;
-            }
-
-            static RejectOrder rejectOrder() {
-                return REJECT_ORDER;
-            }
-
-            static AssignRegistrantDetails assignRegistrantDetails() {
-                return ASSIGN_REGISTRANT_DETAILS;
-            }
-        }
-
-        private static class Event {
-
-            static final OrderPlaced ORDER_PLACED = OrderPlaced.newBuilder()
-                    .setOrderId(ORDER_ID)
-                    .setConferenceId(CONFERENCE_ID)
-                    .addAllSeat(SEATS)
-                    .build();
-
-            private static final OrderConfirmed ORDER_CONFIRMED = OrderConfirmed.newBuilder().setOrderId(ORDER_ID).build();
-
-            static OrderPlaced orderPlaced() {
-                return ORDER_PLACED;
-            }
-
-            static OrderUpdated orderUpdated() {
-                final OrderUpdated.Builder result = OrderUpdated.newBuilder()
-                        .setOrderId(ORDER_ID)
-                        .addSeat(newSeatQuantity(16))
-                        .addSeat(newSeatQuantity(32));
-                return result.build();
-            }
-
-            static OrderPartiallyReserved orderPartiallyReserved() {
-                final OrderPartiallyReserved.Builder result = OrderPartiallyReserved.newBuilder()
-                        .setOrderId(ORDER_ID)
-                        .addSeat(newSeatQuantity(64))
-                        .addSeat(newSeatQuantity(128));
-                return result.build();
-            }
-
-            static OrderReservationCompleted orderReservationCompleted() {
-                final OrderReservationCompleted.Builder result = OrderReservationCompleted.newBuilder()
-                        .setOrderId(ORDER_ID)
-                        .addSeat(newSeatQuantity(256))
-                        .addSeat(newSeatQuantity(512));
-                return result.build();
-            }
-
-            static OrderConfirmed orderConfirmed() {
-                return ORDER_CONFIRMED;
-            }
-        }
-    }
-
     static class PricingServiceStub implements OrderPricingService {
 
         private static final Money TOTAL_PRICE = newMoney(100, USD);
@@ -527,6 +363,7 @@ public class OrderAggregateShould {
 
         private void invokeApplyMethod(Message event) {
             try {
+                //noinspection DuplicateStringLiteralInspection
                 final Method apply = OrderAggregate.class.getDeclaredMethod("apply", event.getClass());
                 apply.setAccessible(true);
                 apply.invoke(this, event);

@@ -43,6 +43,7 @@ import java.util.List;
 import static com.google.common.collect.Iterables.filter;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
+import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 import static org.spine3.util.Commands.newCommandRequest;
 
 /**
@@ -64,7 +65,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
      * Creates a new instance.
      *
      * @param id the ID for the new instance
-     * @throws IllegalArgumentException if the ID is not of one of the supported types
+     * @throws IllegalArgumentException if the ID type is not supported
      */
     public ConferenceProjection(ConferenceId id) {
         super(id);
@@ -160,8 +161,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
     private void sendAddSeatsRequest(SeatTypeId seatTypeId, int quantity) {
         final AddSeats command = AddSeats.newBuilder()
                 .setConferenceId(getState().getId())
-                .setSeatTypeId(seatTypeId)
-                .setQuantity(quantity)
+                .setQuantity(newSeatQuantity(seatTypeId, quantity))
                 .build();
         final CommandRequest request = newCommandRequest(command, CommandContext.getDefaultInstance());
         boundedContext.process(request);
@@ -170,8 +170,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
     private void sendRemoveSeatsRequest(SeatTypeId seatTypeId, int quantity) {
         final RemoveSeats command = RemoveSeats.newBuilder()
                 .setConferenceId(getState().getId())
-                .setSeatTypeId(seatTypeId)
-                .setQuantity(quantity)
+                .setQuantity(newSeatQuantity(seatTypeId, quantity))
                 .build();
         final CommandRequest request = newCommandRequest(command, CommandContext.getDefaultInstance());
         boundedContext.process(request);
@@ -185,19 +184,6 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
             }
         });
         return ImmutableList.copyOf(result);
-    }
-
-    protected static Conference convert(org.spine3.samples.lobby.conference.contracts.Conference c) {
-        final Conference.Builder newState = Conference.newBuilder()
-                .setId(c.getId())
-                .setSlug(c.getSlug())
-                .setName(c.getName())
-                .setDescription(c.getDescription())
-                .setLocation(c.getLocation())
-                .setTagline(c.getTagline())
-                .setTwitterSearch(c.getTwitterSearch())
-                .setStartDate(c.getStartDate());
-        return newState.build();
     }
 
     private static Logger log() {

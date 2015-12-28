@@ -46,9 +46,6 @@ message MakeSeatReservation {
 message CommitSeatReservation {
     // The ID of the reservation.
     spine.samples.lobby.common.ReservationId reservation_id = 1;
-
-    // The conference id the seats associated with.
-    spine.samples.lobby.common.ConferenceId conference_id = 2;
 }
 
 // The request to cancel a seat reservation.
@@ -66,11 +63,8 @@ message AddSeats {
     // The conference id the seats associated with.
     spine.samples.lobby.common.ConferenceId conference_id = 1;
 
-    // The ID of the seat type.
-    spine.samples.lobby.common.SeatTypeId seat_type_id = 2;
-
     // The quantity of the seats to add.
-    int32 quantity = 3;
+    spine.samples.lobby.registration.contracts.SeatQuantity quantity = 2;
 }
 
 // The request to remove seats from the conference.
@@ -78,9 +72,6 @@ message RemoveSeats {
     // The conference id the seats associated with.
     spine.samples.lobby.common.ConferenceId conference_id = 1;
 
-    // The ID of the seat type.
-    spine.samples.lobby.common.SeatTypeId seat_type_id = 2;
-
     // The quantity of the seats to add.
-    int32 quantity = 3;
+    spine.samples.lobby.registration.contracts.SeatQuantity quantity = 2;
 }

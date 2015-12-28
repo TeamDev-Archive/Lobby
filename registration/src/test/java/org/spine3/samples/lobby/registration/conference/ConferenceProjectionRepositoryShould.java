@@ -25,11 +25,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.conference.contracts.Conference;
-import org.spine3.samples.lobby.registration.testdata.TestDataFactory;
 import org.spine3.server.storage.EntityStorage;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
 
 /**
@@ -39,7 +39,7 @@ import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.new
 public class ConferenceProjectionRepositoryShould {
 
     private final ConferenceProjectionRepository repository = new ConferenceProjectionRepository(newBoundedContext());
-    private final ConferenceId id = TestDataFactory.newConferenceId();
+    private final ConferenceId id = newConferenceId();
 
     @Before
     public void setUpTest() {
@@ -54,11 +54,31 @@ public class ConferenceProjectionRepositoryShould {
 
     @Test
     public void store_and_load_projection() {
-        final ConferenceProjection expected = new ConferenceProjection(id);
+        final ConferenceProjection expected = givenConferenceProjection();
 
         repository.store(expected);
 
         final ConferenceProjection actual = repository.load(id);
         assertEquals(expected.getState(), actual.getState());
+    }
+
+    private ConferenceProjection givenConferenceProjection() {
+        final TestConferenceProjection projection = new TestConferenceProjection(id);
+        final Conference conference = Given.conference();
+        projection.incrementState(conference);
+        return projection;
+    }
+
+    public static class TestConferenceProjection extends ConferenceProjection {
+
+        public TestConferenceProjection(ConferenceId id) {
+            super(id);
+        }
+
+        // Is overridden to make it accessible in tests.
+        @Override
+        public void incrementState(Conference newState) {
+            super.incrementState(newState);
+        }
     }
 }
