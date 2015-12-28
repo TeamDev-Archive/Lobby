@@ -24,12 +24,12 @@ import com.google.protobuf.Message;
 import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
+import org.spine3.samples.lobby.registration.util.Seats;
 
 import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkState;
-import static org.spine3.samples.lobby.registration.util.CollectionUtils.findById;
 import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
 
 /**
@@ -83,7 +83,7 @@ class Validator {
         final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
         final SeatQuantity quantityToRemove = cmd.getQuantity();
         final SeatTypeId id = quantityToRemove.getSeatTypeId();
-        final SeatQuantity existingOne = findById(availableSeats, id, null);
+        final SeatQuantity existingOne = Seats.findById(availableSeats, id, null);
         checkState(existingOne != null, "No such available seat, seat type ID: " + id.getUuid());
     }
 

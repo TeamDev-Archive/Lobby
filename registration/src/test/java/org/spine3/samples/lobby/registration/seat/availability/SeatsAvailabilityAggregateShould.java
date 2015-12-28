@@ -38,7 +38,6 @@ import java.util.Map;
 import static com.google.common.base.Throwables.propagate;
 import static org.junit.Assert.*;
 import static org.spine3.samples.lobby.common.util.IdFactory.*;
-import static org.spine3.samples.lobby.registration.util.CollectionUtils.findById;
 import static org.spine3.samples.lobby.registration.util.Seats.*;
 import static org.spine3.util.Identifiers.newUuid;
 

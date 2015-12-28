@@ -20,19 +20,22 @@
 
 package org.spine3.samples.lobby.registration.util;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
-import com.google.protobuf.Message;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.seat.availability.SeatQuantities;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityId;
 import org.spine3.util.Identifiers;
 
+import javax.annotation.Nullable;
+
+import static com.google.common.collect.Iterables.find;
+
 /**
- * The utility class containing convenience methods for messages creation.
- * Note: works with the messages from this bounded context only.
+ * The utility class for working with objects related to seats.
  *
- * @see Message
+ * @see SeatQuantity
  * @author Alexander Litus
  */
 @SuppressWarnings("UtilityClass")
@@ -92,5 +95,39 @@ public class Seats {
                 .setSeatTypeId(id)
                 .setQuantity(quantity);
         return result.build();
+    }
+
+    /**
+     * Finds a seat quantity item by the {@code id}.
+     *
+     * @param seats         the collection to search in
+     * @param id            the ID of the item to find
+     * @param defaultResult the value to return if nothing was found
+     * @return the found item
+     */
+    public static SeatQuantity findById(Iterable<SeatQuantity> seats, final SeatTypeId id, @Nullable SeatQuantity defaultResult) {
+        final SeatQuantity result = find(seats, new Predicate<SeatQuantity>() {
+            @Override
+            public boolean apply(@Nullable SeatQuantity seat) {
+                final boolean result =
+                        (seat != null) &&
+                                seat.hasSeatTypeId() &&
+                                seat.getSeatTypeId().equals(id);
+                return result;
+            }
+        }, defaultResult);
+        return result;
+    }
+
+    /**
+     * Finds a seat quantity item by the {@code id} or returns a default {@code SeatQuantity} instance.
+     *
+     * @param seats the collection to search in
+     * @param id    the ID of the item to find
+     * @return the found item or the default instance
+     * @see SeatQuantity#getDefaultInstance()
+     */
+    public static SeatQuantity findById(Iterable<SeatQuantity> seats, SeatTypeId id) {
+        return findById(seats, id, SeatQuantity.getDefaultInstance());
     }
 }

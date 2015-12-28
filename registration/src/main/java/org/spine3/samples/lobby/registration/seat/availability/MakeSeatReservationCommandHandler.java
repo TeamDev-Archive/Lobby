@@ -25,13 +25,13 @@ import com.google.common.collect.ImmutableList;
 import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
+import org.spine3.samples.lobby.registration.util.Seats;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import static com.google.common.collect.Lists.newLinkedList;
-import static org.spine3.samples.lobby.registration.util.CollectionUtils.findById;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
 /**
@@ -101,7 +101,7 @@ class MakeSeatReservationCommandHandler {
 
     private int findAvailableSeatCount(SeatTypeId seatTypeId) {
         final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
-        final SeatQuantity availableOne = findById(availableSeats, seatTypeId);
+        final SeatQuantity availableOne = Seats.findById(availableSeats, seatTypeId);
         final int seatCount = availableOne.getQuantity();
         return seatCount;
     }
@@ -111,7 +111,7 @@ class MakeSeatReservationCommandHandler {
         final List<SeatQuantity> reservedSeats = (quantities != null) ?
                 quantities.getItemList() :
                 Collections.<SeatQuantity>emptyList();
-        final SeatQuantity reservedOne = findById(reservedSeats, seatTypeId);
+        final SeatQuantity reservedOne = Seats.findById(reservedSeats, seatTypeId);
         final int reservedCount = reservedOne.getQuantity();
         return reservedCount;
     }
@@ -120,7 +120,7 @@ class MakeSeatReservationCommandHandler {
         final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
         for (SeatQuantity requestedSeat : requestedSeats) {
             final SeatTypeId id = requestedSeat.getSeatTypeId();
-            final SeatQuantity availableSeat = findById(availableSeats, id, null);
+            final SeatQuantity availableSeat = Seats.findById(availableSeats, id, null);
             if (availableSeat == null) {
                 throw new NoSuchElementException("No seat found with such an ID: " + id.getUuid());
             }

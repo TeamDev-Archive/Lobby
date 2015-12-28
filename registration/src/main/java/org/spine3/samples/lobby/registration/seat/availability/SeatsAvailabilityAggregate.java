@@ -24,6 +24,7 @@ import org.spine3.base.CommandContext;
 import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
+import org.spine3.samples.lobby.registration.util.Seats;
 import org.spine3.server.Assign;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
@@ -34,7 +35,6 @@ import java.util.Map;
 import static com.google.common.collect.Lists.newLinkedList;
 import static org.spine3.samples.lobby.registration.seat.availability.Validator.validateCommand;
 import static org.spine3.samples.lobby.registration.seat.availability.Validator.validateState;
-import static org.spine3.samples.lobby.registration.util.CollectionUtils.findById;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantities;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
@@ -172,7 +172,7 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
         final SeatQuantity addedQuantity = event.getQuantity();
         final SeatTypeId seatTypeId = addedQuantity.getSeatTypeId();
-        final SeatQuantity existingOne = findById(availableSeats, seatTypeId, null);
+        final SeatQuantity existingOne = Seats.findById(availableSeats, seatTypeId, null);
         if (existingOne != null) {
             final int indexOfOldValue = availableSeats.indexOf(existingOne);
             final int newQuantity = existingOne.getQuantity() + addedQuantity.getQuantity();
@@ -191,7 +191,7 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         final SeatQuantity removedQuantity = event.getQuantity();
         final SeatTypeId seatTypeId = removedQuantity.getSeatTypeId();
         final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
-        final SeatQuantity existingOne = findById(availableSeats, seatTypeId);
+        final SeatQuantity existingOne = Seats.findById(availableSeats, seatTypeId);
         final int indexOfOldValue = availableSeats.indexOf(existingOne);
         final int newQuantity = calculateNewQuantity(removedQuantity, existingOne);
         state.setAvailableSeat(indexOfOldValue, newSeatQuantity(seatTypeId, newQuantity));

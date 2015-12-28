@@ -33,6 +33,7 @@ import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.registration.contracts.*;
+import org.spine3.samples.lobby.registration.util.Seats;
 import org.spine3.server.Assign;
 import org.spine3.server.Entity;
 import org.spine3.server.aggregate.Aggregate;
@@ -48,7 +49,6 @@ import static com.google.common.collect.Collections2.filter;
 import static com.google.protobuf.util.TimeUtil.add;
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static java.lang.String.format;
-import static org.spine3.samples.lobby.registration.util.CollectionUtils.findById;
 import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
 
 /**
@@ -229,7 +229,7 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
                 if (requestedOne == null) {
                     return false;
                 }
-                final SeatQuantity reservedOne = findById(reservedSeats, requestedOne.getSeatTypeId(), null);
+                final SeatQuantity reservedOne = Seats.findById(reservedSeats, requestedOne.getSeatTypeId(), null);
                 if (reservedOne == null) {
                     return false;
                 }
