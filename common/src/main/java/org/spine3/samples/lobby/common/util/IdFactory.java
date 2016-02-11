@@ -21,11 +21,11 @@
 package org.spine3.samples.lobby.common.util;
 
 import com.google.protobuf.Message;
+import org.spine3.base.Identifiers;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
-import org.spine3.util.Identifiers;
 
 /**
  * The utility class containing convenience methods for identifiers creation.

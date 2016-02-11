@@ -22,11 +22,11 @@ package org.spine3.samples.lobby.registration.util;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
+import org.spine3.base.Identifiers;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.seat.availability.SeatQuantities;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityId;
-import org.spine3.util.Identifiers;
 
 import javax.annotation.Nullable;
 

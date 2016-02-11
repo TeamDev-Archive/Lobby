@@ -335,6 +335,13 @@ public class OrderAggregateShould {
             super(id);
         }
 
+        // Is overridden to do not throw exceptions while retrieving the default state via reflection.
+        @Override
+        @SuppressWarnings("RefusedBequest")
+        protected Order getDefaultState() {
+            return Order.getDefaultInstance();
+        }
+
         // Is overridden to make accessible in tests.
         @Override
         public void incrementState(Order newState) {

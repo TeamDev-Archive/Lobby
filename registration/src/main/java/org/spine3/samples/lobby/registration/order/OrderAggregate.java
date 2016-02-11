@@ -92,11 +92,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         this.pricingService = service;
     }
 
-    @Override
-    protected Order getDefaultState() {
-        return Order.getDefaultInstance();
-    }
-
     @Assign
     public List<Message> handle(RegisterToConference command, CommandContext context) {
         checkNotConfirmed(getState(), command);

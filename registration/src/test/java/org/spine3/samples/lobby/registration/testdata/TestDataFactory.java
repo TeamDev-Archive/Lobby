@@ -20,13 +20,16 @@
 
 package org.spine3.samples.lobby.registration.testdata;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.Message;
-import com.google.protobuf.util.TimeUtil;
 import org.spine3.base.*;
-import org.spine3.eventbus.EventBus;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.server.BoundedContext;
+import org.spine3.server.CommandBus;
 import org.spine3.server.CommandDispatcher;
+import org.spine3.server.EventBus;
+import org.spine3.server.command.CommandStore;
+import org.spine3.server.event.EventStore;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import static org.spine3.protobuf.Messages.toAny;
@@ -47,11 +50,17 @@ public class TestDataFactory {
      * {@link CommandDispatcher} and {@link EventBus}.
      */
     public static BoundedContext newBoundedContext() {
+        final InMemoryStorageFactory storageFactory = InMemoryStorageFactory.getInstance();
+        final EventStore eventStore = EventStore.newBuilder()
+                .setStreamExecutor(MoreExecutors.directExecutor())
+                .setStorage(storageFactory.createEventStorage())
+                .build();
+        final CommandBus commandBus = CommandBus.create(new CommandStore(storageFactory.createCommandStorage()));
         final BoundedContext.Builder result = BoundedContext.newBuilder()
                 .setName("Orders & Registrations tests")
-                .setStorageFactory(InMemoryStorageFactory.getInstance())
-                .setCommandDispatcher(CommandDispatcher.getInstance())
-                .setEventBus(EventBus.newInstance());
+                .setStorageFactory(storageFactory)
+                .setCommandBus(commandBus)
+                .setEventBus(EventBus.newInstance(eventStore));
         return result.build();
     }
 
@@ -66,18 +75,19 @@ public class TestDataFactory {
     }
 
     /**
-     * Creates a new {@link EventRecord} instance with the given {@code event}, and {@code aggregateId}.
+     * Creates a new {@link Event} instance with the given {@code event}, and {@code aggregateId}.
      */
-    public static EventRecord newEventRecord(Message event, Message aggregateId) {
-        final CommandId commandId = CommandId.newBuilder().setTimestamp(TimeUtil.getCurrentTime()).build();
-        final EventId eventId = EventId.newBuilder().setCommandId(commandId).build();
-        final EventContext context = EventContext.newBuilder()
-                .setAggregateId(toAny(aggregateId))
+    public static Event newEvent(Message event) {
+        final CommandId commandId = Commands.generateId();
+        final EventId eventId = Events.generateId();
+        final CommandContext commandContext = CommandContext.newBuilder().setCommandId(commandId).build();
+        final EventContext eventContext = EventContext.newBuilder()
+                .setCommandContext(commandContext)
                 .setEventId(eventId)
                 .build();
-        final EventRecord.Builder result = EventRecord.newBuilder()
-                .setContext(context)
-                .setEvent(toAny(event));
+        final Event.Builder result = Event.newBuilder()
+                .setContext(eventContext)
+                .setMessage(toAny(event));
         return result.build();
     }
 }

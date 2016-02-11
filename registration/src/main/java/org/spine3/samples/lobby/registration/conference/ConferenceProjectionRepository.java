@@ -35,23 +35,21 @@ import javax.annotation.Nonnull;
  */
 public class ConferenceProjectionRepository extends ProjectionRepository<ConferenceId, ConferenceProjection, Conference> {
 
-    private final BoundedContext context;
-
     /**
      * Creates a new repository instance.
      *
      * @param context current bounded context
      */
     public ConferenceProjectionRepository(BoundedContext context) {
-        super();
-        this.context = context;
+        super(context);
     }
 
     @Nonnull
     @Override
     public ConferenceProjection load(ConferenceId id) throws IllegalStateException {
         final ConferenceProjection conference = super.load(id);
-        conference.setBoundedContext(context);
+        final BoundedContext boundedContext = getBoundedContext();
+        conference.setBoundedContext(boundedContext);
         return conference;
     }
 }

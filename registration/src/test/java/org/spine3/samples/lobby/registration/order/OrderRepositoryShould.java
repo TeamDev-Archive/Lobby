@@ -21,17 +21,16 @@
 package org.spine3.samples.lobby.registration.order;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.spine3.base.EventRecord;
+import org.spine3.base.Event;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
 import org.spine3.samples.lobby.registration.contracts.OrderTotal;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
-import org.spine3.server.storage.AggregateStorage;
+import org.spine3.server.BoundedContext;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import java.lang.reflect.InvocationTargetException;
@@ -39,7 +38,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.spine3.samples.lobby.common.util.IdFactory.*;
-import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newEventRecord;
+import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
+import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newEvent;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
 /**
@@ -48,17 +48,14 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 @SuppressWarnings({"InstanceMethodNamingConvention", "ReturnOfCollectionOrArrayField", "MagicNumber"})
 public class OrderRepositoryShould {
 
-    private final OrderRepository repository = new OrderRepository(new PricingServiceMock());
+    private OrderRepository repository;
 
     @Before
     public void setUpTest() {
-        final AggregateStorage<OrderId> storage = InMemoryStorageFactory.getInstance().createAggregateStorage(null);
-        repository.assignStorage(storage);
-    }
-
-    @After
-    public void tearDownTest() {
-        repository.assignStorage(null);
+        final BoundedContext boundedContext = newBoundedContext();
+        repository = new OrderRepository(boundedContext, new PricingServiceMock());
+        repository.initStorage(InMemoryStorageFactory.getInstance());
+        boundedContext.register(repository);
     }
 
     @Test
@@ -81,13 +78,13 @@ public class OrderRepositoryShould {
         private final List<SeatQuantity> seats = ImmutableList.of(
                 newSeatQuantity(seatTypeId, 128), newSeatQuantity(seatTypeId, 256));
 
-        private final EventRecord orderPlaced = newEventRecord(OrderPlaced.newBuilder()
+        private final Event orderPlaced = newEvent(OrderPlaced.newBuilder()
                 .setOrderId(ID)
                 .setConferenceId(newConferenceId())
                 .addAllSeat(seats)
-                .build(), ID);
+                .build());
 
-        private final ImmutableList<EventRecord> uncommittedEvents = ImmutableList.of(orderPlaced);
+        private final ImmutableList<Event> uncommittedEvents = ImmutableList.of(orderPlaced);
 
         public TestOrderAggregate() {
             super(ID);
@@ -95,7 +92,7 @@ public class OrderRepositoryShould {
 
         @Override
         @SuppressWarnings("RefusedBequest")
-        public List<EventRecord> getStateChangingUncommittedEvents() {
+        public List<Event> getStateChangingUncommittedEvents() {
             return uncommittedEvents;
         }
 

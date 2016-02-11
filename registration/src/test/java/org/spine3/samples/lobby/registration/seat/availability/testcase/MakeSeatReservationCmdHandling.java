@@ -32,11 +32,11 @@ import org.spine3.samples.lobby.registration.seat.availability.SeatsReserved;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.spine3.base.Identifiers.newUuid;
 import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
 import static org.spine3.samples.lobby.common.util.IdFactory.newReservationId;
 import static org.spine3.samples.lobby.registration.util.Seats.findById;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
-import static org.spine3.util.Identifiers.newUuid;
 
 /**
  * @author Alexander Litus

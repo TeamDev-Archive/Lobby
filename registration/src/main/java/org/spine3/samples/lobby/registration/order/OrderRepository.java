@@ -21,7 +21,8 @@
 package org.spine3.samples.lobby.registration.order;
 
 import org.spine3.samples.lobby.common.OrderId;
-import org.spine3.server.aggregate.AggregateRepositoryBase;
+import org.spine3.server.BoundedContext;
+import org.spine3.server.aggregate.AggregateRepository;
 
 import javax.annotation.Nonnull;
 
@@ -31,17 +32,18 @@ import javax.annotation.Nonnull;
  * @see OrderAggregate
  * @author Alexander Litus
  */
-public class OrderRepository extends AggregateRepositoryBase<OrderId, OrderAggregate> {
+public class OrderRepository extends AggregateRepository<OrderId, OrderAggregate> {
 
     private final OrderPricingService orderPricingService;
 
     /**
      * Creates a new repository instance.
      *
+     * @param boundedContext the bounded context where this repository is used
      * @param orderPricingService the pricing service to inject to order aggregates
      */
-    public OrderRepository(OrderPricingService orderPricingService) {
-        super();
+    public OrderRepository(BoundedContext boundedContext, OrderPricingService orderPricingService) {
+        super(boundedContext);
         this.orderPricingService = orderPricingService;
     }
 

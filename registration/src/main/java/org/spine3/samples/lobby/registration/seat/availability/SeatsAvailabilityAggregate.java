@@ -56,11 +56,6 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         super(id);
     }
 
-    @Override
-    protected SeatsAvailability getDefaultState() {
-        return SeatsAvailability.getDefaultInstance();
-    }
-
     @Assign
     public SeatsReserved handle(MakeSeatReservation cmd, CommandContext context) {
         validateCommand(cmd);
