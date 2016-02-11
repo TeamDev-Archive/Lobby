@@ -29,7 +29,6 @@ import org.spine3.server.aggregate.AggregateRepository;
  * @see SeatsAvailabilityAggregate
  * @author Alexander Litus
  */
-@SuppressWarnings("EmptyClass")
 public class SeatsAvailabilityRepository extends AggregateRepository<SeatsAvailabilityId, SeatsAvailabilityAggregate> {
 
     /**

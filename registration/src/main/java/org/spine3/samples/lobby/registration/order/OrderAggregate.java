@@ -64,7 +64,7 @@ import static org.spine3.samples.lobby.registration.order.OrderValidator.*;
  *
  * @author Alexander Litus
  */
-@SuppressWarnings({"TypeMayBeWeakened", "OverlyCoupledClass", "ClassWithTooManyMethods"})
+@SuppressWarnings({"TypeMayBeWeakened", "OverlyCoupledClass"})
 public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     /**
@@ -248,7 +248,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     protected Set<Class<? extends Message>> getStateNeutralEventClasses() {
         return STATE_NEUTRAL_EVENT_CLASSES;
     }
-
 
     @Override
     @SuppressWarnings("RefusedBequest") // method from superclass does nothing
