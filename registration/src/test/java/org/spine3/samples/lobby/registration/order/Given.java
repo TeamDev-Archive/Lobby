@@ -25,7 +25,12 @@ import com.google.protobuf.util.TimeUtil;
 import org.spine3.base.CommandContext;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
-import org.spine3.samples.lobby.registration.contracts.*;
+import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
+import org.spine3.samples.lobby.registration.contracts.OrderPartiallyReserved;
+import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
+import org.spine3.samples.lobby.registration.contracts.OrderReservationCompleted;
+import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
+import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 
 import java.util.List;
 

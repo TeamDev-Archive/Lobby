@@ -26,7 +26,17 @@ import org.junit.Test;
 import org.spine3.money.Money;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
-import org.spine3.samples.lobby.registration.contracts.*;
+import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
+import org.spine3.samples.lobby.registration.contracts.OrderExpired;
+import org.spine3.samples.lobby.registration.contracts.OrderPartiallyReserved;
+import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
+import org.spine3.samples.lobby.registration.contracts.OrderRegistrantAssigned;
+import org.spine3.samples.lobby.registration.contracts.OrderReservationCompleted;
+import org.spine3.samples.lobby.registration.contracts.OrderTotal;
+import org.spine3.samples.lobby.registration.contracts.OrderTotalsCalculated;
+import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
+import org.spine3.samples.lobby.registration.contracts.SeatOrderLine;
+import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
