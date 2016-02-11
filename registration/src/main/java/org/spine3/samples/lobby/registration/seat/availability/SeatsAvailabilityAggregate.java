@@ -88,7 +88,6 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         validateState(state, cmd);
 
         final ReservationId reservationId = cmd.getReservationId();
-        //noinspection LocalVariableNamingConvention
         final List<SeatQuantity> availableSeatsUpdated = newLinkedList(state.getAvailableSeatList());
         final SeatQuantities unreservedSeats = state.getPendingReservations().get(reservationId.getUuid());
         availableSeatsUpdated.addAll(unreservedSeats.getItemList());

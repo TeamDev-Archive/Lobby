@@ -53,7 +53,7 @@ import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.new
 /**
  * @author Alexander Litus
  */
-@SuppressWarnings({"TypeMayBeWeakened", "InstanceMethodNamingConvention", "ClassWithTooManyMethods", "UtilityClass"})
+@SuppressWarnings("InstanceMethodNamingConvention")
 public class ConferenceProjectionShould {
 
     private static final EventContext CONTEXT = EventContext.getDefaultInstance();

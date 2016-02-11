@@ -82,7 +82,6 @@ class Given {
 
     OrderAggregateShould.TestOrderAggregate partiallyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
         final List<SeatQuantity> requestedSeats = newArrayList(reservedSeats);
-        //noinspection LocalVariableNamingConvention
         final int partlyReservedSeatIndex = 0;
         final SeatQuantity.Builder seat = requestedSeats.get(partlyReservedSeatIndex).toBuilder();
         seat.setQuantity(seat.getQuantity() + 5);

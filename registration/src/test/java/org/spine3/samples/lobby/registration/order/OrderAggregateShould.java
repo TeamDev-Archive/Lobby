@@ -53,7 +53,7 @@ import static org.spine3.money.MoneyUtil.newMoney;
  * @author Alexander Litus
  */
 @SuppressWarnings({"InstanceMethodNamingConvention", "TypeMayBeWeakened", "UtilityClass", "OverlyCoupledClass",
-        "MagicNumber", "ClassWithTooManyMethods"})
+        "ClassWithTooManyMethods"})
 public class OrderAggregateShould {
 
     private Given given;

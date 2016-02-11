@@ -44,8 +44,8 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatsAvailabil
 /**
  * @author Alexander Litus
  */
-@SuppressWarnings({"MagicNumber", "UtilityClass", "InstanceMethodNamingConvention", "RefusedBequest",
-        "ReturnOfCollectionOrArrayField", "TypeMayBeWeakened"})
+@SuppressWarnings({"MagicNumber", "InstanceMethodNamingConvention", "RefusedBequest",
+        "ReturnOfCollectionOrArrayField"})
 public class SeatsAvailabilityRepositoryShould {
 
     private SeatsAvailabilityRepository repository;

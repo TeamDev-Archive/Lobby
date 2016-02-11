@@ -49,7 +49,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
  * @author Alexander Litus
  */
 @SuppressWarnings({"InstanceMethodNamingConvention", "MagicNumber", "ClassWithTooManyMethods",
-        "LocalVariableNamingConvention", "OverlyCoupledClass"})
+        "OverlyCoupledClass"})
 public class SeatsAvailabilityAggregateShould {
 
     private final TestSeatsAvailabilityAggregate defaultAggregate = new TestCase().givenAggregate();

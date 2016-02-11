@@ -41,7 +41,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 /**
  * @author Alexander Litus
  */
-@SuppressWarnings({"TypeMayBeWeakened", "LocalVariableNamingConvention"})
+@SuppressWarnings("TypeMayBeWeakened")
 public abstract class MakeSeatReservationCmdHandling extends TestCase {
 
     private static final ConferenceId CONFERENCE_ID = newConferenceId();
