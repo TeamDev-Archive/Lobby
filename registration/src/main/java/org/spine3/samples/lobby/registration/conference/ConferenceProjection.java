@@ -167,7 +167,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                 .setQuantity(newSeatQuantity(seatTypeId, quantity))
                 .build();
         final Command command = create(message, newCommandContext());
-        boundedContext.post(command);
+        boundedContext.process(command);
     }
 
     private void sendRemoveSeatsRequest(SeatTypeId seatTypeId, int quantity) {
@@ -176,7 +176,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                 .setQuantity(newSeatQuantity(seatTypeId, quantity))
                 .build();
         final Command command = create(message, newCommandContext());
-        boundedContext.post(command);
+        boundedContext.process(command);
     }
 
     private static List<SeatType> filterById(final SeatTypeId id, List<SeatType> seatTypes) {
