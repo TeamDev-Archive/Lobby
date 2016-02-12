@@ -160,7 +160,7 @@ message SeatAssignmentUpdated {
 // The event propagated when a seat is assigned to an attendee.
 message SeatAssigned {
     // The ID of the seat assignments aggregate.
-        spine.samples.lobby.registration.contracts.SeatAssignmentsId assignments_id = 1;
+    spine.samples.lobby.registration.contracts.SeatAssignmentsId assignments_id = 1;
 
     // The position of the seat.
     spine.samples.lobby.registration.contracts.SeatPosition position = 2;
@@ -175,7 +175,7 @@ message SeatAssigned {
 // The event propagated when a seat is unassigned from an attendee.
 message SeatUnassigned {
     // The ID of the seat assignments aggregate.
-        spine.samples.lobby.registration.contracts.SeatAssignmentsId assignments_id = 1;
+    spine.samples.lobby.registration.contracts.SeatAssignmentsId assignments_id = 1;
 
     // The position of the seat.
     spine.samples.lobby.registration.contracts.SeatPosition position = 2;
