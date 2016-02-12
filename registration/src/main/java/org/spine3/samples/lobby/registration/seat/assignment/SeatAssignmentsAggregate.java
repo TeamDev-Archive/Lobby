@@ -23,11 +23,14 @@ package org.spine3.samples.lobby.registration.seat.assignment;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Message;
 import org.spine3.base.CommandContext;
+import org.spine3.base.EmailAddress;
+import org.spine3.base.PersonName;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatAssigned;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsId;
+import org.spine3.samples.lobby.registration.contracts.SeatPosition;
 import org.spine3.samples.lobby.registration.contracts.SeatUnassigned;
 import org.spine3.server.Assign;
 import org.spine3.server.aggregate.Aggregate;
@@ -60,15 +63,14 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
     public List<Message> handle(AssignSeat cmd, CommandContext context) {
         Validator.validateCommand(cmd);
         final SeatAssignments state = getState();
-        Validator.validateState(state, cmd);
+        Validator.checkContainsPosition(cmd.getPosition(), state);
 
         final ImmutableList.Builder<Message> result = ImmutableList.builder();
-        final SeatAssignment primaryAssignment = state.getAssignments().get(cmd.getPosition().getValue());
+        final SeatAssignment primaryAssignment = getAssignment(cmd.getPosition());
         final PersonalInfo primaryAttendee = primaryAssignment.getAttendee();
         if (isAttendeeChanged(primaryAttendee, cmd.getAttendee())) {
-            final boolean isPrimaryAttendeePresent = primaryAttendee.hasEmail();
-            if (isPrimaryAttendeePresent) {
-                result.add(newSeatUnassignedEvent(cmd));
+            if (primaryAssignment.hasAttendee()) {
+                result.add(newSeatUnassignedEvent(cmd.getPosition()));
             }
             result.add(newSeatAssignedEvent(cmd, primaryAssignment.getSeatTypeId()));
         } else if (isAttendeeNameChanged(primaryAttendee, cmd.getAttendee())) {
@@ -77,12 +79,38 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
         return result.build();
     }
 
+    @Assign
+    public SeatUnassigned handle(UnassignSeat cmd, CommandContext context) throws CannotUnassignNotAssignedSeat{
+        Validator.validateCommand(cmd);
+        final SeatAssignments state = getState();
+        Validator.checkContainsPosition(cmd.getPosition(), state);
+
+        final SeatAssignment primaryAssignment = getAssignment(cmd.getPosition());
+        if (primaryAssignment.hasAttendee()) {
+            final SeatUnassigned event = newSeatUnassignedEvent(cmd.getPosition());
+            return event;
+        } else {
+            throw new CannotUnassignNotAssignedSeat(getId(), primaryAssignment.getSeatTypeId(), cmd.getPosition());
+        }
+    }
+
+    private SeatAssignment getAssignment(SeatPosition seatPosition) {
+        final SeatAssignments state = getState();
+        final Map<Integer, SeatAssignment> assignments = state.getAssignments();
+        final SeatAssignment assignment = assignments.get(seatPosition.getValue());
+        return assignment;
+    }
+
     private static boolean isAttendeeChanged(PersonalInfo primaryAttendee, PersonalInfo newAttendee) {
-        return !newAttendee.getEmail().equals(primaryAttendee.getEmail());
+        final EmailAddress primaryEmail = primaryAttendee.getEmail();
+        final EmailAddress newEmail = newAttendee.getEmail();
+        return !primaryEmail.equals(newEmail);
     }
 
     private static boolean isAttendeeNameChanged(PersonalInfo primaryAttendee, PersonalInfo newAttendee) {
-        return !newAttendee.getName().equals(primaryAttendee.getName());
+        final PersonName newName = newAttendee.getName();
+        final PersonName primaryName = primaryAttendee.getName();
+        return !primaryName.equals(newName);
     }
 
     private SeatAssigned newSeatAssignedEvent(AssignSeat cmd, SeatTypeId seatTypeId) {
@@ -102,10 +130,10 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
         return builder.build();
     }
 
-    public SeatUnassigned newSeatUnassignedEvent(AssignSeat cmd) {
+    public SeatUnassigned newSeatUnassignedEvent(SeatPosition position) {
         final SeatUnassigned.Builder builder = SeatUnassigned.newBuilder()
                 .setAssignmentsId(getId())
-                .setPosition(cmd.getPosition());
+                .setPosition(position);
         return builder.build();
     }
 
@@ -125,10 +153,10 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
             checkMessageField(cmd.hasPosition(), SEAT_POSITION, cmd);
         }
 
-        public static void validateState(SeatAssignments state, AssignSeat cmd) {
+        public static void checkContainsPosition(SeatPosition seatPosition, SeatAssignments state) {
             final Map<Integer, SeatAssignment> assignments = state.getAssignments();
-            final int position = cmd.getPosition().getValue();
-            checkState(assignments.containsKey(position), "No such position: " + position);
+            final int value = seatPosition.getValue();
+            checkState(assignments.containsKey(value), "No such position: " + value);
         }
 
         private static void validateCommand(UnassignSeat cmd) {
