@@ -23,8 +23,6 @@ package org.spine3.samples.lobby.registration.order;
 import com.google.protobuf.Message;
 import org.junit.Before;
 import org.junit.Test;
-import org.spine3.money.Money;
-import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
 import org.spine3.samples.lobby.registration.contracts.OrderExpired;
@@ -32,10 +30,8 @@ import org.spine3.samples.lobby.registration.contracts.OrderPartiallyReserved;
 import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
 import org.spine3.samples.lobby.registration.contracts.OrderRegistrantAssigned;
 import org.spine3.samples.lobby.registration.contracts.OrderReservationCompleted;
-import org.spine3.samples.lobby.registration.contracts.OrderTotal;
 import org.spine3.samples.lobby.registration.contracts.OrderTotalsCalculated;
 import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
-import org.spine3.samples.lobby.registration.contracts.SeatOrderLine;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 
 import java.lang.reflect.InvocationTargetException;
@@ -43,11 +39,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import static com.google.common.base.Throwables.propagate;
-import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.spine3.money.Currency.USD;
-import static org.spine3.money.MoneyUtil.newMoney;
 
 /**
  * @author Alexander Litus
@@ -278,72 +271,53 @@ public class OrderAggregateShould {
 
     private static class Assert {
 
-        static void eventIsValid(OrderPlaced event, RegisterToConference cmd) {
+        private static void eventIsValid(OrderPlaced event, RegisterToConference cmd) {
             assertEquals(cmd.getOrderId(), event.getOrderId());
             assertEquals(cmd.getConferenceId(), event.getConferenceId());
             assertEquals(cmd.getSeatList(), event.getSeatList());
         }
 
-        static void eventIsValid(OrderUpdated event, RegisterToConference cmd) {
+        private static void eventIsValid(OrderUpdated event, RegisterToConference cmd) {
             assertEquals(cmd.getOrderId(), event.getOrderId());
             assertEquals(cmd.getSeatList(), event.getSeatList());
         }
 
-        static void eventIsValid(OrderTotalsCalculated event) {
+        private static void eventIsValid(OrderTotalsCalculated event) {
             assertEquals(Given.ORDER_ID, event.getOrderId());
-            assertEquals(PricingServiceStub.ORDER_LINES, event.getOrderLineList());
-            assertEquals(PricingServiceStub.TOTAL_PRICE, event.getTotal());
+            assertEquals(Given.PricingServiceStub.ORDER_LINES, event.getOrderLineList());
+            assertEquals(Given.PricingServiceStub.TOTAL_PRICE, event.getTotal());
         }
 
-        static void eventIsValid(OrderReservationCompleted event, MarkSeatsAsReserved cmd) {
+        private static void eventIsValid(OrderReservationCompleted event, MarkSeatsAsReserved cmd) {
             assertEquals(cmd.getOrderId(), event.getOrderId());
             assertEquals(cmd.getReservationExpiration(), event.getReservationExpiration());
             assertEquals(cmd.getSeatList(), event.getSeatList());
         }
 
-        static void eventIsValid(OrderPartiallyReserved event, MarkSeatsAsReserved cmd) {
+        private static void eventIsValid(OrderPartiallyReserved event, MarkSeatsAsReserved cmd) {
             assertEquals(cmd.getOrderId(), event.getOrderId());
             assertEquals(cmd.getReservationExpiration(), event.getReservationExpiration());
             assertEquals(cmd.getSeatList(), event.getSeatList());
         }
 
-        static void eventIsValid(OrderExpired event, RejectOrder cmd) {
+        private static void eventIsValid(OrderExpired event, RejectOrder cmd) {
             assertEquals(cmd.getOrderId(), event.getOrderId());
         }
 
-        static void eventIsValid(OrderConfirmed event, ConfirmOrder cmd, List<SeatQuantity> seatsExpected) {
+        private static void eventIsValid(OrderConfirmed event, ConfirmOrder cmd, List<SeatQuantity> seatsExpected) {
             assertEquals(cmd.getOrderId(), event.getOrderId());
             assertEquals(seatsExpected, event.getSeatList());
         }
 
-        static void eventIsValid(OrderRegistrantAssigned event, AssignRegistrantDetails cmd) {
+        private static void eventIsValid(OrderRegistrantAssigned event, AssignRegistrantDetails cmd) {
             assertEquals(cmd.getOrderId(), event.getOrderId());
             assertEquals(cmd.getRegistrant(), event.getPersonalInfo());
         }
     }
 
-    static class PricingServiceStub implements OrderPricingService {
+    /*package*/ static class TestOrderAggregate extends OrderAggregate {
 
-        private static final Money TOTAL_PRICE = newMoney(100, USD);
-        private static final SeatOrderLine ORDER_LINE = SeatOrderLine.newBuilder()
-                .setQuantity(10)
-                .setUnitPrice(newMoney(10, USD))
-                .setLineTotal(TOTAL_PRICE)
-                .build();
-        private static final List<SeatOrderLine> ORDER_LINES = singletonList(ORDER_LINE);
-
-        @Override
-        public OrderTotal calculateTotalOrderPrice(ConferenceId conferenceId, Iterable<SeatQuantity> seats) {
-            final OrderTotal.Builder result = OrderTotal.newBuilder()
-                    .setTotalPrice(TOTAL_PRICE)
-                    .addAllOrderLine(ORDER_LINES);
-            return result.build();
-        }
-    }
-
-    public static class TestOrderAggregate extends OrderAggregate {
-
-        public TestOrderAggregate(OrderId id) {
+        /*package*/ TestOrderAggregate(OrderId id) {
             super(id);
         }
 
@@ -360,23 +334,23 @@ public class OrderAggregateShould {
             super.incrementState(newState);
         }
 
-        void apply(OrderPlaced event) {
+        private void apply(OrderPlaced event) {
             invokeApplyMethod(event);
         }
 
-        void apply(OrderUpdated event) {
+        private void apply(OrderUpdated event) {
             invokeApplyMethod(event);
         }
 
-        void apply(OrderPartiallyReserved event) {
+        private void apply(OrderPartiallyReserved event) {
             invokeApplyMethod(event);
         }
 
-        void apply(OrderReservationCompleted event) {
+        private void apply(OrderReservationCompleted event) {
             invokeApplyMethod(event);
         }
 
-        void apply(OrderConfirmed event) {
+        private void apply(OrderConfirmed event) {
             invokeApplyMethod(event);
         }
 

@@ -23,18 +23,24 @@ package org.spine3.samples.lobby.registration.order;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.util.TimeUtil;
 import org.spine3.base.CommandContext;
+import org.spine3.money.Money;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
 import org.spine3.samples.lobby.registration.contracts.OrderPartiallyReserved;
 import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
 import org.spine3.samples.lobby.registration.contracts.OrderReservationCompleted;
+import org.spine3.samples.lobby.registration.contracts.OrderTotal;
 import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
+import org.spine3.samples.lobby.registration.contracts.SeatOrderLine;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.singletonList;
+import static org.spine3.money.Currency.USD;
+import static org.spine3.money.MoneyUtil.newMoney;
 import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
 import static org.spine3.samples.lobby.common.util.IdFactory.newOrderId;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newPersonalInfo;
@@ -55,7 +61,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
     /*package*/ Given() {
         aggregate = new OrderAggregateShould.TestOrderAggregate(ORDER_ID);
-        aggregate.setOrderPricingService(new OrderAggregateShould.PricingServiceStub());
+        aggregate.setOrderPricingService(new PricingServiceStub());
     }
 
     /*package*/ OrderAggregateShould.TestOrderAggregate newOrder() {
@@ -108,6 +114,25 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         final Order.Builder order = orderState(seats).toBuilder();
         order.setIsConfirmed(isConfirmed);
         return order.build();
+    }
+
+    /*package*/ static class PricingServiceStub implements OrderPricingService {
+
+        /*package*/ static final Money TOTAL_PRICE = newMoney(100, USD);
+        private static final SeatOrderLine ORDER_LINE = SeatOrderLine.newBuilder()
+                .setQuantity(10)
+                .setUnitPrice(newMoney(10, USD))
+                .setLineTotal(TOTAL_PRICE)
+                .build();
+        /*package*/ static final List<SeatOrderLine> ORDER_LINES = singletonList(ORDER_LINE);
+
+        @Override
+        public OrderTotal calculateTotalOrderPrice(ConferenceId conferenceId, Iterable<SeatQuantity> seats) {
+            final OrderTotal.Builder result = OrderTotal.newBuilder()
+                    .setTotalPrice(TOTAL_PRICE)
+                    .addAllOrderLine(ORDER_LINES);
+            return result.build();
+        }
     }
 
     @SuppressWarnings("UtilityClass")
