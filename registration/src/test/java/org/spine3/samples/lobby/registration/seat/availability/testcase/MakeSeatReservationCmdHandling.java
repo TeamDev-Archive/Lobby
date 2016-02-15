@@ -33,8 +33,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.spine3.base.Identifiers.newUuid;
-import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
-import static org.spine3.samples.lobby.common.util.IdFactory.newReservationId;
+import static org.spine3.samples.lobby.common.util.IdFactory.*;
 import static org.spine3.samples.lobby.registration.util.Seats.findById;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
@@ -110,9 +109,5 @@ public abstract class MakeSeatReservationCmdHandling extends TestCase {
         final int expectedWorkshopSeatCount = WORKSHOP_SEAT_COUNT_AVAILABLE - Command.WORKSHOP_SEAT_COUNT_REQUESTED;
         final SeatQuantity workshopSeatAvailable = findById(availableSeats, WORKSHOP_SEAT_TYPE_ID);
         assertEquals(expectedWorkshopSeatCount, workshopSeatAvailable.getQuantity());
-    }
-
-    private static SeatTypeId newSeatTypeId(String uuid) {
-        return SeatTypeId.newBuilder().setUuid(uuid).build();
     }
 }

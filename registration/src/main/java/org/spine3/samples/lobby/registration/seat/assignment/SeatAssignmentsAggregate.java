@@ -46,7 +46,7 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.Lists.newLinkedList;
-import static org.spine3.base.Identifiers.newUuid;
+import static org.spine3.samples.lobby.registration.util.Seats.newSeatAssignmentsId;
 import static org.spine3.samples.lobby.registration.util.ValidationUtils.checkMessageField;
 
 /**
@@ -196,12 +196,6 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
                     .build();
             assignments.add(assignment);
         }
-    }
-
-    private static SeatAssignmentsId newSeatAssignmentsId() {
-        final SeatAssignmentsId.Builder builder = SeatAssignmentsId.newBuilder()
-                                                                   .setUuid(newUuid());
-        return builder.build();
     }
 
     private static SeatPosition newSeatPosition(int position) {

@@ -69,4 +69,11 @@ public class IdFactory {
     public static SeatTypeId newSeatTypeId() {
         return SeatTypeId.newBuilder().setUuid(Identifiers.newUuid()).build();
     }
+
+    /**
+     * Creates a new {@code SeatAssignmentsId} with the given UUID value.
+     */
+    public static SeatTypeId newSeatTypeId(String uuid) {
+        return SeatTypeId.newBuilder().setUuid(uuid).build();
+    }
 }
