@@ -176,7 +176,8 @@ public class OrderAggregateShould {
 
         final OrderConfirmed event = aggregate.handle(cmd, Given.Command.context());
 
-        Assert.eventIsValid(event, cmd);
+        final List<SeatQuantity> seats = aggregate.getState().getSeatList();
+        Assert.eventIsValid(event, cmd, seats);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -310,8 +311,9 @@ public class OrderAggregateShould {
             assertEquals(cmd.getOrderId(), event.getOrderId());
         }
 
-        static void eventIsValid(OrderConfirmed event, ConfirmOrder cmd) {
+        static void eventIsValid(OrderConfirmed event, ConfirmOrder cmd, List<SeatQuantity> seatsExpected) {
             assertEquals(cmd.getOrderId(), event.getOrderId());
+            assertEquals(seatsExpected, event.getSeatList());
         }
 
         static void eventIsValid(OrderRegistrantAssigned event, AssignRegistrantDetails cmd) {

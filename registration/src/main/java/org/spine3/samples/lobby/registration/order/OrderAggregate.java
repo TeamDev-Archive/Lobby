@@ -156,10 +156,12 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Assign
     public OrderConfirmed handle(ConfirmOrder command, CommandContext context) {
-        checkNotConfirmed(getState(), command);
+        final Order state = getState();
+        checkNotConfirmed(state, command);
         validateCommand(command);
         final OrderConfirmed result = OrderConfirmed.newBuilder()
                 .setOrderId(command.getOrderId())
+                .addAllSeat(state.getSeatList())
                 .build();
         return result;
     }

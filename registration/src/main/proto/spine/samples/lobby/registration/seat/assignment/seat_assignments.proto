@@ -35,17 +35,5 @@ message SeatAssignments {
 
     // The map from a SeatPosition to a seat assignment.
     // NOTE: the SeatPosition cannot be used as a map key due to Protobuf restrictions.
-    map<int32, SeatAssignment> assignments = 2;
-}
-
-// Associates an attendee with a seat in a confirmed order.
-message SeatAssignment {
-    // The position of the seat.
-    spine.samples.lobby.registration.contracts.SeatPosition position = 1;
-
-    // The seat type for the attendee.
-    spine.samples.lobby.common.SeatTypeId seat_type_id = 2;
-
-    // The personal info of the attendee.
-    spine.samples.lobby.common.PersonalInfo attendee = 3;
+    map<int32, spine.samples.lobby.registration.contracts.SeatAssignment> assignments = 2;
 }

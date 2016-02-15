@@ -80,3 +80,15 @@ message SeatAssignmentsId {
     // The UUID-based value of the seat assignments ID.
     string uuid = 1;
 }
+
+// Associates an attendee with a seat in a confirmed order.
+message SeatAssignment {
+    // The type of the seat assigned.
+    spine.samples.lobby.common.SeatTypeId seat_type_id = 1;
+
+    // The position of the seat.
+    SeatPosition position = 2;
+
+    // The personal info of the attendee.
+    spine.samples.lobby.common.PersonalInfo attendee = 3;
+}

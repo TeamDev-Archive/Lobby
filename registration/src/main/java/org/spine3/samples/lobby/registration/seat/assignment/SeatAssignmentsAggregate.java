@@ -28,18 +28,25 @@ import org.spine3.base.PersonName;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatAssigned;
+import org.spine3.samples.lobby.registration.contracts.SeatAssignment;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentUpdated;
+import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsCreated;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsId;
 import org.spine3.samples.lobby.registration.contracts.SeatPosition;
+import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.contracts.SeatUnassigned;
+import org.spine3.samples.lobby.registration.util.ValidationUtils;
 import org.spine3.server.Assign;
 import org.spine3.server.aggregate.Aggregate;
+import org.spine3.server.aggregate.Apply;
 
 import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.google.common.collect.Lists.newLinkedList;
+import static org.spine3.base.Identifiers.newUuid;
 import static org.spine3.samples.lobby.registration.util.ValidationUtils.checkMessageField;
 
 /**
@@ -47,6 +54,7 @@ import static org.spine3.samples.lobby.registration.util.ValidationUtils.checkMe
  *
  * @author Alexander Litus
  */
+@SuppressWarnings("OverlyCoupledClass")
 public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatAssignments> {
 
     /**
@@ -57,6 +65,13 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
      */
     public SeatAssignmentsAggregate(SeatAssignmentsId id) {
         super(id);
+    }
+
+    @Assign
+    public SeatAssignmentsCreated handle(CreateSeatAssignments cmd, CommandContext context) {
+        Validator.validateCommand(cmd);
+        final SeatAssignmentsCreated event = newSeatAssignmentsCreatedEvent(cmd);
+        return event;
     }
 
     @Assign
@@ -80,7 +95,7 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
     }
 
     @Assign
-    public SeatUnassigned handle(UnassignSeat cmd, CommandContext context) throws CannotUnassignNotAssignedSeat{
+    public SeatUnassigned handle(UnassignSeat cmd, CommandContext context) throws CannotUnassignNotAssignedSeat {
         Validator.validateCommand(cmd);
         final SeatAssignments state = getState();
         Validator.checkContainsPosition(cmd.getPosition(), state);
@@ -92,6 +107,53 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
         } else {
             throw new CannotUnassignNotAssignedSeat(getId(), primaryAssignment.getSeatTypeId(), cmd.getPosition());
         }
+    }
+
+    /* Event Appliers */
+
+    @Apply
+    private void apply(SeatAssignmentsCreated event) {
+        final SeatAssignments.Builder state = getState().toBuilder();
+        final Map<Integer, SeatAssignment> assignments = state.getMutableAssignments();
+        for (SeatAssignment newAssignment : event.getAssignmentList()) {
+            final int position = newAssignment.getPosition().getValue();
+            assignments.put(position, newAssignment);
+        }
+        incrementState(state.build());
+    }
+
+    @Apply
+    private void apply(SeatAssigned event) {
+        final SeatAssignment assignment = event.getAssignment();
+        final int position = assignment.getPosition().getValue();
+        final SeatAssignments.Builder state = getState().toBuilder();
+        state.getMutableAssignments().put(position, assignment);
+        incrementState(state.build());
+    }
+
+    @Apply
+    private void apply(SeatUnassigned event) {
+        final int position = event.getPosition().getValue();
+        final SeatAssignments.Builder state = getState().toBuilder();
+        state.getMutableAssignments().remove(position);
+        incrementState(state.build());
+    }
+
+    @Apply
+    private void apply(SeatAssignmentUpdated event) {
+        final SeatPosition seatPosition = event.getPosition();
+        final SeatAssignment assignmentPrimary = getAssignment(seatPosition);
+        final PersonName newName = event.getAttendee().getName();
+        final PersonalInfo attendeeUpdated = assignmentPrimary.getAttendee()
+                .toBuilder()
+                .setName(newName)
+                .build();
+        final SeatAssignment assignmentUpdated = assignmentPrimary.toBuilder()
+                .setAttendee(attendeeUpdated)
+                .build();
+        final SeatAssignments.Builder state = getState().toBuilder();
+        state.getMutableAssignments().put(seatPosition.getValue(), assignmentUpdated);
+        incrementState(state.build());
     }
 
     private SeatAssignment getAssignment(SeatPosition seatPosition) {
@@ -113,12 +175,48 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
         return !primaryName.equals(newName);
     }
 
+    private static SeatAssignmentsCreated newSeatAssignmentsCreatedEvent(CreateSeatAssignments cmd) {
+        final List<SeatAssignment> assignments = newLinkedList();
+        for (SeatQuantity seatQuantity : cmd.getSeatList()) {
+            addAssignment(assignments, seatQuantity);
+        }
+        final SeatAssignmentsCreated.Builder builder = SeatAssignmentsCreated.newBuilder()
+                .setAssignmentsId(newSeatAssignmentsId())
+                .setOrderId(cmd.getOrderId())
+                .addAllAssignment(assignments);
+        return builder.build();
+    }
+
+    private static void addAssignment(List<SeatAssignment> assignments, SeatQuantity seatQuantity) {
+        final SeatTypeId seatTypeId = seatQuantity.getSeatTypeId();
+        for (int i = 0; i < seatQuantity.getQuantity(); i++) {
+            final SeatAssignment assignment = SeatAssignment.newBuilder()
+                    .setSeatTypeId(seatTypeId)
+                    .setPosition(newSeatPosition(i))
+                    .build();
+            assignments.add(assignment);
+        }
+    }
+
+    private static SeatAssignmentsId newSeatAssignmentsId() {
+        final SeatAssignmentsId.Builder builder = SeatAssignmentsId.newBuilder()
+                                                                   .setUuid(newUuid());
+        return builder.build();
+    }
+
+    private static SeatPosition newSeatPosition(int position) {
+        return SeatPosition.newBuilder().setValue(position).build();
+    }
+
     private SeatAssigned newSeatAssignedEvent(AssignSeat cmd, SeatTypeId seatTypeId) {
+        final SeatAssignment assignment = SeatAssignment.newBuilder()
+                .setSeatTypeId(seatTypeId)
+                .setPosition(cmd.getPosition())
+                .setAttendee(cmd.getAttendee())
+                .build();
         final SeatAssigned.Builder builder = SeatAssigned.newBuilder()
                 .setAssignmentsId(getId())
-                .setPosition(cmd.getPosition())
-                .setSeatTypeId(seatTypeId)
-                .setAttendee(cmd.getAttendee());
+                .setAssignment(assignment);
         return builder.build();
     }
 
@@ -143,6 +241,12 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
         private static final String SEAT_POSITION = "seat position";
         private static final String ATTENDEE = "attendee";
         private static final String ATTENDEE_EMAIL = "attendee email";
+        private static final String ORDER_ID = "order id";
+
+        public static void validateCommand(CreateSeatAssignments cmd) {
+            checkMessageField(cmd.hasOrderId(), ORDER_ID, cmd);
+            ValidationUtils.checkSeats(cmd.getSeatList(), cmd);
+        }
 
         private static void validateCommand(AssignSeat cmd) {
             checkMessageField(cmd.hasSeatAssignmentsId(), SEAT_ASSIGNMENTS_ID, cmd);
