@@ -238,13 +238,13 @@ public class SeatAssignmentsAggregateShould {
             assertEquals(cmd.getAttendee(), assignment.getAttendee());
         }
 
-        public static void eventIsValid(SeatAssignmentUpdated event, AssignSeat cmd) {
+        private static void eventIsValid(SeatAssignmentUpdated event, AssignSeat cmd) {
             assertEquals(cmd.getSeatAssignmentsId(), event.getAssignmentsId());
             assertEquals(cmd.getPosition(), event.getPosition());
             assertEquals(cmd.getAttendee(), event.getAttendee());
         }
 
-        public static void eventIsValid(SeatUnassigned event, UnassignSeat cmd) {
+        private static void eventIsValid(SeatUnassigned event, UnassignSeat cmd) {
             assertEquals(cmd.getSeatAssignmentsId(), event.getAssignmentsId());
             assertEquals(cmd.getPosition(), event.getPosition());
         }
@@ -269,19 +269,19 @@ public class SeatAssignmentsAggregateShould {
             super.incrementState(newState);
         }
 
-        void apply(SeatAssignmentsCreated event) {
+        /*package*/ void apply(SeatAssignmentsCreated event) {
             invokeApplyMethod(event);
         }
 
-        void apply(SeatAssigned event) {
+        /*package*/ void apply(SeatAssigned event) {
             invokeApplyMethod(event);
         }
 
-        void apply(SeatUnassigned event) {
+        /*package*/ void apply(SeatUnassigned event) {
             invokeApplyMethod(event);
         }
 
-        void apply(SeatAssignmentUpdated event) {
+        /*package*/ void apply(SeatAssignmentUpdated event) {
             invokeApplyMethod(event);
         }
 
