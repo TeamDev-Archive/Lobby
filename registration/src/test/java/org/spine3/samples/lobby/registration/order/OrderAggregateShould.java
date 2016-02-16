@@ -40,13 +40,11 @@ import java.util.List;
 
 import static com.google.common.base.Throwables.propagate;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  * @author Alexander Litus
  */
-@SuppressWarnings({"InstanceMethodNamingConvention", "TypeMayBeWeakened", "UtilityClass", "OverlyCoupledClass",
-        "ClassWithTooManyMethods"})
+@SuppressWarnings({"InstanceMethodNamingConvention", "TypeMayBeWeakened", "OverlyCoupledClass", "ClassWithTooManyMethods"})
 public class OrderAggregateShould {
 
     private Given given;
@@ -64,9 +62,9 @@ public class OrderAggregateShould {
         final List<Message> events = aggregate.handle(cmd, Given.Command.context());
 
         assertEquals(2, events.size());
-        final OrderPlaced placedEvent = findMessage(OrderPlaced.class, events);
+        final OrderPlaced placedEvent = (OrderPlaced) events.get(0);
         Assert.eventIsValid(placedEvent, cmd);
-        final OrderTotalsCalculated calculatedEvent = findMessage(OrderTotalsCalculated.class, events);
+        final OrderTotalsCalculated calculatedEvent = (OrderTotalsCalculated) events.get(1);
         Assert.eventIsValid(calculatedEvent);
     }
 
@@ -78,9 +76,9 @@ public class OrderAggregateShould {
         final List<Message> events = aggregate.handle(cmd, Given.Command.context());
 
         assertEquals(2, events.size());
-        final OrderUpdated updated = findMessage(OrderUpdated.class, events);
+        final OrderUpdated updated = (OrderUpdated) events.get(0);
         Assert.eventIsValid(updated, cmd);
-        final OrderTotalsCalculated calculatedEvent = findMessage(OrderTotalsCalculated.class, events);
+        final OrderTotalsCalculated calculatedEvent = (OrderTotalsCalculated) events.get(1);
         Assert.eventIsValid(calculatedEvent);
     }
 
@@ -106,7 +104,7 @@ public class OrderAggregateShould {
         final List<Message> events = aggregate.handle(cmd, Given.Command.context());
 
         assertEquals(1, events.size());
-        final OrderReservationCompleted completedEvent = findMessage(OrderReservationCompleted.class, events);
+        final OrderReservationCompleted completedEvent = (OrderReservationCompleted) events.get(0);
         Assert.eventIsValid(completedEvent, cmd);
     }
 
@@ -118,9 +116,9 @@ public class OrderAggregateShould {
         final List<Message> events = aggregate.handle(cmd, Given.Command.context());
 
         assertEquals(2, events.size());
-        final OrderPartiallyReserved reservedEvent = findMessage(OrderPartiallyReserved.class, events);
+        final OrderPartiallyReserved reservedEvent = (OrderPartiallyReserved) events.get(0);
         Assert.eventIsValid(reservedEvent, cmd);
-        final OrderTotalsCalculated calculatedEvent = findMessage(OrderTotalsCalculated.class, events);
+        final OrderTotalsCalculated calculatedEvent = (OrderTotalsCalculated) events.get(1);
         Assert.eventIsValid(calculatedEvent);
     }
 
@@ -255,18 +253,6 @@ public class OrderAggregateShould {
         aggregate.apply(event);
 
         assertEquals(true, aggregate.getState().getIsConfirmed());
-    }
-
-    private static <E extends Message> E findMessage(Class<E> messageClass, Iterable<Message> messages) {
-        for (Message message : messages) {
-            if (message.getClass().equals(messageClass)) {
-                @SuppressWarnings("unchecked")
-                final E result = (E) message;
-                return result;
-            }
-        }
-        fail("No message found of class: " + messageClass.getName());
-        throw new RuntimeException("");
     }
 
     private static class Assert {
