@@ -31,7 +31,6 @@ import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -55,7 +54,7 @@ public class OrderRepositoryShould {
     }
 
     @Test
-    public void store_and_load_aggregate() throws InvocationTargetException {
+    public void store_and_load_aggregate() {
         final TestOrderAggregate expected = new TestOrderAggregate();
 
         repository.store(expected);

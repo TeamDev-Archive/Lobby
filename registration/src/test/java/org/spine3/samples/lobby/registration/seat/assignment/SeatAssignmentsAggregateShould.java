@@ -48,7 +48,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Alexander Litus
  */
-@SuppressWarnings("InstanceMethodNamingConvention")
+@SuppressWarnings({"InstanceMethodNamingConvention", "TypeMayBeWeakened"})
 public class SeatAssignmentsAggregateShould {
 
     private Given given;

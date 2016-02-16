@@ -29,7 +29,6 @@ import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsCreated;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 
@@ -56,7 +55,7 @@ public class SeatAssignmentsRepositoryShould {
     }
 
     @Test
-    public void store_and_load_aggregate() throws InvocationTargetException {
+    public void store_and_load_aggregate() {
         final TestSeatAssignmentsAggregate expectedAggregate = new TestSeatAssignmentsAggregate();
         final List<SeatAssignment> expectedAssignments = expectedAggregate.getAssignments();
 
@@ -78,7 +77,7 @@ public class SeatAssignmentsRepositoryShould {
         }
 
         @Override
-        @SuppressWarnings({"RefusedBequest", "ReturnOfCollectionOrArrayField"})
+        @SuppressWarnings("RefusedBequest")
         public List<Event> getStateChangingUncommittedEvents() {
             return ImmutableList.of(newEvent(event));
         }

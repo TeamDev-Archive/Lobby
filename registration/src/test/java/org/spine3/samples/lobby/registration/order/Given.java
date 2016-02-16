@@ -69,13 +69,13 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     }
 
     /*package*/ OrderAggregateShould.TestOrderAggregate confirmedOrder() {
-        final Order state = orderState(seats(), true);
+        final Order state = orderState(SEATS, true);
         aggregate.incrementState(state);
         return aggregate;
     }
 
     /*package*/ OrderAggregateShould.TestOrderAggregate placedOrder() {
-        final Order state = orderState(seats());
+        final Order state = orderState(SEATS);
         aggregate.incrementState(state);
         return aggregate;
     }
@@ -95,11 +95,6 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         final Order state = orderState(requestedSeats);
         aggregate.incrementState(state);
         return aggregate;
-    }
-
-    /*package*/ static List<SeatQuantity> seats() {
-        //noinspection ReturnOfCollectionOrArrayField
-        return SEATS;
     }
 
     private static Order orderState(Iterable<SeatQuantity> seats) {

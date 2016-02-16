@@ -49,6 +49,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
  *
  * @author Alexander Litus
  */
+@SuppressWarnings("UtilityClass")
 /*package*/ class Given {
 
     private static final SeatAssignmentsId ASSIGNMENTS_ID = newSeatAssignmentsId();
