@@ -117,7 +117,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
         return builder.build();
     }
 
-    private static SeatAssignment newSeatAssignment(SeatTypeId seatTypeId, SeatPosition position, PersonalInfo attendee) {
+    /*package*/ static SeatAssignment newSeatAssignment(SeatTypeId seatTypeId, SeatPosition position, PersonalInfo attendee) {
         final SeatAssignment.Builder builder = SeatAssignment.newBuilder()
                 .setSeatTypeId(seatTypeId)
                 .setPosition(position)
