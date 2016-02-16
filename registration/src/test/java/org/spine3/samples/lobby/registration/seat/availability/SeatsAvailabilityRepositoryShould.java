@@ -75,8 +75,6 @@ public class SeatsAvailabilityRepositoryShould {
 
     private static class TestSeatsAvailabilityAggregate extends SeatsAvailabilityAggregate {
 
-        private static final SeatsAvailabilityId ID = newSeatsAvailabilityId();
-
         private final SeatTypeId seatTypeId = newSeatTypeId();
 
         private final List<SeatQuantity> availableSeats = ImmutableList.of(newSeatQuantity(seatTypeId, 256));
@@ -94,7 +92,7 @@ public class SeatsAvailabilityRepositoryShould {
         private final ImmutableList<Event> uncommittedEvents = ImmutableList.of(seatsReservedEvent);
 
         private TestSeatsAvailabilityAggregate() {
-            super(ID);
+            super(newSeatsAvailabilityId());
         }
 
         @Override

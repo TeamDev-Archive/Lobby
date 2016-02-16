@@ -25,8 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.spine3.base.Event;
 import org.spine3.samples.lobby.common.ConferenceId;
-import org.spine3.samples.lobby.common.OrderId;
-import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
 import org.spine3.samples.lobby.registration.contracts.OrderTotal;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
@@ -37,15 +35,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.spine3.samples.lobby.common.util.IdFactory.*;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newEvent;
-import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
 /**
  * @author Alexander Litus
  */
-@SuppressWarnings({"InstanceMethodNamingConvention", "ReturnOfCollectionOrArrayField", "MagicNumber"})
+@SuppressWarnings({"InstanceMethodNamingConvention", "ReturnOfCollectionOrArrayField"})
 public class OrderRepositoryShould {
 
     private OrderRepository repository;
@@ -71,23 +67,12 @@ public class OrderRepositoryShould {
 
     private static class TestOrderAggregate extends OrderAggregate {
 
-        private static final OrderId ID = newOrderId();
+        private final OrderPlaced event = Given.Event.orderPlaced();
 
-        private final SeatTypeId seatTypeId = newSeatTypeId();
-
-        private final List<SeatQuantity> seats = ImmutableList.of(
-                newSeatQuantity(seatTypeId, 128), newSeatQuantity(seatTypeId, 256));
-
-        private final Event orderPlaced = newEvent(OrderPlaced.newBuilder()
-                .setOrderId(ID)
-                .setConferenceId(newConferenceId())
-                .addAllSeat(seats)
-                .build());
-
-        private final ImmutableList<Event> uncommittedEvents = ImmutableList.of(orderPlaced);
+        private final ImmutableList<Event> uncommittedEvents = ImmutableList.of(newEvent(event));
 
         private TestOrderAggregate() {
-            super(ID);
+            super(Given.ORDER_ID);
         }
 
         @Override
@@ -97,7 +82,7 @@ public class OrderRepositoryShould {
         }
 
         public List<SeatQuantity> getSeats() {
-            return seats;
+            return event.getSeatList();
         }
     }
 
