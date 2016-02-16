@@ -69,7 +69,7 @@ public class OrderRepositoryShould {
         assertEquals(expected.getSeats(), actualState.getSeatList());
     }
 
-    public static class TestOrderAggregate extends OrderAggregate {
+    private static class TestOrderAggregate extends OrderAggregate {
 
         private static final OrderId ID = newOrderId();
 
@@ -86,7 +86,7 @@ public class OrderRepositoryShould {
 
         private final ImmutableList<Event> uncommittedEvents = ImmutableList.of(orderPlaced);
 
-        public TestOrderAggregate() {
+        private TestOrderAggregate() {
             super(ID);
         }
 

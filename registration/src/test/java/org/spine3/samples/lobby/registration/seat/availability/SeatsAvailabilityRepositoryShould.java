@@ -73,7 +73,7 @@ public class SeatsAvailabilityRepositoryShould {
         assertEquals(expected.getReservedSeats(), reservedSeats);
     }
 
-    public static class TestSeatsAvailabilityAggregate extends SeatsAvailabilityAggregate {
+    private static class TestSeatsAvailabilityAggregate extends SeatsAvailabilityAggregate {
 
         private static final SeatsAvailabilityId ID = newSeatsAvailabilityId();
 
@@ -93,7 +93,7 @@ public class SeatsAvailabilityRepositoryShould {
 
         private final ImmutableList<Event> uncommittedEvents = ImmutableList.of(seatsReservedEvent);
 
-        public TestSeatsAvailabilityAggregate() {
+        private TestSeatsAvailabilityAggregate() {
             super(ID);
         }
 

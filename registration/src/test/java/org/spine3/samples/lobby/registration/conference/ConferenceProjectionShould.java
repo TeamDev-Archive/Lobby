@@ -182,9 +182,9 @@ public class ConferenceProjectionShould {
         assertTrue(actualTypes.containsAll(expectedTypes));
     }
 
-    public static class TestConferenceProjection extends ConferenceProjection {
+    private static class TestConferenceProjection extends ConferenceProjection {
 
-        public TestConferenceProjection(ConferenceId id) {
+        private TestConferenceProjection(ConferenceId id) {
             super(id);
         }
 
@@ -204,19 +204,20 @@ public class ConferenceProjectionShould {
     /**
      * Handles commands sent by ConferenceProjection.
      */
-    public static class TestCommandHandlerRepository extends AggregateRepository<ConferenceId, TestCommandHandler> {
+    private static class TestCommandHandlerRepository extends AggregateRepository<ConferenceId, TestCommandHandler> {
 
-        public TestCommandHandlerRepository(BoundedContext boundedContext) {
+        private TestCommandHandlerRepository(BoundedContext boundedContext) {
             super(boundedContext);
         }
     }
 
     @SuppressWarnings({"StaticNonFinalField", "AssignmentToStaticFieldFromInstanceMethod"})
-    public static class TestCommandHandler extends Aggregate<ConferenceId, StringValue> {
+    private static class TestCommandHandler extends Aggregate<ConferenceId, StringValue> {
 
         private static boolean isAddSeatsCommandHandled = false;
         private static boolean isRemoveSeatsCommandHandled = false;
 
+        @SuppressWarnings("PublicConstructorInNonPublicClass") // it is required
         public TestCommandHandler(ConferenceId id) {
             super(id);
             isAddSeatsCommandHandled = false;

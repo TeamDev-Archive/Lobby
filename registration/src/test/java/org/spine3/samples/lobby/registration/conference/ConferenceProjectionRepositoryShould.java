@@ -65,9 +65,9 @@ public class ConferenceProjectionRepositoryShould {
         return projection;
     }
 
-    public static class TestConferenceProjection extends ConferenceProjection {
+    private static class TestConferenceProjection extends ConferenceProjection {
 
-        public TestConferenceProjection(ConferenceId id) {
+        private TestConferenceProjection(ConferenceId id) {
             super(id);
         }
 
