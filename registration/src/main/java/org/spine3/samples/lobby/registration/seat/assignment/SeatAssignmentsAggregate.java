@@ -84,7 +84,7 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
         final SeatAssignment primaryAssignment = getAssignment(cmd.getPosition());
         final PersonalInfo primaryAttendee = primaryAssignment.getAttendee();
         if (isAttendeeChanged(primaryAttendee, cmd.getAttendee())) {
-            if (primaryAssignment.hasAttendee()) {
+            if (primaryAssignment.hasAttendee() && primaryAttendee.hasEmail()) {
                 result.add(newSeatUnassignedEvent(cmd.getPosition()));
             }
             result.add(newSeatAssignedEvent(cmd, primaryAssignment.getSeatTypeId()));
@@ -114,6 +114,7 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
     @Apply
     private void apply(SeatAssignmentsCreated event) {
         final SeatAssignments.Builder state = getState().toBuilder();
+        state.setId(event.getAssignmentsId());
         final Map<Integer, SeatAssignment> assignments = state.getMutableAssignments();
         for (SeatAssignment newAssignment : event.getAssignmentList()) {
             final int position = newAssignment.getPosition().getValue();
@@ -135,7 +136,12 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
     private void apply(SeatUnassigned event) {
         final int position = event.getPosition().getValue();
         final SeatAssignments.Builder state = getState().toBuilder();
-        state.getMutableAssignments().remove(position);
+        final Map<Integer, SeatAssignment> assignments = state.getMutableAssignments();
+        final SeatAssignment assignmentPrimary = assignments.get(position);
+        final SeatAssignment assignmentNew = SeatAssignment.newBuilder()
+                .setSeatTypeId(assignmentPrimary.getSeatTypeId())
+                .setPosition(assignmentPrimary.getPosition()).build();
+        assignments.put(position, assignmentNew);
         incrementState(state.build());
     }
 

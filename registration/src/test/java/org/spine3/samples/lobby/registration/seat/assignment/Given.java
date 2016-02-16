@@ -26,11 +26,14 @@ import org.spine3.base.CommandContext;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.samples.lobby.common.SeatTypeId;
+import org.spine3.samples.lobby.registration.contracts.SeatAssigned;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignment;
+import org.spine3.samples.lobby.registration.contracts.SeatAssignmentUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsCreated;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsId;
 import org.spine3.samples.lobby.registration.contracts.SeatPosition;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
+import org.spine3.samples.lobby.registration.contracts.SeatUnassigned;
 
 import java.util.List;
 import java.util.Map;
@@ -48,17 +51,13 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
  */
 /*package*/ class Given {
 
-    /*package*/ static final SeatAssignmentsId ASSIGNMENTS_ID = newSeatAssignmentsId();
-    /*package*/ static final OrderId ORDER_ID = newOrderId();
+    private static final SeatAssignmentsId ASSIGNMENTS_ID = newSeatAssignmentsId();
+    private static final OrderId ORDER_ID = newOrderId();
 
     /*package*/ static final SeatTypeId MAIN_SEAT_TYPE_ID = newSeatTypeId("main_" + newUuid());
     /*package*/ static final int MAIN_SEAT_QUANTITY = 5;
     /*package*/ static final SeatTypeId WORKSHOP_SEAT_TYPE_ID = newSeatTypeId("workshop_" + newUuid());
     /*package*/ static final int WORKSHOP_SEAT_QUANTITY = 10;
-
-    private static final List<SeatQuantity> SEATS = ImmutableList.of(
-            newSeatQuantity(MAIN_SEAT_TYPE_ID, MAIN_SEAT_QUANTITY),
-            newSeatQuantity(WORKSHOP_SEAT_TYPE_ID, WORKSHOP_SEAT_QUANTITY));
 
     private static class Assignments {
 
@@ -66,16 +65,15 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
         private static final SeatPosition WORKSHOP_SEAT_POSITION = newSeatPosition(1);
 
         private static final PersonalInfo MAIN_SEAT_ATTENDEE = newPersonalInfo("J", "Doe", "j@mail.com");
+        private static final String MAIN_SEAT_ATTENDEE_EMAIL = MAIN_SEAT_ATTENDEE.getEmail().getValue();
 
         private static final Map<Integer, SeatAssignment> MAP_WITH_ATTENDEES = ImmutableMap.<Integer, SeatAssignment>builder()
                 .put(
-                        MAIN_SEAT_POSITION.getValue(),
-                        newSeatAssignment(MAIN_SEAT_TYPE_ID, MAIN_SEAT_POSITION, MAIN_SEAT_ATTENDEE)
-                )
+                    MAIN_SEAT_POSITION.getValue(),
+                    newSeatAssignment(MAIN_SEAT_TYPE_ID, MAIN_SEAT_POSITION, MAIN_SEAT_ATTENDEE))
                 .put(
-                        WORKSHOP_SEAT_POSITION.getValue(),
-                        newSeatAssignment(WORKSHOP_SEAT_TYPE_ID, WORKSHOP_SEAT_POSITION, newPersonalInfo("K", "White", "k@mail.com"))
-                )
+                    WORKSHOP_SEAT_POSITION.getValue(),
+                    newSeatAssignment(WORKSHOP_SEAT_TYPE_ID, WORKSHOP_SEAT_POSITION, newPersonalInfo("K", "White", "k@mail.com")))
                 .build();
 
         private static final Map<Integer, SeatAssignment> MAP_WITHOUT_ATTENDEES = ImmutableMap.<Integer, SeatAssignment>builder()
@@ -91,7 +89,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
         aggregate = new SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate(ASSIGNMENTS_ID);
     }
 
-    /*package*/ SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate newSeatAssignments() {
+    /*package*/ SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate emptySeatAssignments() {
         return aggregate;
     }
 
@@ -111,6 +109,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
         return aggregate;
     }
 
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass")
     private static SeatAssignment newSeatAssignment(SeatTypeId seatTypeId, SeatPosition position) {
         final SeatAssignment.Builder builder = SeatAssignment.newBuilder()
                 .setSeatTypeId(seatTypeId)
@@ -130,6 +129,10 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
 
         private static final CommandContext CMD_CONTEXT = CommandContext.getDefaultInstance();
 
+        private static final List<SeatQuantity> SEATS = ImmutableList.of(
+                newSeatQuantity(MAIN_SEAT_TYPE_ID, MAIN_SEAT_QUANTITY),
+                newSeatQuantity(WORKSHOP_SEAT_TYPE_ID, WORKSHOP_SEAT_QUANTITY));
+
         private static final CreateSeatAssignments CREATE_SEAT_ASSIGNMENTS = CreateSeatAssignments.newBuilder()
                 .setOrderId(ORDER_ID)
                 .addAllSeat(SEATS)
@@ -143,7 +146,12 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
 
         private static final AssignSeat ASSIGN_SEAT_TO_UPDATED_ATTENDEE = AssignSeat.newBuilder()
                 .setSeatAssignmentsId(ASSIGNMENTS_ID)
-                .setAttendee(newPersonalInfo("NewGivenName", "NewFamilyName", Assignments.MAIN_SEAT_ATTENDEE.getEmail().getValue()))
+                .setAttendee(newPersonalInfo("NewGivenName", "NewFamilyName", Assignments.MAIN_SEAT_ATTENDEE_EMAIL))
+                .setPosition(Assignments.MAIN_SEAT_POSITION)
+                .build();
+
+        private static final UnassignSeat UNASSIGN_SEAT = UnassignSeat.newBuilder()
+                .setSeatAssignmentsId(ASSIGNMENTS_ID)
                 .setPosition(Assignments.MAIN_SEAT_POSITION)
                 .build();
 
@@ -164,6 +172,10 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
         /*package*/ static AssignSeat assignSeatToUpdatedAttendee() {
             return ASSIGN_SEAT_TO_UPDATED_ATTENDEE;
         }
+
+        /*package*/ static UnassignSeat unassignSeat() {
+            return UNASSIGN_SEAT;
+        }
     }
 
     /*package*/ static class Event {
@@ -171,12 +183,45 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
         private static final SeatAssignmentsCreated SEAT_ASSIGNMENTS_CREATED = SeatAssignmentsCreated.newBuilder()
                 .setAssignmentsId(ASSIGNMENTS_ID)
                 .setOrderId(ORDER_ID)
+                .addAllAssignment(Assignments.MAP_WITH_ATTENDEES.values())
+                .build();
+
+        private static final SeatAssigned SEAT_ASSIGNED = SeatAssigned.newBuilder()
+                .setAssignmentsId(ASSIGNMENTS_ID)
+                .setAssignment(
+                        newSeatAssignment(
+                                MAIN_SEAT_TYPE_ID,
+                                Assignments.MAIN_SEAT_POSITION,
+                                newPersonalInfo("NewName", "NewSurname", "n@mail.com")
+                        )
+                ).build();
+
+        private static final SeatUnassigned SEAT_UNASSIGNED = SeatUnassigned.newBuilder()
+                .setAssignmentsId(ASSIGNMENTS_ID)
+                .setPosition(Assignments.MAIN_SEAT_POSITION).build();
+
+        private static final SeatAssignmentUpdated SEAT_ASSIGNMENT_UPDATED = SeatAssignmentUpdated.newBuilder()
+                .setAssignmentsId(ASSIGNMENTS_ID)
+                .setPosition(Assignments.MAIN_SEAT_POSITION)
+                .setAttendee(newPersonalInfo("UpdatedGivenName", "UpdatedFamilyName", Assignments.MAIN_SEAT_ATTENDEE_EMAIL))
                 .build();
 
         private Event() {}
 
         /*package*/ static SeatAssignmentsCreated seatAssignmentsCreated() {
             return SEAT_ASSIGNMENTS_CREATED;
+        }
+
+        /*package*/ static SeatAssigned seatAssigned() {
+            return SEAT_ASSIGNED;
+        }
+
+        /*package*/ static SeatUnassigned seatUnassigned() {
+            return SEAT_UNASSIGNED;
+        }
+
+        /*package*/ static SeatAssignmentUpdated seatAssignmentUpdated() {
+            return SEAT_ASSIGNMENT_UPDATED;
         }
     }
 }
