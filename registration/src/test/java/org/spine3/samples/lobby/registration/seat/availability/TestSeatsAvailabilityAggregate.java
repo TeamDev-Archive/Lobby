@@ -39,6 +39,13 @@ public class TestSeatsAvailabilityAggregate extends SeatsAvailabilityAggregate {
         super(id);
     }
 
+    // Is overridden to do not throw exceptions while retrieving the default state via reflection.
+    @Override
+    @SuppressWarnings("RefusedBequest")
+    protected SeatsAvailability getDefaultState() {
+        return SeatsAvailability.getDefaultInstance();
+    }
+
     // Is overridden to make it accessible in tests.
     @Override
     public void incrementState(SeatsAvailability newState) {

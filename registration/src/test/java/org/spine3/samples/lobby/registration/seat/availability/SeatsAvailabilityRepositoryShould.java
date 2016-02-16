@@ -21,52 +21,45 @@
 package org.spine3.samples.lobby.registration.seat.availability;
 
 import com.google.common.collect.ImmutableList;
-import com.google.protobuf.Message;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.spine3.base.EventRecord;
+import org.spine3.base.Event;
 import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
-import org.spine3.samples.lobby.registration.testdata.TestDataFactory;
-import org.spine3.server.storage.AggregateStorage;
+import org.spine3.server.BoundedContext;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.spine3.samples.lobby.common.util.IdFactory.*;
+import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
+import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newEvent;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatsAvailabilityId;
 
 /**
  * @author Alexander Litus
  */
-@SuppressWarnings({"MagicNumber", "UtilityClass", "InstanceMethodNamingConvention", "RefusedBequest",
-        "ReturnOfCollectionOrArrayField", "TypeMayBeWeakened"})
+@SuppressWarnings({"MagicNumber", "InstanceMethodNamingConvention", "RefusedBequest",
+        "ReturnOfCollectionOrArrayField"})
 public class SeatsAvailabilityRepositoryShould {
 
-    private final SeatsAvailabilityRepository repository = new SeatsAvailabilityRepository();
+    private SeatsAvailabilityRepository repository;
 
     @Before
     public void setUpTest() {
-        final AggregateStorage<SeatsAvailabilityId> storage =
-                InMemoryStorageFactory.getInstance().createAggregateStorage(null);
-        repository.assignStorage(storage);
-    }
-
-    @After
-    public void tearDownTest() {
-        repository.assignStorage(null);
+        final BoundedContext boundedContext = newBoundedContext();
+        repository = new SeatsAvailabilityRepository(boundedContext);
+        repository.initStorage(InMemoryStorageFactory.getInstance());
+        boundedContext.register(repository);
     }
 
     @Test
-    public void store_and_load_aggregate() throws InvocationTargetException {
-        final SeatsAvailabilityRepositoryShould.TestSeatsAvailabilityAggregate expected =
-                new SeatsAvailabilityRepositoryShould.TestSeatsAvailabilityAggregate();
+    public void store_and_load_aggregate() {
+        final TestSeatsAvailabilityAggregate expected = new TestSeatsAvailabilityAggregate();
 
         repository.store(expected);
 
@@ -79,9 +72,7 @@ public class SeatsAvailabilityRepositoryShould {
         assertEquals(expected.getReservedSeats(), reservedSeats);
     }
 
-    public static class TestSeatsAvailabilityAggregate extends SeatsAvailabilityAggregate {
-
-        private static final SeatsAvailabilityId ID = newSeatsAvailabilityId();
+    private static class TestSeatsAvailabilityAggregate extends SeatsAvailabilityAggregate {
 
         private final SeatTypeId seatTypeId = newSeatTypeId();
 
@@ -91,25 +82,21 @@ public class SeatsAvailabilityRepositoryShould {
 
         private final ReservationId reservationId = newReservationId();
 
-        private final EventRecord seatsReservedEvent = newEventRecord(SeatsReserved.newBuilder()
+        private final Event seatsReservedEvent = newEvent(SeatsReserved.newBuilder()
                 .setConferenceId(newConferenceId())
                 .setReservationId(reservationId)
                 .addAllReservedSeatUpdated(reservedSeats)
                 .addAllAvailableSeatUpdated(availableSeats).build());
 
-        private final ImmutableList<EventRecord> uncommittedEvents = ImmutableList.of(seatsReservedEvent);
+        private final ImmutableList<Event> uncommittedEvents = ImmutableList.of(seatsReservedEvent);
 
-        public TestSeatsAvailabilityAggregate() {
-            super(ID);
+        private TestSeatsAvailabilityAggregate() {
+            super(newSeatsAvailabilityId());
         }
 
         @Override
-        public List<EventRecord> getStateChangingUncommittedEvents() {
+        public List<Event> getStateChangingUncommittedEvents() {
             return uncommittedEvents;
-        }
-
-        private static EventRecord newEventRecord(Message event) {
-            return TestDataFactory.newEventRecord(event, ID);
         }
 
         public List<SeatQuantity> getAvailableSeats() {

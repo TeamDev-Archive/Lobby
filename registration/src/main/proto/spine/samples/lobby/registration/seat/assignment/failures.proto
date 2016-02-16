@@ -1,5 +1,4 @@
-//
-// Copyright 2015, TeamDev Ltd. All rights reserved.
+// Copyright 2016, TeamDev Ltd. All rights reserved.
 //
 // Redistribution and use in source and/or binary forms, with or without
 // modification, must retain the above copyright notice and the following
@@ -22,18 +21,21 @@ syntax = "proto3";
 package spine.samples.lobby.registration.seat.assignment;
 
 option java_package="org.spine3.samples.lobby.registration.seat.assignment";
-option java_outer_classname = "SeatAssignmentsProto";
-option java_multiple_files = true;
+option java_multiple_files = false;
+// Do not specify java_outer_classname option as we're not generating multiple Java classes for failures.
+option java_generate_equals_and_hash = true;
 
 import "spine/samples/lobby/common/common.proto";
 import "spine/samples/lobby/registration/contracts/registration.proto";
 
-// The state of the seat assignments aggregate.
-message SeatAssignments {
-    // The ID of the seat assignment.
-    spine.samples.lobby.registration.contracts.SeatAssignmentsId id = 1;
+// A business failure which is thrown on attempt to unassign a seat which is not assigned to anyone.
+message CannotUnassignNotAssignedSeat {
+    // An ID of the seat assignments aggregate.
+    spine.samples.lobby.registration.contracts.SeatAssignmentsId seat_assignments_id = 1;
 
-    // The map from a SeatPosition to a seat assignment.
-    // NOTE: the SeatPosition cannot be used as a map key due to Protobuf restrictions.
-    map<int32, spine.samples.lobby.registration.contracts.SeatAssignment> assignments = 2;
+    // A seat type.
+    spine.samples.lobby.common.SeatTypeId seat_type_id = 2;
+
+    // A position of the seat.
+    spine.samples.lobby.registration.contracts.SeatPosition position = 3;
 }

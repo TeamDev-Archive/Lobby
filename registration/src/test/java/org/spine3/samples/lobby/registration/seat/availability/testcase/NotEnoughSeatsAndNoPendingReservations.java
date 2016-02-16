@@ -69,7 +69,7 @@ public class NotEnoughSeatsAndNoPendingReservations extends MakeSeatReservationC
     }
 
     @Override
-    @SuppressWarnings({"RefusedBequest", "LocalVariableNamingConvention"})
+    @SuppressWarnings("RefusedBequest")
     public void checkAvailableSeatsUpdated(List<SeatQuantity> availableSeats, List<SeatQuantity> requestedSeats) {
         assertEquals(requestedSeats.size(), availableSeats.size());
 

@@ -23,7 +23,11 @@ package org.spine3.samples.lobby.registration.seat.availability.testcase;
 import com.google.common.collect.ImmutableMap;
 import org.spine3.base.CommandContext;
 import org.spine3.samples.lobby.common.ReservationId;
-import org.spine3.samples.lobby.registration.seat.availability.*;
+import org.spine3.samples.lobby.registration.seat.availability.CommitSeatReservation;
+import org.spine3.samples.lobby.registration.seat.availability.SeatQuantities;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailability;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsReservationCommitted;
+import org.spine3.samples.lobby.registration.seat.availability.TestSeatsAvailabilityAggregate;
 
 import static org.junit.Assert.assertEquals;
 import static org.spine3.samples.lobby.common.util.IdFactory.newReservationId;

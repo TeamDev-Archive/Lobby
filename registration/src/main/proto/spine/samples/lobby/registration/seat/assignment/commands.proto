@@ -29,11 +29,21 @@ import "spine/samples/lobby/common/common.proto";
 import "spine/samples/lobby/registration/contracts/registration.proto";
 import "spine/samples/lobby/registration/seat/assignment/seat_assignments.proto";
 
+// The request to create a new seat assignments aggregate.
+// Is sent as the result of an order confirmation.
+message CreateSeatAssignments {
+    // The ID of the confirmed order.
+    spine.samples.lobby.common.OrderId order_id = 1;
+
+    // The set of order seat items representing seat quantities of different types.
+    repeated spine.samples.lobby.registration.contracts.SeatQuantity seat = 2;
+}
+
 // The request to assign the seat to the attendee.
 // Is sent as the result of a registrant interaction with the UI.
 message AssignSeat {
     // The ID of the seat assignments aggregate.
-    lobby.registration.seat.assignment.SeatAssignmentsId seat_assignments_id = 1;
+    spine.samples.lobby.registration.contracts.SeatAssignmentsId seat_assignments_id = 1;
 
     // The info about an attendee.
     spine.samples.lobby.common.PersonalInfo attendee = 2;
@@ -45,7 +55,7 @@ message AssignSeat {
 // The request to unassign the seat from the attendee.
 message UnassignSeat {
     // The ID of the seat assignments aggregate.
-    lobby.registration.seat.assignment.SeatAssignmentsId seat_assignments_id = 1;
+    spine.samples.lobby.registration.contracts.SeatAssignmentsId seat_assignments_id = 1;
 
     // The position of the seat to unassign.
     spine.samples.lobby.registration.contracts.SeatPosition position = 2;

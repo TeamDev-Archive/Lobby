@@ -49,7 +49,7 @@ subprojects {
         // TODO:2015-11-16:alexander.litus: change Spine local dependency to Maven central repository dependency
         // when Spine can be used for evaluation in real projects.
         // Spine
-        compile group: 'org.spine3', name: 'core-java', version: '0.2', changing: true
+        compile group: 'org.spine3', name: 'server', version: '0.2', changing: true
 
         // Guava
         compile group: 'com.google.guava', name: 'guava', version: '19.0'

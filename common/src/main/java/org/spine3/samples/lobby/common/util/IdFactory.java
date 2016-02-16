@@ -21,11 +21,11 @@
 package org.spine3.samples.lobby.common.util;
 
 import com.google.protobuf.Message;
+import org.spine3.base.Identifiers;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
-import org.spine3.util.Identifiers;
 
 /**
  * The utility class containing convenience methods for identifiers creation.
@@ -68,5 +68,12 @@ public class IdFactory {
      */
     public static SeatTypeId newSeatTypeId() {
         return SeatTypeId.newBuilder().setUuid(Identifiers.newUuid()).build();
+    }
+
+    /**
+     * Creates a new {@code SeatAssignmentsId} with the given UUID value.
+     */
+    public static SeatTypeId newSeatTypeId(String uuid) {
+        return SeatTypeId.newBuilder().setUuid(uuid).build();
     }
 }

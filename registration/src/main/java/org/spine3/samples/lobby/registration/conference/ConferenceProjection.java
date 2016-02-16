@@ -24,27 +24,35 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spine3.base.Command;
 import org.spine3.base.CommandContext;
-import org.spine3.client.CommandRequest;
-import org.spine3.eventbus.Subscribe;
+import org.spine3.base.Commands;
+import org.spine3.base.EventContext;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.SeatType;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.lobby.registration.seat.availability.AddSeats;
 import org.spine3.samples.lobby.registration.seat.availability.RemoveSeats;
-import org.spine3.samples.sample.lobby.conference.contracts.*;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferencePublished;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUnpublished;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
+import org.spine3.samples.sample.lobby.conference.contracts.SeatTypeCreated;
+import org.spine3.samples.sample.lobby.conference.contracts.SeatTypeUpdated;
 import org.spine3.server.BoundedContext;
+import org.spine3.server.Subscribe;
 import org.spine3.server.projection.Projection;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 import static com.google.common.collect.Iterables.filter;
+import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
+import static org.spine3.base.Commands.create;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
-import static org.spine3.util.Commands.newCommandRequest;
 
 /**
  * Holds a structural representation of data extracted from a stream of events related to a conference.
@@ -75,30 +83,25 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         this.boundedContext = boundedContext;
     }
 
-    @Override
-    protected Conference getDefaultState() {
-        return Conference.getDefaultInstance();
-    }
-
     @Subscribe
-    public void on(ConferenceCreated event) {
+    public void on(ConferenceCreated event, EventContext context) {
         final Conference newState = event.getConference();
         incrementState(newState);
     }
 
     @Subscribe
-    public void on(ConferenceUpdated event) {
+    public void on(ConferenceUpdated event, EventContext context) {
         final Conference newState = event.getConference();
         incrementState(newState);
     }
 
     @Subscribe
-    public void on(ConferencePublished event) {
+    public void on(ConferencePublished event, EventContext context) {
         updatePublishingStatus(true);
     }
 
     @Subscribe
-    public void on(ConferenceUnpublished event) {
+    public void on(ConferenceUnpublished event, EventContext context) {
         updatePublishingStatus(false);
     }
 
@@ -109,7 +112,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
     }
 
     @Subscribe
-    public void on(SeatTypeCreated event) {
+    public void on(SeatTypeCreated event, EventContext context) {
         final Conference.Builder conference = getState().toBuilder();
         final SeatType seatType = event.getSeatType();
         final SeatTypeId id = seatType.getId();
@@ -129,7 +132,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
     }
 
     @Subscribe
-    public void on(SeatTypeUpdated event) {
+    public void on(SeatTypeUpdated event, EventContext context) {
         final Conference.Builder conference = getState().toBuilder();
         final SeatType newSeatType = event.getSeatType();
         final SeatTypeId id = newSeatType.getId();
@@ -159,21 +162,21 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
     }
 
     private void sendAddSeatsRequest(SeatTypeId seatTypeId, int quantity) {
-        final AddSeats command = AddSeats.newBuilder()
+        final AddSeats message = AddSeats.newBuilder()
                 .setConferenceId(getState().getId())
                 .setQuantity(newSeatQuantity(seatTypeId, quantity))
                 .build();
-        final CommandRequest request = newCommandRequest(command, CommandContext.getDefaultInstance());
-        boundedContext.process(request);
+        final Command command = create(message, newCommandContext());
+        boundedContext.process(command);
     }
 
     private void sendRemoveSeatsRequest(SeatTypeId seatTypeId, int quantity) {
-        final RemoveSeats command = RemoveSeats.newBuilder()
+        final RemoveSeats message = RemoveSeats.newBuilder()
                 .setConferenceId(getState().getId())
                 .setQuantity(newSeatQuantity(seatTypeId, quantity))
                 .build();
-        final CommandRequest request = newCommandRequest(command, CommandContext.getDefaultInstance());
-        boundedContext.process(request);
+        final Command command = create(message, newCommandContext());
+        boundedContext.process(command);
     }
 
     private static List<SeatType> filterById(final SeatTypeId id, List<SeatType> seatTypes) {
@@ -184,6 +187,13 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
             }
         });
         return ImmutableList.copyOf(result);
+    }
+
+    private static CommandContext newCommandContext() {
+        final CommandContext.Builder builder = CommandContext.newBuilder()
+                .setTimestamp(getCurrentTime())
+                .setCommandId(Commands.generateId());
+        return builder.build();
     }
 
     private static Logger log() {

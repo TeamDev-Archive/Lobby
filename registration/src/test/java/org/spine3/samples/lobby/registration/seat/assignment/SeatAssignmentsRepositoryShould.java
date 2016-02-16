@@ -18,78 +18,72 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration.order;
+package org.spine3.samples.lobby.registration.seat.assignment;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.spine3.base.Event;
-import org.spine3.samples.lobby.common.ConferenceId;
-import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
-import org.spine3.samples.lobby.registration.contracts.OrderTotal;
-import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
+import org.spine3.samples.lobby.registration.contracts.SeatAssignment;
+import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsCreated;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newEvent;
+import static org.spine3.samples.lobby.registration.util.Seats.newSeatAssignmentsId;
 
 /**
  * @author Alexander Litus
  */
-@SuppressWarnings({"InstanceMethodNamingConvention", "ReturnOfCollectionOrArrayField"})
-public class OrderRepositoryShould {
+@SuppressWarnings("InstanceMethodNamingConvention")
+public class SeatAssignmentsRepositoryShould {
 
-    private OrderRepository repository;
+    private SeatAssignmentsRepository repository;
 
     @Before
     public void setUpTest() {
         final BoundedContext boundedContext = newBoundedContext();
-        repository = new OrderRepository(boundedContext, new PricingServiceMock());
+        repository = new SeatAssignmentsRepository(boundedContext);
         repository.initStorage(InMemoryStorageFactory.getInstance());
         boundedContext.register(repository);
     }
 
     @Test
     public void store_and_load_aggregate() {
-        final TestOrderAggregate expected = new TestOrderAggregate();
+        final TestSeatAssignmentsAggregate expectedAggregate = new TestSeatAssignmentsAggregate();
+        final List<SeatAssignment> expectedAssignments = expectedAggregate.getAssignments();
 
-        repository.store(expected);
+        repository.store(expectedAggregate);
 
-        final OrderAggregate actual = repository.load(expected.getId());
-        final Order actualState = actual.getState();
-        assertEquals(expected.getSeats(), actualState.getSeatList());
+        final SeatAssignmentsAggregate actualAggregate = repository.load(expectedAggregate.getId());
+        final SeatAssignments actualState = actualAggregate.getState();
+        final Collection<SeatAssignment> actualAssignments = actualState.getAssignments().values();
+        assertEquals(expectedAssignments.size(), actualAssignments.size());
+        assertTrue(expectedAssignments.containsAll(actualAssignments));
     }
 
-    private static class TestOrderAggregate extends OrderAggregate {
+    private static class TestSeatAssignmentsAggregate extends SeatAssignmentsAggregate {
 
-        private final OrderPlaced event = Given.Event.orderPlaced();
+        private final SeatAssignmentsCreated event = Given.Event.seatAssignmentsCreated();
 
-        private final ImmutableList<Event> uncommittedEvents = ImmutableList.of(newEvent(event));
-
-        private TestOrderAggregate() {
-            super(Given.ORDER_ID);
+        private TestSeatAssignmentsAggregate() {
+            super(newSeatAssignmentsId());
         }
 
         @Override
         @SuppressWarnings("RefusedBequest")
         public List<Event> getStateChangingUncommittedEvents() {
-            return uncommittedEvents;
+            return ImmutableList.of(newEvent(event));
         }
 
-        public List<SeatQuantity> getSeats() {
-            return event.getSeatList();
-        }
-    }
-
-    private static class PricingServiceMock implements OrderPricingService {
-
-        @Override
-        public OrderTotal calculateTotalOrderPrice(ConferenceId conferenceId, Iterable<SeatQuantity> seats) {
-            return OrderTotal.getDefaultInstance();
+        public List<SeatAssignment> getAssignments() {
+            return event.getAssignmentList();
         }
     }
 }

@@ -32,7 +32,17 @@ import org.spine3.protobuf.Durations;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
-import org.spine3.samples.lobby.registration.contracts.*;
+import org.spine3.samples.lobby.registration.contracts.OrderAccessCode;
+import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
+import org.spine3.samples.lobby.registration.contracts.OrderExpired;
+import org.spine3.samples.lobby.registration.contracts.OrderPartiallyReserved;
+import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
+import org.spine3.samples.lobby.registration.contracts.OrderRegistrantAssigned;
+import org.spine3.samples.lobby.registration.contracts.OrderReservationCompleted;
+import org.spine3.samples.lobby.registration.contracts.OrderTotal;
+import org.spine3.samples.lobby.registration.contracts.OrderTotalsCalculated;
+import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
+import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.util.Seats;
 import org.spine3.server.Assign;
 import org.spine3.server.Entity;
@@ -54,7 +64,7 @@ import static org.spine3.samples.lobby.registration.order.OrderValidator.*;
  *
  * @author Alexander Litus
  */
-@SuppressWarnings({"TypeMayBeWeakened", "OverlyCoupledClass", "ClassWithTooManyMethods"})
+@SuppressWarnings({"TypeMayBeWeakened", "OverlyCoupledClass"})
 public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     /**
@@ -90,11 +100,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
      */
     public void setOrderPricingService(OrderPricingService service) {
         this.pricingService = service;
-    }
-
-    @Override
-    protected Order getDefaultState() {
-        return Order.getDefaultInstance();
     }
 
     @Assign
@@ -151,10 +156,12 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Assign
     public OrderConfirmed handle(ConfirmOrder command, CommandContext context) {
-        checkNotConfirmed(getState(), command);
+        final Order state = getState();
+        checkNotConfirmed(state, command);
         validateCommand(command);
         final OrderConfirmed result = OrderConfirmed.newBuilder()
                 .setOrderId(command.getOrderId())
+                .addAllSeat(state.getSeatList())
                 .build();
         return result;
     }
@@ -243,7 +250,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     protected Set<Class<? extends Message>> getStateNeutralEventClasses() {
         return STATE_NEUTRAL_EVENT_CLASSES;
     }
-
 
     @Override
     @SuppressWarnings("RefusedBequest") // method from superclass does nothing

@@ -20,12 +20,11 @@
 
 package org.spine3.samples.lobby.registration.conference;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.conference.contracts.Conference;
-import org.spine3.server.storage.EntityStorage;
+import org.spine3.server.BoundedContext;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import static org.junit.Assert.assertEquals;
@@ -38,18 +37,15 @@ import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.new
 @SuppressWarnings("InstanceMethodNamingConvention")
 public class ConferenceProjectionRepositoryShould {
 
-    private final ConferenceProjectionRepository repository = new ConferenceProjectionRepository(newBoundedContext());
+    private ConferenceProjectionRepository repository;
     private final ConferenceId id = newConferenceId();
 
     @Before
     public void setUpTest() {
-        final EntityStorage<ConferenceId, Conference> storage = InMemoryStorageFactory.getInstance().createEntityStorage(null);
-        repository.assignStorage(storage);
-    }
-
-    @After
-    public void tearDownTest() {
-        repository.assignStorage(null);
+        final BoundedContext boundedContext = newBoundedContext();
+        repository = new ConferenceProjectionRepository(boundedContext);
+        repository.initStorage(InMemoryStorageFactory.getInstance());
+        boundedContext.register(repository);
     }
 
     @Test
@@ -69,9 +65,9 @@ public class ConferenceProjectionRepositoryShould {
         return projection;
     }
 
-    public static class TestConferenceProjection extends ConferenceProjection {
+    private static class TestConferenceProjection extends ConferenceProjection {
 
-        public TestConferenceProjection(ConferenceId id) {
+        private TestConferenceProjection(ConferenceId id) {
             super(id);
         }
 

@@ -18,25 +18,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration.seat.availability;
+package org.spine3.samples.lobby.registration.seat.assignment;
 
+import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsId;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.aggregate.AggregateRepository;
 
 /**
- * The repository for SeatsAvailability aggregates.
+ * The repository managing {@link SeatAssignmentsAggregate}s.
  *
- * @see SeatsAvailabilityAggregate
  * @author Alexander Litus
  */
-public class SeatsAvailabilityRepository extends AggregateRepository<SeatsAvailabilityId, SeatsAvailabilityAggregate> {
+public class SeatAssignmentsRepository extends AggregateRepository<SeatAssignmentsId, SeatAssignmentsAggregate> {
 
     /**
      * Creates a new repository instance.
      *
      * @param boundedContext the bounded context where this repository is used
      */
-    public SeatsAvailabilityRepository(BoundedContext boundedContext) {
+    public SeatAssignmentsRepository(BoundedContext boundedContext) {
         super(boundedContext);
     }
 }

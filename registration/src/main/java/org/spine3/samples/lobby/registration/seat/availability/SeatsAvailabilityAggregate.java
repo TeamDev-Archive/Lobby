@@ -56,11 +56,6 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         super(id);
     }
 
-    @Override
-    protected SeatsAvailability getDefaultState() {
-        return SeatsAvailability.getDefaultInstance();
-    }
-
     @Assign
     public SeatsReserved handle(MakeSeatReservation cmd, CommandContext context) {
         validateCommand(cmd);
@@ -93,7 +88,6 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         validateState(state, cmd);
 
         final ReservationId reservationId = cmd.getReservationId();
-        //noinspection LocalVariableNamingConvention
         final List<SeatQuantity> availableSeatsUpdated = newLinkedList(state.getAvailableSeatList());
         final SeatQuantities unreservedSeats = state.getPendingReservations().get(reservationId.getUuid());
         availableSeatsUpdated.addAll(unreservedSeats.getItemList());

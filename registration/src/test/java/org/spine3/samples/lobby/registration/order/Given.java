@@ -23,13 +23,24 @@ package org.spine3.samples.lobby.registration.order;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.util.TimeUtil;
 import org.spine3.base.CommandContext;
+import org.spine3.money.Money;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
-import org.spine3.samples.lobby.registration.contracts.*;
+import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
+import org.spine3.samples.lobby.registration.contracts.OrderPartiallyReserved;
+import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
+import org.spine3.samples.lobby.registration.contracts.OrderReservationCompleted;
+import org.spine3.samples.lobby.registration.contracts.OrderTotal;
+import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
+import org.spine3.samples.lobby.registration.contracts.SeatOrderLine;
+import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.singletonList;
+import static org.spine3.money.Currency.USD;
+import static org.spine3.money.MoneyUtil.newMoney;
 import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
 import static org.spine3.samples.lobby.common.util.IdFactory.newOrderId;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newPersonalInfo;
@@ -40,44 +51,43 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
  *
  * @author Alexander Litus
  */
-class Given {
+/*package*/ class Given {
 
-    static final OrderId ORDER_ID = newOrderId();
-    static final ConferenceId CONFERENCE_ID = newConferenceId();
-    static final List<SeatQuantity> SEATS = ImmutableList.of(newSeatQuantity(5), newSeatQuantity(10));
+    /*package*/ static final OrderId ORDER_ID = newOrderId();
+    private static final ConferenceId CONFERENCE_ID = newConferenceId();
+    private static final List<SeatQuantity> SEATS = ImmutableList.of(newSeatQuantity(5), newSeatQuantity(10));
 
     private final OrderAggregateShould.TestOrderAggregate aggregate;
 
-    Given() {
+    /*package*/ Given() {
         aggregate = new OrderAggregateShould.TestOrderAggregate(ORDER_ID);
-        aggregate.setOrderPricingService(new OrderAggregateShould.PricingServiceStub());
+        aggregate.setOrderPricingService(new PricingServiceStub());
     }
 
-    OrderAggregateShould.TestOrderAggregate newOrder() {
+    /*package*/ OrderAggregateShould.TestOrderAggregate newOrder() {
         return aggregate;
     }
 
-    OrderAggregateShould.TestOrderAggregate confirmedOrder() {
-        final Order state = orderState(seats(), true);
+    /*package*/ OrderAggregateShould.TestOrderAggregate confirmedOrder() {
+        final Order state = orderState(SEATS, true);
         aggregate.incrementState(state);
         return aggregate;
     }
 
-    OrderAggregateShould.TestOrderAggregate placedOrder() {
-        final Order state = orderState(seats());
+    /*package*/ OrderAggregateShould.TestOrderAggregate placedOrder() {
+        final Order state = orderState(SEATS);
         aggregate.incrementState(state);
         return aggregate;
     }
 
-    OrderAggregateShould.TestOrderAggregate completelyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
+    /*package*/ OrderAggregateShould.TestOrderAggregate completelyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
         final Order state = orderState(reservedSeats);
         aggregate.incrementState(state);
         return aggregate;
     }
 
-    OrderAggregateShould.TestOrderAggregate partiallyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
+    /*package*/ OrderAggregateShould.TestOrderAggregate partiallyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
         final List<SeatQuantity> requestedSeats = newArrayList(reservedSeats);
-        //noinspection LocalVariableNamingConvention
         final int partlyReservedSeatIndex = 0;
         final SeatQuantity.Builder seat = requestedSeats.get(partlyReservedSeatIndex).toBuilder();
         seat.setQuantity(seat.getQuantity() + 5);
@@ -87,12 +97,7 @@ class Given {
         return aggregate;
     }
 
-    static List<SeatQuantity> seats() {
-        //noinspection ReturnOfCollectionOrArrayField
-        return SEATS;
-    }
-
-    static Order orderState(Iterable<SeatQuantity> seats) {
+    private static Order orderState(Iterable<SeatQuantity> seats) {
         final Order.Builder order = Order.newBuilder()
                 .setId(ORDER_ID)
                 .setConferenceId(CONFERENCE_ID)
@@ -100,34 +105,53 @@ class Given {
         return order.build();
     }
 
-    static Order orderState(Iterable<SeatQuantity> seats, boolean isConfirmed) {
+    private static Order orderState(Iterable<SeatQuantity> seats, boolean isConfirmed) {
         final Order.Builder order = orderState(seats).toBuilder();
         order.setIsConfirmed(isConfirmed);
         return order.build();
     }
 
+    /*package*/ static class PricingServiceStub implements OrderPricingService {
+
+        /*package*/ static final Money TOTAL_PRICE = newMoney(100, USD);
+        private static final SeatOrderLine ORDER_LINE = SeatOrderLine.newBuilder()
+                .setQuantity(10)
+                .setUnitPrice(newMoney(10, USD))
+                .setLineTotal(TOTAL_PRICE)
+                .build();
+        /*package*/ static final List<SeatOrderLine> ORDER_LINES = singletonList(ORDER_LINE);
+
+        @Override
+        public OrderTotal calculateTotalOrderPrice(ConferenceId conferenceId, Iterable<SeatQuantity> seats) {
+            final OrderTotal.Builder result = OrderTotal.newBuilder()
+                    .setTotalPrice(TOTAL_PRICE)
+                    .addAllOrderLine(ORDER_LINES);
+            return result.build();
+        }
+    }
+
     @SuppressWarnings("UtilityClass")
-    static class Command {
+    /*package*/ static class Command {
 
-        static final CommandContext CMD_CONTEXT = CommandContext.getDefaultInstance();
+        private static final CommandContext CMD_CONTEXT = CommandContext.getDefaultInstance();
 
-        static final RegisterToConference REGISTER_TO_CONFERENCE = RegisterToConference.newBuilder()
+        private static final RegisterToConference REGISTER_TO_CONFERENCE = RegisterToConference.newBuilder()
                 .setOrderId(ORDER_ID)
                 .setConferenceId(CONFERENCE_ID)
                 .addAllSeat(SEATS)
                 .build();
 
-        static final MarkSeatsAsReserved MARK_SEATS_AS_RESERVED = MarkSeatsAsReserved.newBuilder()
+        private static final MarkSeatsAsReserved MARK_SEATS_AS_RESERVED = MarkSeatsAsReserved.newBuilder()
                 .setOrderId(ORDER_ID)
                 .setReservationExpiration(TimeUtil.getCurrentTime())
                 .addAllSeat(SEATS)
                 .build();
 
-        static final RejectOrder REJECT_ORDER = RejectOrder.newBuilder().setOrderId(ORDER_ID).build();
+        private static final RejectOrder REJECT_ORDER = RejectOrder.newBuilder().setOrderId(ORDER_ID).build();
 
-        static final ConfirmOrder CONFIRM_ORDER = ConfirmOrder.newBuilder().setOrderId(ORDER_ID).build();
+        private static final ConfirmOrder CONFIRM_ORDER = ConfirmOrder.newBuilder().setOrderId(ORDER_ID).build();
 
-        static final AssignRegistrantDetails ASSIGN_REGISTRANT_DETAILS = AssignRegistrantDetails.newBuilder()
+        private static final AssignRegistrantDetails ASSIGN_REGISTRANT_DETAILS = AssignRegistrantDetails.newBuilder()
                 .setOrderId(ORDER_ID)
                 .setRegistrant(newPersonalInfo("John", "Black", "jblack@gmail.com"))
                 .build();
@@ -135,35 +159,35 @@ class Given {
         private Command() {
         }
 
-        static CommandContext context() {
+        /*package*/ static CommandContext context() {
             return CMD_CONTEXT;
         }
 
-        static RegisterToConference registerToConference() {
+        /*package*/ static RegisterToConference registerToConference() {
             return REGISTER_TO_CONFERENCE;
         }
 
-        static MarkSeatsAsReserved markSeatsAsReserved() {
+        /*package*/ static MarkSeatsAsReserved markSeatsAsReserved() {
             return MARK_SEATS_AS_RESERVED;
         }
 
-        static ConfirmOrder confirmOrder() {
+        /*package*/ static ConfirmOrder confirmOrder() {
             return CONFIRM_ORDER;
         }
 
-        static RejectOrder rejectOrder() {
+        /*package*/ static RejectOrder rejectOrder() {
             return REJECT_ORDER;
         }
 
-        static AssignRegistrantDetails assignRegistrantDetails() {
+        /*package*/ static AssignRegistrantDetails assignRegistrantDetails() {
             return ASSIGN_REGISTRANT_DETAILS;
         }
     }
 
     @SuppressWarnings({"UtilityClass", "MagicNumber"})
-    static class Event {
+    /*package*/ static class Event {
 
-        static final OrderPlaced ORDER_PLACED = OrderPlaced.newBuilder()
+        private static final OrderPlaced ORDER_PLACED = OrderPlaced.newBuilder()
                 .setOrderId(ORDER_ID)
                 .setConferenceId(CONFERENCE_ID)
                 .addAllSeat(SEATS)
@@ -173,11 +197,11 @@ class Given {
 
         private Event() {}
 
-        static OrderPlaced orderPlaced() {
+        /*package*/ static OrderPlaced orderPlaced() {
             return ORDER_PLACED;
         }
 
-        static OrderUpdated orderUpdated() {
+        /*package*/ static OrderUpdated orderUpdated() {
             final OrderUpdated.Builder result = OrderUpdated.newBuilder()
                     .setOrderId(ORDER_ID)
                     .addSeat(newSeatQuantity(16))
@@ -185,7 +209,7 @@ class Given {
             return result.build();
         }
 
-        static OrderPartiallyReserved orderPartiallyReserved() {
+        /*package*/ static OrderPartiallyReserved orderPartiallyReserved() {
             final OrderPartiallyReserved.Builder result = OrderPartiallyReserved.newBuilder()
                     .setOrderId(ORDER_ID)
                     .addSeat(newSeatQuantity(64))
@@ -193,7 +217,7 @@ class Given {
             return result.build();
         }
 
-        static OrderReservationCompleted orderReservationCompleted() {
+        /*package*/ static OrderReservationCompleted orderReservationCompleted() {
             final OrderReservationCompleted.Builder result = OrderReservationCompleted.newBuilder()
                     .setOrderId(ORDER_ID)
                     .addSeat(newSeatQuantity(256))
@@ -201,7 +225,7 @@ class Given {
             return result.build();
         }
 
-        static OrderConfirmed orderConfirmed() {
+        /*package*/ static OrderConfirmed orderConfirmed() {
             return ORDER_CONFIRMED;
         }
     }
