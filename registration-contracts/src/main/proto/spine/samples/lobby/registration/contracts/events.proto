@@ -127,7 +127,7 @@ message OrderTotalsCalculated {
 
 // Seats related
 
-// The event propagated whenseat assignments are created.
+// The event propagated when seat assignments are created.
 message SeatAssignmentsCreated {
     // The ID of the seat assignments aggregate.
     spine.samples.lobby.registration.contracts.SeatAssignmentsId assignments_id = 1;
