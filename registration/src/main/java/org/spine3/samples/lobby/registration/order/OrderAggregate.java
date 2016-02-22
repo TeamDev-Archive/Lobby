@@ -45,9 +45,9 @@ import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.util.Seats;
 import org.spine3.server.Assign;
-import org.spine3.server.Entity;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
+import org.spine3.server.entity.Entity;
 
 import javax.annotation.Nullable;
 import java.util.Collection;

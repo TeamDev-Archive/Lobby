@@ -33,10 +33,10 @@ import org.spine3.base.Events;
 import org.spine3.base.PersonName;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.server.BoundedContext;
-import org.spine3.server.CommandBus;
 import org.spine3.server.CommandDispatcher;
-import org.spine3.server.EventBus;
+import org.spine3.server.command.CommandBus;
 import org.spine3.server.command.CommandStore;
+import org.spine3.server.event.EventBus;
 import org.spine3.server.event.EventStore;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
