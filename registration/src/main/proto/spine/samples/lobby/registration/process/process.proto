@@ -48,7 +48,7 @@ message RegistrationProcess {
         PAYMENT_RECEIVED = 3;
 
         // The process is in this state when it is completed:
-        // the reservation was confirmed (for free-of-charge orders) or
+        // the reservation is confirmed (for free-of-charge orders) or
         // the payment is received (for billable orders).
         COMPLETED = 4;
     }
