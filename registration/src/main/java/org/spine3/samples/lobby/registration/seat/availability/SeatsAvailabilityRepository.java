@@ -34,7 +34,7 @@ public class SeatsAvailabilityRepository extends AggregateRepository<SeatsAvaila
     /**
      * Creates a new repository instance.
      *
-     * @param boundedContext the bounded context where this repository is used
+     * @param boundedContext the bounded context to which this repository belongs
      */
     public SeatsAvailabilityRepository(BoundedContext boundedContext) {
         super(boundedContext);
