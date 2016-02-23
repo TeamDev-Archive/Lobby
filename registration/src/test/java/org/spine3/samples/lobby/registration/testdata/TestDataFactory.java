@@ -22,6 +22,7 @@ package org.spine3.samples.lobby.registration.testdata;
 
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.Message;
+import com.google.protobuf.Timestamp;
 import org.spine3.base.CommandContext;
 import org.spine3.base.CommandId;
 import org.spine3.base.Commands;
@@ -40,6 +41,7 @@ import org.spine3.server.event.EventBus;
 import org.spine3.server.event.EventStore;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
+import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static org.spine3.protobuf.Messages.toAny;
 
 /**
@@ -89,9 +91,11 @@ public class TestDataFactory {
         final CommandId commandId = Commands.generateId();
         final EventId eventId = Events.generateId();
         final CommandContext commandContext = CommandContext.newBuilder().setCommandId(commandId).build();
+        final Timestamp currentTime = getCurrentTime();
         final EventContext eventContext = EventContext.newBuilder()
                 .setCommandContext(commandContext)
                 .setEventId(eventId)
+                .setTimestamp(currentTime)
                 .build();
         final Event.Builder result = Event.newBuilder()
                 .setContext(eventContext)
