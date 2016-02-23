@@ -19,16 +19,16 @@
 //
 syntax = "proto3";
 
-package spine.samples.lobby.registration.process;
+package spine.samples.lobby.registration.procman;
 
-option java_package="org.spine3.samples.lobby.registration.process";
-option java_outer_classname = "RegistrationProcessProto";
+option java_package="org.spine3.samples.lobby.registration.procman";
+option java_outer_classname = "RegistrationProcessManagerProto";
 option java_multiple_files = true;
 
-// The registration process state of the Process Manager.
+// The registration process manager state.
 message RegistrationProcess {
-    // The unique process id.
-    ProcessId id = 1;
+    // The process manager ID.
+    ProcessManagerId id = 1;
 
     // The current state of the process.
     State state = 2;
@@ -54,8 +54,8 @@ message RegistrationProcess {
     }
 }
 
-// The ID of the registration process.
-message ProcessId {
-    // The UUID-based value of the registration process ID.
+// The ID of the registration process manager.
+message ProcessManagerId {
+    // The UUID-based value of the ID.
     string uuid = 1;
 }
