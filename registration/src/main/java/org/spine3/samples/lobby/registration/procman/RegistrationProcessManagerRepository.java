@@ -137,6 +137,7 @@ public class RegistrationProcessManagerRepository
         }
     }
 
+    @SuppressWarnings("UtilityClass")
     private static class IdConverter {
 
         /**
