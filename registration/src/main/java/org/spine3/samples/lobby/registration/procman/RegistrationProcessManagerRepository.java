@@ -64,7 +64,6 @@ public class RegistrationProcessManagerRepository
     }
 
     @Override
-    @SuppressWarnings("RefusedBequest") // the default implementation returns null
     public IdFunction<ProcessManagerId, ? extends Message, EventContext> getIdFunction(EventClass eventClass) {
         final IdFunction<ProcessManagerId, ? extends Message, EventContext> func = idFromEventFunctions.get(eventClass);
         return func;
