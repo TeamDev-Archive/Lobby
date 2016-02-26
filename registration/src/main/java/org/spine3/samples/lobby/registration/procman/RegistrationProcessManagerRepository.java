@@ -22,7 +22,6 @@ package org.spine3.samples.lobby.registration.procman;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.protobuf.Message;
-import org.spine3.base.CommandContext;
 import org.spine3.base.EventContext;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.ReservationId;
@@ -32,10 +31,8 @@ import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
 import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsReserved;
 import org.spine3.server.BoundedContext;
-import org.spine3.server.entity.GetIdByFieldIndex;
 import org.spine3.server.entity.IdFunction;
 import org.spine3.server.procman.ProcessManagerRepository;
-import org.spine3.type.CommandClass;
 import org.spine3.type.EventClass;
 
 import java.util.Map;
@@ -57,13 +54,6 @@ public class RegistrationProcessManagerRepository
             .put(EventClass.of(PaymentCompleted.class), new GetIdFromEventPaymentCompleted())
             .build();
 
-    private final Map<CommandClass, IdFunction<ProcessManagerId, ? extends Message, CommandContext>> idFromCommandFunctions =
-            ImmutableMap.<CommandClass, IdFunction<ProcessManagerId, ? extends Message, CommandContext>>builder()
-            .put(
-                CommandClass.of(ExpireRegistrationProcess.class),
-                new GetIdByFieldIndex<ProcessManagerId, ExpireRegistrationProcess, CommandContext>(0)
-            ).build();
-
     /**
      * Creates a new repository instance.
      *
@@ -77,13 +67,6 @@ public class RegistrationProcessManagerRepository
     @SuppressWarnings("RefusedBequest") // the default implementation returns null
     public IdFunction<ProcessManagerId, ? extends Message, EventContext> getIdFunction(EventClass eventClass) {
         final IdFunction<ProcessManagerId, ? extends Message, EventContext> func = idFromEventFunctions.get(eventClass);
-        return func;
-    }
-
-    @Override
-    @SuppressWarnings("RefusedBequest") // the default implementation returns null
-    public IdFunction<ProcessManagerId, ? extends Message, CommandContext> getIdFunction(CommandClass commandClass) {
-        final IdFunction<ProcessManagerId, ? extends Message, CommandContext> func = idFromCommandFunctions.get(commandClass);
         return func;
     }
 

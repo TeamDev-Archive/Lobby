@@ -79,7 +79,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         super(id);
     }
 
-    public void setBoundedContext(BoundedContext boundedContext) {
+    /*package*/ void setBoundedContext(BoundedContext boundedContext) {
         this.boundedContext = boundedContext;
     }
 
@@ -161,6 +161,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         }
     }
 
+    // TODO:2016-02-23:alexander.litus: why is it here and not in PM?!
     private void sendAddSeatsRequest(SeatTypeId seatTypeId, int quantity) {
         final AddSeats message = AddSeats.newBuilder()
                 .setConferenceId(getState().getId())

@@ -20,8 +20,18 @@
 
 package org.spine3.samples.lobby.registration.procman;
 
-import org.spine3.server.entity.EntityId;
+import com.google.protobuf.Timestamp;
+import org.spine3.base.EventContext;
+import org.spine3.protobuf.Timestamps;
+import org.spine3.samples.lobby.common.OrderId;
+import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
+import org.spine3.server.BoundedContext;
+import org.spine3.server.Subscribe;
 import org.spine3.server.procman.ProcessManager;
+
+import static com.google.protobuf.util.TimeUtil.getCurrentTime;
+import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.State;
+import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.State.NOT_STARTED;
 
 /**
  * A process manager for registration to conference process.
@@ -30,13 +40,43 @@ import org.spine3.server.procman.ProcessManager;
  */
 public class RegistrationProcessManager extends ProcessManager<ProcessManagerId, RegistrationProcess> {
 
+    private BoundedContext boundedContext;
+
     /**
      * Creates a new instance.
      *
      * @param id an ID for the new instance
-     * @throws IllegalArgumentException if the ID type is unsupported. See {@link EntityId} for supported types
+     * @throws IllegalArgumentException if the ID type is unsupported
      */
     public RegistrationProcessManager(ProcessManagerId id) {
         super(id);
+    }
+
+    /*package*/ void setBoundedContext(BoundedContext boundedContext) {
+        this.boundedContext = boundedContext;
+    }
+
+    @Subscribe
+    public void on(OrderPlaced event, EventContext context) {
+        final State processState = getState().getState();
+        if (processState != NOT_STARTED) {
+            // TODO:2016-02-23:alexander.litus: throw smth?
+        }
+        final Timestamp currentTime = getCurrentTime();
+        final Timestamp thanReservationExpiration = event.getReservationAutoExpiration();
+        final boolean isReservationExpired = Timestamps.isAfter(currentTime, thanReservationExpiration);
+        if (isReservationExpired) {
+            rejectOrder(event.getOrderId());
+        } else {
+            reserveSeats(event);
+        }
+    }
+
+    private void reserveSeats(OrderPlaced event) {
+
+    }
+
+    private void rejectOrder(OrderId orderId) {
+
     }
 }

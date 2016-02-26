@@ -50,6 +50,8 @@ subprojects {
         // when Spine can be used for evaluation in real projects.
         // Spine
         compile group: 'org.spine3', name: 'server', version: '0.2', changing: true
+        compile group: 'org.spine3', name: 'client', version: '0.2', changing: true
+        compile group: 'org.spine3', name: 'values', version: '0.2', changing: true
 
         // Guava
         compile group: 'com.google.guava', name: 'guava', version: '19.0'
