@@ -32,6 +32,8 @@ import "spine/samples/lobby/registration/seat/assignment/seat_assignments.proto"
 // The request to create a new seat assignments aggregate.
 // Is sent as the result of an order confirmation.
 message CreateSeatAssignments {
+    // TODO:2016-02-29:alexander.litus: add SeatAssignmentsId
+
     // The ID of the confirmed order.
     spine.samples.lobby.common.OrderId order_id = 1;
 
