@@ -20,18 +20,40 @@
 
 package org.spine3.samples.lobby.registration.procman;
 
+import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spine3.base.Command;
+import org.spine3.base.CommandContext;
+import org.spine3.base.Commands;
 import org.spine3.base.EventContext;
-import org.spine3.protobuf.Timestamps;
+import org.spine3.base.UserId;
+import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
+import org.spine3.samples.lobby.common.ReservationId;
+import org.spine3.samples.lobby.payment.contracts.PaymentCompleted;
+import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
 import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
+import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
+import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
+import org.spine3.samples.lobby.registration.order.ConfirmOrder;
+import org.spine3.samples.lobby.registration.order.MarkSeatsAsReserved;
+import org.spine3.samples.lobby.registration.order.RejectOrder;
+import org.spine3.samples.lobby.registration.seat.availability.CancelSeatReservation;
+import org.spine3.samples.lobby.registration.seat.availability.CommitSeatReservation;
+import org.spine3.samples.lobby.registration.seat.availability.MakeSeatReservation;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsReserved;
+import org.spine3.server.Assign;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.Subscribe;
 import org.spine3.server.procman.ProcessManager;
+import org.spine3.time.ZoneOffset;
 
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
-import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.State;
-import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.State.NOT_STARTED;
+import static org.spine3.base.Commands.create;
+import static org.spine3.protobuf.Timestamps.isAfter;
+import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.State.*;
 
 /**
  * A process manager for registration to conference process.
@@ -41,6 +63,7 @@ import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.
 public class RegistrationProcessManager extends ProcessManager<ProcessManagerId, RegistrationProcess> {
 
     private BoundedContext boundedContext;
+    private final CommandSender commandSender;
 
     /**
      * Creates a new instance.
@@ -50,6 +73,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
      */
     public RegistrationProcessManager(ProcessManagerId id) {
         super(id);
+        this.commandSender = new CommandSender();
     }
 
     /*package*/ void setBoundedContext(BoundedContext boundedContext) {
@@ -57,26 +81,208 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
     }
 
     @Subscribe
-    public void on(OrderPlaced event, EventContext context) {
-        final State processState = getState().getState();
-        if (processState != NOT_STARTED) {
-            // TODO:2016-02-23:alexander.litus: throw smth?
+    public void on(OrderPlaced event, EventContext context) throws IllegalProcessStateFailure {
+        final RegistrationProcess.State state = getState().getProcessState();
+        if (state != NOT_STARTED) {
+            throw newIllegalProcessStateFailure(event);
         }
+        updateState(event);
+
         final Timestamp currentTime = getCurrentTime();
         final Timestamp thanReservationExpiration = event.getReservationAutoExpiration();
-        final boolean isReservationExpired = Timestamps.isAfter(currentTime, thanReservationExpiration);
+        final boolean isReservationExpired = isAfter(currentTime, thanReservationExpiration);
         if (isReservationExpired) {
-            rejectOrder(event.getOrderId());
+            commandSender.rejectOrder(event);
         } else {
-            reserveSeats(event);
+            setProcessState(AWAITING_RESERVATION_CONFIRMATION);
+            commandSender.reserveSeats(event);
+            // TODO:2016-02-26:alexander.litus: send ExpireRegistrationProcess cmd with 15 minutes delay
         }
     }
 
-    private void reserveSeats(OrderPlaced event) {
-
+    @Subscribe
+    public void on(OrderUpdated event, EventContext context) throws IllegalProcessStateFailure {
+        final RegistrationProcess.State state = getState().getProcessState();
+        if (state == AWAITING_RESERVATION_CONFIRMATION || state == RESERVATION_CONFIRMED) {
+            setProcessState(AWAITING_RESERVATION_CONFIRMATION);
+            commandSender.reserveSeats(event);
+        } else {
+            throw newIllegalProcessStateFailure(event);
+        }
     }
 
-    private void rejectOrder(OrderId orderId) {
+    @Subscribe
+    public void on(SeatsReserved event, EventContext context) throws IllegalProcessStateFailure {
+        final RegistrationProcess.State state = getState().getProcessState();
+        if (state == AWAITING_RESERVATION_CONFIRMATION) {
+            setProcessState(RESERVATION_CONFIRMED);
+            commandSender.markSeatsAsReserved(event);
+        } else {
+            throw newIllegalProcessStateFailure(event);
+        }
+    }
 
+    @Subscribe
+    public void on(PaymentCompleted event, EventContext context) throws IllegalProcessStateFailure {
+        final RegistrationProcess.State state = getState().getProcessState();
+        if (state == RESERVATION_CONFIRMED) {
+            setProcessState(PAYMENT_RECEIVED);
+            commandSender.confirmOrder(event);
+        } else {
+            throw newIllegalProcessStateFailure(event);
+        }
+    }
+
+    @Subscribe
+    public void on(OrderConfirmed event, EventContext context) throws IllegalProcessStateFailure {
+        final RegistrationProcess.State state = getState().getProcessState();
+        if (state == RESERVATION_CONFIRMED || state == PAYMENT_RECEIVED) {
+            setIsCompleted(true);
+            commandSender.commitSeatReservation(event);
+        } else {
+            throw newIllegalProcessStateFailure(event);
+        }
+    }
+
+    @Assign
+    public void handle(ExpireRegistrationProcess cmd, EventContext context) {
+        final RegistrationProcess state = getState();
+        if (!state.getIsCompleted()) {
+            setIsCompleted(true);
+            commandSender.rejectOrder(cmd);
+            commandSender.cancelSeatReservation(cmd);
+        } else {
+            log().warn("Ignoring command " + cmd.getClass().getSimpleName() + " which is no longer relevant.");
+        }
+    }
+
+    @SuppressWarnings("OverlyCoupledClass")
+    private class CommandSender {
+
+        private void reserveSeats(OrderPlaced event) {
+            reserveSeats(event.getOrderId(), event.getConferenceId(), event.getSeatList());
+        }
+
+        private void reserveSeats(OrderUpdated event) {
+            final ConferenceId conferenceId = getState().getConferenceId();
+            reserveSeats(event.getOrderId(), conferenceId, event.getSeatList());
+        }
+
+        private void reserveSeats(OrderId orderId, ConferenceId conferenceId, Iterable<SeatQuantity> seats) {
+            final ReservationId reservationId = toReservationId(orderId);
+            final MakeSeatReservation message = MakeSeatReservation.newBuilder()
+                    .setConferenceId(conferenceId)
+                    .setReservationId(reservationId)
+                    .addAllSeat(seats)
+                    .build();
+            final Command command = create(message, newCommandContext());
+            boundedContext.process(command);
+        }
+
+        private void markSeatsAsReserved(SeatsReserved event) {
+            final RegistrationProcess state = getState();
+            final MarkSeatsAsReserved message = MarkSeatsAsReserved.newBuilder()
+                    .setOrderId(state.getOrderId())
+                    .setReservationExpiration(state.getReservationAutoExpiration())
+                    .addAllSeat(event.getReservedSeatUpdatedList())
+                    .build();
+            final Command command = create(message, newCommandContext());
+            boundedContext.process(command);
+        }
+
+        private void rejectOrder(OrderPlaced event) {
+            rejectOrder(event.getOrderId());
+        }
+
+        private void rejectOrder(ExpireRegistrationProcess cmd) {
+            rejectOrder(getState().getOrderId());
+        }
+
+        private void rejectOrder(OrderId orderId) {
+            final RejectOrder message = RejectOrder.newBuilder()
+                    .setOrderId(orderId)
+                    .build();
+            final Command command = create(message, newCommandContext());
+            boundedContext.process(command);
+        }
+
+        private void confirmOrder(PaymentCompleted event) {
+            final ConfirmOrder message = ConfirmOrder.newBuilder()
+                    .setOrderId(event.getOrderId())
+                    .build();
+            final Command command = create(message, newCommandContext());
+            boundedContext.process(command);
+        }
+
+        private void commitSeatReservation(OrderConfirmed event) {
+            final ReservationId reservationId = toReservationId(getState().getOrderId());
+            final CommitSeatReservation message = CommitSeatReservation.newBuilder()
+                    .setReservationId(reservationId)
+                    .build();
+            final Command command = create(message, newCommandContext());
+            boundedContext.process(command);
+        }
+
+        private void cancelSeatReservation(ExpireRegistrationProcess cmd) {
+            final RegistrationProcess state = getState();
+            final ReservationId reservationId = toReservationId(state.getOrderId());
+            final CancelSeatReservation message = CancelSeatReservation.newBuilder()
+                    .setReservationId(reservationId)
+                    .setConferenceId(state.getConferenceId())
+                    .build();
+            final Command command = create(message, newCommandContext());
+            boundedContext.process(command);
+        }
+    }
+
+    private void setProcessState(RegistrationProcess.State processState) {
+        final RegistrationProcess newState = getState().toBuilder()
+                .setProcessState(processState)
+                .build();
+        incrementState(newState);
+    }
+
+    private void updateState(OrderPlaced event) {
+        final RegistrationProcess newState = getState().toBuilder()
+                .setOrderId(event.getOrderId())
+                .setConferenceId(event.getConferenceId())
+                .setReservationAutoExpiration(event.getReservationAutoExpiration())
+                .build();
+        incrementState(newState);
+    }
+
+    private void setIsCompleted(boolean isCompleted) {
+        final RegistrationProcess newState = getState().toBuilder()
+                .setIsCompleted(isCompleted)
+                .build();
+        incrementState(newState);
+    }
+
+    private static ReservationId toReservationId(OrderId orderId) {
+        final ReservationId.Builder builder = ReservationId.newBuilder().setUuid(orderId.getUuid());
+        return builder.build();
+    }
+
+    private IllegalProcessStateFailure newIllegalProcessStateFailure(Message messageHandled) {
+        final ProcessManagerId id = getId();
+        final RegistrationProcess.State processState = getState().getProcessState();
+        final IllegalProcessStateFailure result = new IllegalProcessStateFailure(id, processState, messageHandled);
+        return result;
+    }
+
+    private static CommandContext newCommandContext() {
+        // TODO:2016-02-29:alexander.litus: obtain user ID and zone offset
+        final CommandContext context = Commands.createContext(UserId.getDefaultInstance(), ZoneOffset.getDefaultInstance());
+        return context;
+    }
+
+    private static Logger log() {
+        return LogSingleton.INSTANCE.value;
+    }
+
+    private enum LogSingleton {
+        INSTANCE;
+        @SuppressWarnings("NonSerializableFieldInSerializableClass")
+        private final Logger value = LoggerFactory.getLogger(RegistrationProcessManager.class);
     }
 }

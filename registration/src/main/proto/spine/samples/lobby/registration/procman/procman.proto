@@ -25,13 +25,31 @@ option java_package="org.spine3.samples.lobby.registration.procman";
 option java_outer_classname = "RegistrationProcessManagerProto";
 option java_multiple_files = true;
 
+import "google/protobuf/timestamp.proto";
+import "spine/samples/lobby/common/common.proto";
+import "spine/base/command.proto";
+
 // The registration process manager state.
 message RegistrationProcess {
     // The process manager ID.
     ProcessManagerId id = 1;
 
     // The current state of the process.
-    State state = 2;
+    State process_state = 2;
+
+    // The order ID.
+    spine.samples.lobby.common.OrderId order_id = 3;
+
+    // The ID of the related conference.
+    spine.samples.lobby.common.ConferenceId conference_id = 4;
+
+    // The time of the expiration of the seats reservation.
+    google.protobuf.Timestamp reservation_auto_expiration = 5;
+
+    // The process is completed if
+    // the reservation is confirmed (for free-of-charge orders) or
+    // the payment is received (for billable orders).
+    bool is_completed = 6;
 
     // The state of the process.
     enum State {
@@ -46,11 +64,6 @@ message RegistrationProcess {
 
         // The process is in this state when the payment for the order is received.
         PAYMENT_RECEIVED = 3;
-
-        // The process is in this state when it is completed:
-        // the reservation is confirmed (for free-of-charge orders) or
-        // the payment is received (for billable orders).
-        COMPLETED = 4;
     }
 }
 
