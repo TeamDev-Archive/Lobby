@@ -175,19 +175,17 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
                     .setReservationId(reservationId)
                     .addAllSeat(seats)
                     .build();
-            final Command command = create(message, newCommandContext());
-            boundedContext.process(command);
+            sendCommand(message);
         }
 
         private void markSeatsAsReserved(SeatsReserved event) {
             final RegistrationProcess state = getState();
             final MarkSeatsAsReserved message = MarkSeatsAsReserved.newBuilder()
-                    .setOrderId(state.getOrderId())
+                                                                   .setOrderId(state.getOrderId())
                     .setReservationExpiration(state.getReservationAutoExpiration())
                     .addAllSeat(event.getReservedSeatUpdatedList())
                     .build();
-            final Command command = create(message, newCommandContext());
-            boundedContext.process(command);
+            sendCommand(message);
         }
 
         private void rejectOrder(OrderPlaced event) {
@@ -202,16 +200,14 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             final RejectOrder message = RejectOrder.newBuilder()
                     .setOrderId(orderId)
                     .build();
-            final Command command = create(message, newCommandContext());
-            boundedContext.process(command);
+            sendCommand(message);
         }
 
         private void confirmOrder(PaymentCompleted event) {
             final ConfirmOrder message = ConfirmOrder.newBuilder()
                     .setOrderId(event.getOrderId())
                     .build();
-            final Command command = create(message, newCommandContext());
-            boundedContext.process(command);
+            sendCommand(message);
         }
 
         private void commitSeatReservation(OrderConfirmed event) {
@@ -219,8 +215,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             final CommitSeatReservation message = CommitSeatReservation.newBuilder()
                     .setReservationId(reservationId)
                     .build();
-            final Command command = create(message, newCommandContext());
-            boundedContext.process(command);
+            sendCommand(message);
         }
 
         private void cancelSeatReservation(ExpireRegistrationProcess cmd) {
@@ -230,6 +225,10 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
                     .setReservationId(reservationId)
                     .setConferenceId(state.getConferenceId())
                     .build();
+            sendCommand(message);
+        }
+
+        private void sendCommand(Message message) {
             final Command command = create(message, newCommandContext());
             boundedContext.process(command);
         }
