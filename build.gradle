@@ -2,19 +2,16 @@ project.ext {
     SPINE_VERSION = '0.2-SNAPSHOT'
     PROTOBUF_VERSION = '3.0.0-beta-1'
     PROTOBUF_DEPENDENCY = "com.google.protobuf:protoc:${project.PROTOBUF_VERSION}"
+    MAVEN_REPOSITORY_URL = 'http://maven.teamdev.com/repository/spine'
+    MAVEN_SNAPSHOTS_REPOSITORY_URL = 'http://maven.teamdev.com/repository/spine-snapshots'
 }
 
 buildscript {
-    configurations.all {
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    }
     repositories {
         mavenCentral()
-        mavenLocal()
     }
     dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.7.0'
-        classpath group: 'org.spine3.tools', name: 'proto-lookup-plugin', version: '1.0', changing: true
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.7.4'
     }
 }
 
@@ -29,7 +26,6 @@ allprojects {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'com.google.protobuf'
-    apply plugin: 'org.spine3.tools.protolookup'
 
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
@@ -43,9 +39,8 @@ subprojects {
 
     repositories {
         mavenCentral()
-
         maven {
-            url = 'http://maven.teamdev.com/repository/spine-snapshots'
+            url = project.MAVEN_SNAPSHOTS_REPOSITORY_URL
         }
     }
 
