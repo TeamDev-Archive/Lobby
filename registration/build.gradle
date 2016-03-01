@@ -9,12 +9,6 @@ buildscript {
     configurations.all {
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
-    repositories {
-        mavenCentral()
-        maven {
-            url = project.MAVEN_REPOSITORY_URL
-        }
-    }
     dependencies {
         classpath group: 'org.spine3.tools', name: 'proto-lookup-plugin', version: '1.1', changing: true
     }

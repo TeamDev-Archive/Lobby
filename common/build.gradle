@@ -1,0 +1,10 @@
+buildscript {
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+    dependencies {
+        classpath group: 'org.spine3.tools', name: 'proto-lookup-plugin', version: '1.1', changing: true
+    }
+}
+
+apply plugin: 'org.spine3.tools.protolookup'

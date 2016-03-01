@@ -44,6 +44,15 @@ subprojects {
         }
     }
 
+    buildscript {
+        repositories {
+            mavenCentral()
+            maven {
+                url = project.MAVEN_REPOSITORY_URL
+            }
+        }
+    }
+
     dependencies {
         // Spine
         compile group: 'org.spine3', name: 'server', version: project.SPINE_VERSION, changing: true
