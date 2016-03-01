@@ -47,6 +47,7 @@ import org.spine3.samples.lobby.registration.seat.availability.SeatsReserved;
 import org.spine3.server.Assign;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.Subscribe;
+import org.spine3.server.procman.CommandRouted;
 import org.spine3.server.procman.ProcessManager;
 import org.spine3.time.ZoneOffset;
 
@@ -145,15 +146,20 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
     }
 
     @Assign
-    public void handle(ExpireRegistrationProcess cmd, CommandContext context) {
+    public CommandRouted handle(ExpireRegistrationProcess cmd, CommandContext context) {
         final RegistrationProcess state = getState();
         if (!state.getIsCompleted()) {
             setIsCompleted(true);
-            commandSender.rejectOrder(cmd);
-            commandSender.cancelSeatReservation(cmd);
+            final RejectOrder rejectOrder = commandSender.newRejectOrderCommand(getState().getOrderId());
+            final CancelSeatReservation cancelReservation = commandSender.newCancelSeatReservationCommand(cmd);
+            return newRouter().of(cmd, context)
+                    .add(rejectOrder)
+                    .add(cancelReservation)
+                    .route();
         } else {
             log().warn("Ignoring {} command which is no longer relevant, command ID: {}",
                     cmd.getClass().getSimpleName(), context.getCommandId().getUuid());
+            return newRouter().route();
         }
     }
 
@@ -190,18 +196,15 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
         }
 
         private void rejectOrder(OrderPlaced event) {
-            rejectOrder(event.getOrderId());
+            final RejectOrder cmd = newRejectOrderCommand(event.getOrderId());
+            sendCommand(cmd);
         }
 
-        private void rejectOrder(ExpireRegistrationProcess cmd) {
-            rejectOrder(getState().getOrderId());
-        }
-
-        private void rejectOrder(OrderId orderId) {
+        private RejectOrder newRejectOrderCommand(OrderId orderId) {
             final RejectOrder message = RejectOrder.newBuilder()
                     .setOrderId(orderId)
                     .build();
-            sendCommand(message);
+            return message;
         }
 
         private void confirmOrder(PaymentCompleted event) {
@@ -219,14 +222,14 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             sendCommand(message);
         }
 
-        private void cancelSeatReservation(ExpireRegistrationProcess cmd) {
+        private CancelSeatReservation newCancelSeatReservationCommand(ExpireRegistrationProcess cmd) {
             final RegistrationProcess state = getState();
             final ReservationId reservationId = toReservationId(state.getOrderId());
             final CancelSeatReservation message = CancelSeatReservation.newBuilder()
                     .setReservationId(reservationId)
                     .setConferenceId(state.getConferenceId())
                     .build();
-            sendCommand(message);
+            return message;
         }
 
         private void sendCommand(Message message) {
