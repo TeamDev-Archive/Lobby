@@ -145,14 +145,15 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
     }
 
     @Assign
-    public void handle(ExpireRegistrationProcess cmd, EventContext context) {
+    public void handle(ExpireRegistrationProcess cmd, CommandContext context) {
         final RegistrationProcess state = getState();
         if (!state.getIsCompleted()) {
             setIsCompleted(true);
             commandSender.rejectOrder(cmd);
             commandSender.cancelSeatReservation(cmd);
         } else {
-            log().warn("Ignoring command " + cmd.getClass().getSimpleName() + " which is no longer relevant.");
+            log().warn("Ignoring {} command which is no longer relevant, command ID: {}",
+                    cmd.getClass().getSimpleName(), context.getCommandId().getUuid());
         }
     }
 
