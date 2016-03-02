@@ -250,6 +250,7 @@ public class SeatAssignmentsAggregateShould {
         }
     }
 
+    // TODO:2016-03-02:alexander.litus: move
     /*package*/ static class TestSeatAssignmentsAggregate extends SeatAssignmentsAggregate {
 
         /*package*/ TestSeatAssignmentsAggregate(SeatAssignmentsId id) {

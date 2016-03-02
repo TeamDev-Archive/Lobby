@@ -32,9 +32,9 @@ import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static org.junit.Assert.assertEquals;
 import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
 import static org.spine3.samples.lobby.common.util.IdFactory.newOrderId;
+import static org.spine3.samples.lobby.registration.procman.Given.newProcessManagerId;
 import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.State.PAYMENT_RECEIVED;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
-import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newProcessManagerId;
 
 /**
  * @author Alexander Litus

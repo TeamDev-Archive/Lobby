@@ -20,6 +20,7 @@
 
 package org.spine3.samples.lobby.registration.procman;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
 import org.slf4j.Logger;
@@ -64,7 +65,7 @@ import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.
 public class RegistrationProcessManager extends ProcessManager<ProcessManagerId, RegistrationProcess> {
 
     private BoundedContext boundedContext;
-    private final CommandSender commandSender;
+    private CommandSender commandSender;
 
     /**
      * Creates a new instance.
@@ -79,6 +80,11 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
 
     /*package*/ void setBoundedContext(BoundedContext boundedContext) {
         this.boundedContext = boundedContext;
+    }
+
+    @VisibleForTesting
+    /*package*/ void setCommandSender(CommandSender commandSender) {
+        this.commandSender = commandSender;
     }
 
     @Subscribe
@@ -164,7 +170,8 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
     }
 
     @SuppressWarnings("OverlyCoupledClass")
-    private class CommandSender {
+    @VisibleForTesting
+    /*package*/ class CommandSender {
 
         private void reserveSeats(OrderPlaced event) {
             reserveSeats(event.getOrderId(), event.getConferenceId(), event.getSeatList());
@@ -182,22 +189,22 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
                     .setReservationId(reservationId)
                     .addAllSeat(seats)
                     .build();
-            sendCommand(message);
+            send(message);
         }
 
         private void markSeatsAsReserved(SeatsReserved event) {
             final RegistrationProcess state = getState();
             final MarkSeatsAsReserved message = MarkSeatsAsReserved.newBuilder()
-                                                                   .setOrderId(state.getOrderId())
+                    .setOrderId(state.getOrderId())
                     .setReservationExpiration(state.getReservationAutoExpiration())
                     .addAllSeat(event.getReservedSeatUpdatedList())
                     .build();
-            sendCommand(message);
+            send(message);
         }
 
         private void rejectOrder(OrderPlaced event) {
             final RejectOrder cmd = newRejectOrderCommand(event.getOrderId());
-            sendCommand(cmd);
+            send(cmd);
         }
 
         private RejectOrder newRejectOrderCommand(OrderId orderId) {
@@ -211,7 +218,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             final ConfirmOrder message = ConfirmOrder.newBuilder()
                     .setOrderId(event.getOrderId())
                     .build();
-            sendCommand(message);
+            send(message);
         }
 
         private void commitSeatReservation(OrderConfirmed event) {
@@ -219,7 +226,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             final CommitSeatReservation message = CommitSeatReservation.newBuilder()
                     .setReservationId(reservationId)
                     .build();
-            sendCommand(message);
+            send(message);
         }
 
         private CancelSeatReservation newCancelSeatReservationCommand(ExpireRegistrationProcess cmd) {
@@ -232,8 +239,9 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             return message;
         }
 
-        private void sendCommand(Message message) {
-            final Command command = create(message, newCommandContext());
+        @VisibleForTesting
+        /*package*/ void send(Message commandMessage) {
+            final Command command = create(commandMessage, newCommandContext());
             boundedContext.process(command);
         }
     }

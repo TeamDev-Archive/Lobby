@@ -33,7 +33,6 @@ import org.spine3.base.EventId;
 import org.spine3.base.Events;
 import org.spine3.base.PersonName;
 import org.spine3.samples.lobby.common.PersonalInfo;
-import org.spine3.samples.lobby.registration.procman.ProcessManagerId;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.CommandDispatcher;
 import org.spine3.server.command.CommandBus;
@@ -43,7 +42,6 @@ import org.spine3.server.event.EventStore;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
-import static org.spine3.base.Identifiers.newUuid;
 import static org.spine3.protobuf.Messages.toAny;
 
 /**
@@ -103,12 +101,5 @@ public class TestDataFactory {
                 .setContext(eventContext)
                 .setMessage(toAny(event));
         return result.build();
-    }
-
-    /**
-     * Creates a new process manager ID with the generated UUID.
-     */
-    public static ProcessManagerId newProcessManagerId() {
-        return ProcessManagerId.newBuilder().setUuid(newUuid()).build();
     }
 }
