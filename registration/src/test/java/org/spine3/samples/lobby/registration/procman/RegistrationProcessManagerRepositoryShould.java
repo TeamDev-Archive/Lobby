@@ -20,18 +20,21 @@
 
 package org.spine3.samples.lobby.registration.procman;
 
+import com.google.protobuf.Timestamp;
 import org.junit.Before;
 import org.junit.Test;
+import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static org.junit.Assert.assertEquals;
-import static org.spine3.base.Identifiers.newUuid;
 import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
 import static org.spine3.samples.lobby.common.util.IdFactory.newOrderId;
 import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.State.PAYMENT_RECEIVED;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
+import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newProcessManagerId;
 
 /**
  * @author Alexander Litus
@@ -50,7 +53,7 @@ public class RegistrationProcessManagerRepositoryShould {
     }
 
     @Test
-    public void store_and_load_aggregate() {
+    public void store_and_load_process_manager() {
         final TestProcessManager expected = new TestProcessManager();
 
         repository.store(expected);
@@ -61,15 +64,18 @@ public class RegistrationProcessManagerRepositoryShould {
 
     private static class TestProcessManager extends RegistrationProcessManager {
 
-        private static final ProcessManagerId ID = ProcessManagerId.newBuilder().setUuid(newUuid()).build();
+        private static final ProcessManagerId ID = newProcessManagerId();
+        private static final OrderId ORDER_ID = newOrderId();
+        private static final ConferenceId CONFERENCE_ID = newConferenceId();
 
         private TestProcessManager() {
             super(ID);
+            final Timestamp currentTime = getCurrentTime();
             final RegistrationProcess newState = getState().toBuilder()
                     .setProcessState(PAYMENT_RECEIVED)
-                    .setOrderId(newOrderId())
-                    .setConferenceId(newConferenceId())
-                    .setReservationAutoExpiration(getCurrentTime())
+                    .setOrderId(ORDER_ID)
+                    .setConferenceId(CONFERENCE_ID)
+                    .setReservationAutoExpiration(currentTime)
                     .build();
             incrementState(newState);
         }
