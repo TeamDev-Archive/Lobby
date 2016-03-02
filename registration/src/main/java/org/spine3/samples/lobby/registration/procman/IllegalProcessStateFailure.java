@@ -25,7 +25,7 @@ import com.google.protobuf.Message;
 import org.spine3.server.FailureThrowable;
 
 /**
- * A business failure which is thrown on attempt to unassign a seat which is not assigned to anyone.
+ * A business failure which is thrown if a process is in inappropriate state for the requested operation.
  *
  * @author Alexander Litus
  */
