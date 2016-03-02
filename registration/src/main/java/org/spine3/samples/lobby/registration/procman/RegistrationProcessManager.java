@@ -112,7 +112,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
         final RegistrationProcess.State state = getState().getProcessState();
         if (state == AWAITING_RESERVATION_CONFIRMATION || state == RESERVATION_CONFIRMED) {
             setProcessState(AWAITING_RESERVATION_CONFIRMATION);
-            commandSender.reserveSeats(event);
+            commandSender.reserveSeats(event, getState().getConferenceId());
         } else {
             throw newIllegalProcessStateFailure(event);
         }
@@ -177,8 +177,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             reserveSeats(event.getOrderId(), event.getConferenceId(), event.getSeatList());
         }
 
-        private void reserveSeats(OrderUpdated event) {
-            final ConferenceId conferenceId = getState().getConferenceId();
+        private void reserveSeats(OrderUpdated event, ConferenceId conferenceId) {
             reserveSeats(event.getOrderId(), conferenceId, event.getSeatList());
         }
 

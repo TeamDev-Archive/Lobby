@@ -29,6 +29,7 @@ import org.spine3.protobuf.Timestamps;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
+import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 
 import java.util.List;
@@ -86,17 +87,12 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
     private RegistrationProcess buildState(RegistrationProcess.State processState) {
         final RegistrationProcess.Builder builder = processManager.getState()
-                                                                  .toBuilder()
-                                                                  .setOrderId(ORDER_ID)
-                                                                  .setConferenceId(CONFERENCE_ID)
+                .toBuilder()
+                .setOrderId(ORDER_ID)
+                .setConferenceId(CONFERENCE_ID)
                 .setReservationAutoExpiration(minutesAhead(15))
-                                                                  .setProcessState(processState);
+                .setProcessState(processState);
         return builder.build();
-    }
-
-    /*package*/ static Timestamp reservationExpirationTimeAfterNow() {
-        final Timestamp result = minutesAhead(15);
-        return result;
     }
 
     /*package*/ static Timestamp reservationExpirationTimeBeforeNow() {
@@ -137,18 +133,30 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
     /*package*/ static class Event {
 
-        public static final EventContext CONTEXT = EventContext.getDefaultInstance();
+        /*package*/ static final EventContext CONTEXT = EventContext.getDefaultInstance();
 
         private static final List<SeatQuantity> SEATS = ImmutableList.of(newSeatQuantity(5), newSeatQuantity(10));
 
         private Event() {}
 
-        public static OrderPlaced orderPlaced(Timestamp reservationExpiration) {
+        /*package*/ static OrderPlaced orderPlaced() {
+            final Timestamp afterNow = minutesAhead(15);
+            return orderPlaced(afterNow);
+        }
+
+        /*package*/ static OrderPlaced orderPlaced(Timestamp reservationExpiration) {
             final OrderPlaced.Builder builder = OrderPlaced.newBuilder()
                     .setOrderId(ORDER_ID)
                     .setConferenceId(CONFERENCE_ID)
                     .addAllSeat(SEATS)
                     .setReservationAutoExpiration(reservationExpiration);
+            return builder.build();
+        }
+
+        public static OrderUpdated orderUpdated() {
+            final OrderUpdated.Builder builder = OrderUpdated.newBuilder()
+                    .setOrderId(ORDER_ID)
+                    .addAllSeat(SEATS);
             return builder.build();
         }
     }

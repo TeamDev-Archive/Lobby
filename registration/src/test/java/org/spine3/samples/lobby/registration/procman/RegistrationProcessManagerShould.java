@@ -25,6 +25,7 @@ import com.google.protobuf.Timestamp;
 import org.junit.Before;
 import org.junit.Test;
 import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
+import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
 import org.spine3.samples.lobby.registration.order.RejectOrder;
 import org.spine3.samples.lobby.registration.procman.Given.TestProcessManager;
 import org.spine3.samples.lobby.registration.seat.availability.MakeSeatReservation;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.State.AWAITING_RESERVATION_CONFIRMATION;
 import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.State.NOT_STARTED;
+import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.State.RESERVATION_CONFIRMED;
 
 /**
  * @author Alexander Litus
@@ -51,20 +53,20 @@ public class RegistrationProcessManagerShould {
     }
 
     @Test
-    public void handle_OrderPlaced_event_update_state_and_reserve_seats_if_reservation_not_expired()
+    public void handle_OrderPlaced_event_then_update_state_and_reserve_seats_if_reservation_not_expired()
             throws IllegalProcessStateFailure {
         processManager = given.processManager(NOT_STARTED);
-        final Timestamp reservationExpiration = Given.reservationExpirationTimeAfterNow();
-        final OrderPlaced event = Given.Event.orderPlaced(reservationExpiration);
+        final OrderPlaced event = Given.Event.orderPlaced();
 
         processManager.on(event, Given.Event.CONTEXT);
 
         assertStateUpdated(AWAITING_RESERVATION_CONFIRMATION, event);
         assertCommandSent(MakeSeatReservation.class);
+        // TODO:2016-03-02:alexander.litus: check that ExpireRegistrationProcess cmd is sent
     }
 
     @Test
-    public void handle_OrderPlaced_event_update_state_and_reject_order_if_reservation_expired()
+    public void handle_OrderPlaced_event_then_update_state_and_reject_order_if_reservation_expired()
             throws IllegalProcessStateFailure {
         processManager = given.processManager(NOT_STARTED);
         final Timestamp reservationExpiration = Given.reservationExpirationTimeBeforeNow();
@@ -79,8 +81,37 @@ public class RegistrationProcessManagerShould {
     @Test(expected = IllegalProcessStateFailure.class)
     public void throw_exception_if_handle_OrderPlaced_event_in_inappropriate_state() throws IllegalProcessStateFailure {
         processManager = given.processManager(AWAITING_RESERVATION_CONFIRMATION);
-        final Timestamp reservationExpiration = Given.reservationExpirationTimeAfterNow();
-        final OrderPlaced event = Given.Event.orderPlaced(reservationExpiration);
+        final OrderPlaced event = Given.Event.orderPlaced();
+
+        processManager.on(event, Given.Event.CONTEXT);
+    }
+
+    @Test
+    public void handle_OrderUpdated_event_then_resend_reservation_cmd_if_awaiting_reservation_confirmation()
+            throws IllegalProcessStateFailure {
+        processManager = given.processManager(AWAITING_RESERVATION_CONFIRMATION);
+        final OrderUpdated event = Given.Event.orderUpdated();
+
+        processManager.on(event, Given.Event.CONTEXT);
+
+        assertCommandSent(MakeSeatReservation.class);
+    }
+
+    @Test
+    public void handle_OrderUpdated_event_then_resend_reservation_cmd_if_reservation_confirmed()
+            throws IllegalProcessStateFailure {
+        processManager = given.processManager(RESERVATION_CONFIRMED);
+        final OrderUpdated event = Given.Event.orderUpdated();
+
+        processManager.on(event, Given.Event.CONTEXT);
+
+        assertCommandSent(MakeSeatReservation.class);
+    }
+
+    @Test(expected = IllegalProcessStateFailure.class)
+    public void throw_exception_if_handle_OrderUpdated_event_in_inappropriate_state() throws IllegalProcessStateFailure {
+        processManager = given.processManager(NOT_STARTED);
+        final OrderUpdated event = Given.Event.orderUpdated();
 
         processManager.on(event, Given.Event.CONTEXT);
     }
