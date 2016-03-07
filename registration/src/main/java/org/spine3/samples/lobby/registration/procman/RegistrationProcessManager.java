@@ -46,7 +46,6 @@ import org.spine3.samples.lobby.registration.seat.availability.CommitSeatReserva
 import org.spine3.samples.lobby.registration.seat.availability.MakeSeatReservation;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsReserved;
 import org.spine3.server.Assign;
-import org.spine3.server.BoundedContext;
 import org.spine3.server.Subscribe;
 import org.spine3.server.procman.CommandRouted;
 import org.spine3.server.procman.ProcessManager;
@@ -64,7 +63,6 @@ import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.
  */
 public class RegistrationProcessManager extends ProcessManager<ProcessManagerId, RegistrationProcess> {
 
-    private BoundedContext boundedContext;
     private CommandSender commandSender;
 
     /**
@@ -76,10 +74,6 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
     public RegistrationProcessManager(ProcessManagerId id) {
         super(id);
         this.commandSender = new CommandSender();
-    }
-
-    /*package*/ void setBoundedContext(BoundedContext boundedContext) {
-        this.boundedContext = boundedContext;
     }
 
     @VisibleForTesting
@@ -120,10 +114,10 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
 
     @Subscribe
     public void on(SeatsReserved event, EventContext context) throws IllegalProcessStateFailure {
-        final RegistrationProcess.State state = getState().getProcessState();
-        if (state == AWAITING_RESERVATION_CONFIRMATION) {
+        final RegistrationProcess state = getState();
+        if (state.getProcessState() == AWAITING_RESERVATION_CONFIRMATION) {
             setProcessState(RESERVATION_CONFIRMED);
-            commandSender.markSeatsAsReserved(event);
+            commandSender.markSeatsAsReserved(event, state);
         } else {
             throw newIllegalProcessStateFailure(event);
         }
@@ -157,7 +151,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
         if (!state.getIsCompleted()) {
             setIsCompleted(true);
             final RejectOrder rejectOrder = commandSender.newRejectOrderCommand(getState().getOrderId());
-            final CancelSeatReservation cancelReservation = commandSender.newCancelSeatReservationCommand(cmd);
+            final CancelSeatReservation cancelReservation = commandSender.newCancelSeatReservationCommand(state);
             return newRouter().of(cmd, context)
                     .add(rejectOrder)
                     .add(cancelReservation)
@@ -165,13 +159,45 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
         } else {
             log().warn("Ignoring {} command which is no longer relevant, command ID: {}",
                     cmd.getClass().getSimpleName(), context.getCommandId().getUuid());
-            return newRouter().route();
+            return newRouter()
+                    .of(cmd, context)
+                    .route();
         }
     }
 
-    @SuppressWarnings("OverlyCoupledClass")
+    private void setProcessState(RegistrationProcess.State processState) {
+        final RegistrationProcess newState = getState().toBuilder()
+                .setProcessState(processState)
+                .build();
+        incrementState(newState);
+    }
+
+    private void updateState(OrderPlaced event) {
+        final RegistrationProcess newState = getState().toBuilder()
+                .setOrderId(event.getOrderId())
+                .setConferenceId(event.getConferenceId())
+                .setReservationAutoExpiration(event.getReservationAutoExpiration())
+                .build();
+        incrementState(newState);
+    }
+
+    private void setIsCompleted(boolean isCompleted) {
+        final RegistrationProcess newState = getState().toBuilder()
+                .setIsCompleted(isCompleted)
+                .build();
+        incrementState(newState);
+    }
+
+    private IllegalProcessStateFailure newIllegalProcessStateFailure(Message messageHandled) {
+        final ProcessManagerId id = getId();
+        final RegistrationProcess.State processState = getState().getProcessState();
+        final IllegalProcessStateFailure result = new IllegalProcessStateFailure(id, processState, messageHandled);
+        return result;
+    }
+
     @VisibleForTesting
-    /*package*/ class CommandSender {
+    @SuppressWarnings("OverlyCoupledClass")
+    protected class CommandSender {
 
         private void reserveSeats(OrderPlaced event) {
             reserveSeats(event.getOrderId(), event.getConferenceId(), event.getSeatList());
@@ -191,8 +217,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             send(message);
         }
 
-        private void markSeatsAsReserved(SeatsReserved event) {
-            final RegistrationProcess state = getState();
+        private void markSeatsAsReserved(SeatsReserved event, RegistrationProcess state) {
             final MarkSeatsAsReserved message = MarkSeatsAsReserved.newBuilder()
                     .setOrderId(state.getOrderId())
                     .setReservationExpiration(state.getReservationAutoExpiration())
@@ -221,15 +246,14 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
         }
 
         private void commitSeatReservation(OrderConfirmed event) {
-            final ReservationId reservationId = toReservationId(getState().getOrderId());
+            final ReservationId reservationId = toReservationId(event.getOrderId());
             final CommitSeatReservation message = CommitSeatReservation.newBuilder()
                     .setReservationId(reservationId)
                     .build();
             send(message);
         }
 
-        private CancelSeatReservation newCancelSeatReservationCommand(ExpireRegistrationProcess cmd) {
-            final RegistrationProcess state = getState();
+        private CancelSeatReservation newCancelSeatReservationCommand(RegistrationProcess state) {
             final ReservationId reservationId = toReservationId(state.getOrderId());
             final CancelSeatReservation message = CancelSeatReservation.newBuilder()
                     .setReservationId(reservationId)
@@ -238,52 +262,18 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             return message;
         }
 
-        @VisibleForTesting
-        /*package*/ void send(Message commandMessage) {
-            final Command command = create(commandMessage, newCommandContext());
-            boundedContext.process(command);
+        private ReservationId toReservationId(OrderId orderId) {
+            final ReservationId.Builder builder = ReservationId.newBuilder().setUuid(orderId.getUuid());
+            return builder.build();
         }
-    }
 
-    private void setProcessState(RegistrationProcess.State processState) {
-        final RegistrationProcess newState = getState().toBuilder()
-                .setProcessState(processState)
-                .build();
-        incrementState(newState);
-    }
-
-    private void updateState(OrderPlaced event) {
-        final RegistrationProcess newState = getState().toBuilder()
-                .setOrderId(event.getOrderId())
-                .setConferenceId(event.getConferenceId())
-                .setReservationAutoExpiration(event.getReservationAutoExpiration())
-                .build();
-        incrementState(newState);
-    }
-
-    private void setIsCompleted(boolean isCompleted) {
-        final RegistrationProcess newState = getState().toBuilder()
-                .setIsCompleted(isCompleted)
-                .build();
-        incrementState(newState);
-    }
-
-    private static ReservationId toReservationId(OrderId orderId) {
-        final ReservationId.Builder builder = ReservationId.newBuilder().setUuid(orderId.getUuid());
-        return builder.build();
-    }
-
-    private IllegalProcessStateFailure newIllegalProcessStateFailure(Message messageHandled) {
-        final ProcessManagerId id = getId();
-        final RegistrationProcess.State processState = getState().getProcessState();
-        final IllegalProcessStateFailure result = new IllegalProcessStateFailure(id, processState, messageHandled);
-        return result;
-    }
-
-    private static CommandContext newCommandContext() {
-        // TODO:2016-02-29:alexander.litus: obtain user ID and zone offset
-        final CommandContext context = Commands.createContext(UserId.getDefaultInstance(), ZoneOffset.getDefaultInstance());
-        return context;
+        @VisibleForTesting
+        protected void send(Message commandMessage) {
+            // TODO:2016-02-29:alexander.litus: obtain user ID and zone offset
+            final CommandContext context = Commands.createContext(UserId.getDefaultInstance(), ZoneOffset.getDefaultInstance());
+            final Command command = create(commandMessage, context);
+            getCommandBus().post(command);
+        }
     }
 
     private static Logger log() {
