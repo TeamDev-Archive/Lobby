@@ -22,18 +22,35 @@ package org.spine3.samples.lobby.registration.procman;
 
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Duration;
+import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
-import org.mockito.Mockito;
+import org.spine3.base.CommandContext;
 import org.spine3.base.EventContext;
 import org.spine3.protobuf.Timestamps;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
+import org.spine3.samples.lobby.common.ReservationId;
+import org.spine3.samples.lobby.payment.contracts.PaymentCompleted;
+import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
 import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
 import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
+import org.spine3.samples.lobby.registration.order.ConfirmOrder;
+import org.spine3.samples.lobby.registration.order.MarkSeatsAsReserved;
+import org.spine3.samples.lobby.registration.order.RejectOrder;
+import org.spine3.samples.lobby.registration.seat.availability.CancelSeatReservation;
+import org.spine3.samples.lobby.registration.seat.availability.CommitSeatReservation;
+import org.spine3.samples.lobby.registration.seat.availability.MakeSeatReservation;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsReserved;
+import org.spine3.server.Assign;
+import org.spine3.server.BoundedContext;
+import org.spine3.server.CommandHandler;
+import org.spine3.server.command.CommandBus;
+import org.spine3.server.procman.CommandRouted;
 
 import java.util.List;
 
+import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.protobuf.util.TimeUtil.add;
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static org.spine3.base.Identifiers.newUuid;
@@ -52,15 +69,17 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 /*package*/ class Given {
 
     private static final ProcessManagerId ID = newProcessManagerId();
-    private static final OrderId ORDER_ID = newOrderId();
-    private static final ConferenceId CONFERENCE_ID = newConferenceId();
+    /*package*/ static final OrderId ORDER_ID = newOrderId();
+    /*package*/ static final ConferenceId CONFERENCE_ID = newConferenceId();
+    /*package*/ static final ReservationId RESERVATION_ID = ReservationId.newBuilder().setUuid(ORDER_ID.getUuid()).build();
 
     private final TestProcessManager processManager;
-    private final RegistrationProcessManager.CommandSender commandSender;
+    private final BoundedContext boundedContext = newBoundedContext();
 
     /*package*/ Given() {
-        commandSender = Mockito.mock(RegistrationProcessManager.CommandSender.class);
-        processManager = new TestProcessManager(ID, commandSender);
+        processManager = new TestProcessManager(ID);
+        processManager.setCommandSender(processManager.new MockCommandSender());
+        boundedContext.getCommandBus().register(new StubCommandHandler());
     }
 
     /**
@@ -71,13 +90,18 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     }
 
     /*package*/ TestProcessManager processManager(RegistrationProcess.State processState) {
+        final TestProcessManager result = processManager(processState, /*isCompleted=*/false);
+        return result;
+    }
+
+    /*package*/ TestProcessManager processManager(RegistrationProcess.State processState, boolean isCompleted) {
         switch (processState) {
             case NOT_STARTED:
                 return processManager;
             case AWAITING_RESERVATION_CONFIRMATION:
             case RESERVATION_CONFIRMED:
             case PAYMENT_RECEIVED:
-                processManager.incrementState(buildState(processState));
+                processManager.incrementState(buildState(processState, isCompleted));
                 return processManager;
             case UNRECOGNIZED:
             default:
@@ -85,13 +109,14 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         }
     }
 
-    private RegistrationProcess buildState(RegistrationProcess.State processState) {
+    private RegistrationProcess buildState(RegistrationProcess.State processState, boolean isCompleted) {
         final RegistrationProcess.Builder builder = processManager.getState()
                 .toBuilder()
                 .setOrderId(ORDER_ID)
                 .setConferenceId(CONFERENCE_ID)
                 .setReservationAutoExpiration(minutesAhead(15))
-                .setProcessState(processState);
+                .setProcessState(processState)
+                .setIsCompleted(isCompleted);
         return builder.build();
     }
 
@@ -106,16 +131,12 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         return add(now, delta);
     }
 
-    /*package*/ RegistrationProcessManager.CommandSender getCommandSender() {
-        return commandSender;
-    }
+    /*package*/ class TestProcessManager extends RegistrationProcessManager {
 
-    /*package*/ static class TestProcessManager extends RegistrationProcessManager {
+        private final List<Message> commandsSent = newLinkedList();
 
-        private TestProcessManager(ProcessManagerId id, CommandSender commandSender) {
+        private TestProcessManager(ProcessManagerId id) {
             super(id);
-            setBoundedContext(newBoundedContext());
-            setCommandSender(commandSender);
         }
 
         @Override
@@ -128,6 +149,25 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         @Override
         public void incrementState(RegistrationProcess newState) {
             super.incrementState(newState);
+        }
+
+        @Override
+        @SuppressWarnings("RefusedBequest") // is overridden to do not throw an exception
+        protected CommandBus getCommandBus() {
+            return boundedContext.getCommandBus();
+        }
+
+        public List<Message> getCommandsSent() {
+            return ImmutableList.copyOf(commandsSent);
+        }
+
+        private class MockCommandSender extends CommandSender {
+
+            @Override
+            protected void send(Message commandMessage) {
+                commandsSent.add(commandMessage);
+                super.send(commandMessage);
+            }
         }
     }
 
@@ -153,11 +193,78 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
             return builder.build();
         }
 
-        public static OrderUpdated orderUpdated() {
+        /*package*/ static OrderUpdated orderUpdated() {
             final OrderUpdated.Builder builder = OrderUpdated.newBuilder()
                     .setOrderId(ORDER_ID)
                     .addAllSeat(SEATS);
             return builder.build();
+        }
+
+        /*package*/ static SeatsReserved seatsReserved() {
+            final SeatsReserved.Builder builder = SeatsReserved.newBuilder()
+                    .setReservationId(RESERVATION_ID)
+                    .setConferenceId(CONFERENCE_ID)
+                    .addAllReservedSeatUpdated(SEATS);
+            return builder.build();
+        }
+
+        /*package*/ static PaymentCompleted paymentCompleted() {
+            final PaymentCompleted.Builder builder = PaymentCompleted.newBuilder()
+                    .setOrderId(ORDER_ID);
+            return builder.build();
+        }
+
+        /*package*/ static OrderConfirmed orderConfirmed() {
+            final OrderConfirmed.Builder builder = OrderConfirmed.newBuilder()
+                    .setOrderId(ORDER_ID)
+                    .addAllSeat(SEATS);
+            return builder.build();
+        }
+    }
+
+    /*package*/ static class Command {
+
+        /*package*/ static final CommandContext CONTEXT = CommandContext.getDefaultInstance();
+
+        private Command() {}
+
+        /*package*/ static ExpireRegistrationProcess expireRegistrationProcess() {
+            final ExpireRegistrationProcess.Builder builder = ExpireRegistrationProcess.newBuilder()
+                    .setProcessManagerId(ID);
+            return builder.build();
+        }
+    }
+
+    private static class StubCommandHandler implements CommandHandler {
+
+        @Assign
+        public CommandRouted handle(MakeSeatReservation cmd, CommandContext context) {
+            return CommandRouted.getDefaultInstance();
+        }
+
+        @Assign
+        public CommandRouted handle(MarkSeatsAsReserved cmd, CommandContext context) {
+            return CommandRouted.getDefaultInstance();
+        }
+
+        @Assign
+        public CommandRouted handle(RejectOrder cmd, CommandContext context) {
+            return CommandRouted.getDefaultInstance();
+        }
+
+        @Assign
+        public CommandRouted handle(ConfirmOrder cmd, CommandContext context) {
+            return CommandRouted.getDefaultInstance();
+        }
+
+        @Assign
+        public CommandRouted handle(CommitSeatReservation cmd, CommandContext context) {
+            return CommandRouted.getDefaultInstance();
+        }
+
+        @Assign
+        public CommandRouted handle(CancelSeatReservation cmd, CommandContext context) {
+            return CommandRouted.getDefaultInstance();
         }
     }
 }
