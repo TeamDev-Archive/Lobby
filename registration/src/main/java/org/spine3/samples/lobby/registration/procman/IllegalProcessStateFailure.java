@@ -25,12 +25,19 @@ import com.google.protobuf.Message;
 import org.spine3.server.FailureThrowable;
 
 /**
- * A business failure which is thrown if a process is in inappropriate state for the requested operation.
+ * A business failure which is thrown if a registration process is in inappropriate state for the requested operation.
  *
  * @author Alexander Litus
  */
 public class IllegalProcessStateFailure extends FailureThrowable {
 
+    /**
+     * Creates a new failure instance.
+     *
+     * @param processManagerId an ID of the current process manager
+     * @param processState a current state of the process
+     * @param messageHandled a message which is handled but cannot be processed
+     */
     public IllegalProcessStateFailure(ProcessManagerId processManagerId,
                                       RegistrationProcess.State processState,
                                       Message messageHandled) {
@@ -40,6 +47,7 @@ public class IllegalProcessStateFailure extends FailureThrowable {
                                                  .setMessage(Any.pack(messageHandled))
                                                  .build());
     }
+
     @Override
     public Failures.IllegalProcessStateFailure getFailure() {
         return (Failures.IllegalProcessStateFailure) super.getFailure();
