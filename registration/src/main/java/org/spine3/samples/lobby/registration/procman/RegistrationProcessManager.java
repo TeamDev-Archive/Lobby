@@ -89,10 +89,8 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
         }
         updateState(event);
 
-        final Timestamp currentTime = getCurrentTime();
-        final Timestamp thanReservationExpiration = event.getReservationAutoExpiration();
-        final boolean isReservationExpired = isAfter(currentTime, thanReservationExpiration);
-        if (isReservationExpired) {
+        final Timestamp reservationExpiration = event.getReservationAutoExpiration();
+        if (isReservationExpired(reservationExpiration)) {
             commandSender.rejectOrder(event);
         } else {
             setProcessState(AWAITING_RESERVATION_CONFIRMATION);
@@ -179,6 +177,12 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
                 .setReservationAutoExpiration(event.getReservationAutoExpiration())
                 .build();
         incrementState(newState);
+    }
+
+    private static boolean isReservationExpired(Timestamp reservationAutoExpiration) {
+        final Timestamp now = getCurrentTime();
+        final boolean isNowAfterThanExpiration = isAfter(now, reservationAutoExpiration);
+        return isNowAfterThanExpiration;
     }
 
     private void setIsCompleted(boolean isCompleted) {
