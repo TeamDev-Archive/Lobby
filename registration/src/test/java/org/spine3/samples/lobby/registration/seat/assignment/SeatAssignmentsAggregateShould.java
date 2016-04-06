@@ -20,7 +20,6 @@
 
 package org.spine3.samples.lobby.registration.seat.assignment;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.FluentIterable;
 import com.google.protobuf.Message;
 import org.junit.Before;
@@ -30,18 +29,13 @@ import org.spine3.samples.lobby.registration.contracts.SeatAssigned;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignment;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsCreated;
-import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsId;
 import org.spine3.samples.lobby.registration.contracts.SeatUnassigned;
 import org.spine3.samples.lobby.registration.util.Seats;
 
-import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.base.Throwables.propagate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -248,54 +242,6 @@ public class SeatAssignmentsAggregateShould {
         private static void eventIsValid(SeatUnassigned event, UnassignSeat cmd) {
             assertEquals(cmd.getSeatAssignmentsId(), event.getAssignmentsId());
             assertEquals(cmd.getPosition(), event.getPosition());
-        }
-    }
-
-    // TODO:2016-03-02:alexander.litus: move
-    /* package */ static class TestSeatAssignmentsAggregate extends SeatAssignmentsAggregate {
-
-        /* package */ TestSeatAssignmentsAggregate(SeatAssignmentsId id) {
-            super(id);
-        }
-
-        // Is overridden to do not throw exceptions while retrieving the default state via reflection.
-        @Override
-        @SuppressWarnings("RefusedBequest")
-        protected SeatAssignments getDefaultState() {
-            return SeatAssignments.getDefaultInstance();
-        }
-
-        @VisibleForTesting
-        @Override
-        public void incrementState(@Nonnull SeatAssignments newState) {
-            super.incrementState(newState);
-        }
-
-        /* package */ void apply(SeatAssignmentsCreated event) {
-            invokeApplyMethod(event);
-        }
-
-        /* package */ void apply(SeatAssigned event) {
-            invokeApplyMethod(event);
-        }
-
-        /* package */ void apply(SeatUnassigned event) {
-            invokeApplyMethod(event);
-        }
-
-        /* package */ void apply(SeatAssignmentUpdated event) {
-            invokeApplyMethod(event);
-        }
-
-        private void invokeApplyMethod(Message event) {
-            try {
-                //noinspection DuplicateStringLiteralInspection
-                final Method apply = SeatAssignmentsAggregate.class.getDeclaredMethod("apply", event.getClass());
-                apply.setAccessible(true);
-                apply.invoke(this, event);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                propagate(e);
-            }
         }
     }
 }

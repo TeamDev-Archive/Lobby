@@ -84,17 +84,17 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
     }
 
 
-    private final SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate aggregate;
+    private final TestSeatAssignmentsAggregate aggregate;
 
     /* package */ Given() {
-        aggregate = new SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate(ASSIGNMENTS_ID);
+        aggregate = new TestSeatAssignmentsAggregate(ASSIGNMENTS_ID);
     }
 
-    /* package */ SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate emptySeatAssignments() {
+    /* package */ TestSeatAssignmentsAggregate emptySeatAssignments() {
         return aggregate;
     }
 
-    /* package */ SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate seatAssignmentsWithAttendees() {
+    /* package */ TestSeatAssignmentsAggregate seatAssignmentsWithAttendees() {
         final SeatAssignments state = aggregate.getState().toBuilder()
                 .putAllAssignments(Assignments.MAP_WITH_ATTENDEES)
                 .build();
@@ -102,7 +102,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
         return aggregate;
     }
 
-    /* package */ SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate seatAssignmentsWithoutAttendees() {
+    /* package */ TestSeatAssignmentsAggregate seatAssignmentsWithoutAttendees() {
         final SeatAssignments state = aggregate.getState().toBuilder()
                 .putAllAssignments(Assignments.MAP_WITHOUT_ATTENDEES)
                 .build();
