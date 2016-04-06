@@ -20,6 +20,7 @@
 
 package org.spine3.samples.lobby.registration.conference;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.StringValue;
 import org.junit.After;
@@ -195,6 +196,7 @@ public class ConferenceProjectionShould {
             return Conference.getDefaultInstance();
         }
 
+        @VisibleForTesting
         @Override
         public void incrementState(Conference newState) {
             super.incrementState(newState);

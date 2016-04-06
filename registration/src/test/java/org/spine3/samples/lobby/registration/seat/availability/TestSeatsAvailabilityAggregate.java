@@ -20,6 +20,7 @@
 
 package org.spine3.samples.lobby.registration.seat.availability;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.protobuf.Message;
 
 import java.lang.reflect.InvocationTargetException;
@@ -46,7 +47,7 @@ public class TestSeatsAvailabilityAggregate extends SeatsAvailabilityAggregate {
         return SeatsAvailability.getDefaultInstance();
     }
 
-    // Is overridden to make it accessible in tests.
+    @VisibleForTesting
     @Override
     public void incrementState(SeatsAvailability newState) {
         super.incrementState(newState);

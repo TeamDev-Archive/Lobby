@@ -20,6 +20,7 @@
 
 package org.spine3.samples.lobby.registration.order;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.protobuf.Message;
 import org.junit.Before;
 import org.junit.Test;
@@ -314,7 +315,7 @@ public class OrderAggregateShould {
             return Order.getDefaultInstance();
         }
 
-        // Is overridden to make accessible in tests.
+        @VisibleForTesting
         @Override
         public void incrementState(Order newState) {
             super.incrementState(newState);

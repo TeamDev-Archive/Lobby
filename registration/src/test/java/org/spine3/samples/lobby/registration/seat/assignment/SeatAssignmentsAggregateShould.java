@@ -20,6 +20,7 @@
 
 package org.spine3.samples.lobby.registration.seat.assignment;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.FluentIterable;
 import com.google.protobuf.Message;
 import org.junit.Before;
@@ -264,7 +265,7 @@ public class SeatAssignmentsAggregateShould {
             return SeatAssignments.getDefaultInstance();
         }
 
-        // Is overridden to make accessible in tests.
+        @VisibleForTesting
         @Override
         public void incrementState(@Nonnull SeatAssignments newState) {
             super.incrementState(newState);

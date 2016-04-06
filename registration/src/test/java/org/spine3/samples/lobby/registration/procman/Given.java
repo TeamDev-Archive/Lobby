@@ -20,6 +20,7 @@
 
 package org.spine3.samples.lobby.registration.procman;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Duration;
 import com.google.protobuf.Message;
@@ -145,7 +146,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
             return RegistrationProcess.getDefaultInstance();
         }
 
-        // Is overridden to make accessible in tests.
+        @VisibleForTesting
         @Override
         public void incrementState(RegistrationProcess newState) {
             super.incrementState(newState);

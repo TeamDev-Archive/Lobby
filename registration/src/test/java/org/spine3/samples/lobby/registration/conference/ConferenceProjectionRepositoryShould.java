@@ -20,6 +20,7 @@
 
 package org.spine3.samples.lobby.registration.conference;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.junit.Before;
 import org.junit.Test;
 import org.spine3.samples.lobby.common.ConferenceId;
@@ -71,7 +72,7 @@ public class ConferenceProjectionRepositoryShould {
             super(id);
         }
 
-        // Is overridden to make it accessible in tests.
+        @VisibleForTesting
         @Override
         public void incrementState(Conference newState) {
             super.incrementState(newState);
