@@ -67,17 +67,17 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
  * @author Alexander Litus
  */
 @SuppressWarnings({"UtilityClass", "MagicNumber"})
-/*package*/ class Given {
+/* package */ class Given {
 
     private static final ProcessManagerId ID = newProcessManagerId();
-    /*package*/ static final OrderId ORDER_ID = newOrderId();
-    /*package*/ static final ConferenceId CONFERENCE_ID = newConferenceId();
-    /*package*/ static final ReservationId RESERVATION_ID = ReservationId.newBuilder().setUuid(ORDER_ID.getUuid()).build();
+    /* package */ static final OrderId ORDER_ID = newOrderId();
+    /* package */ static final ConferenceId CONFERENCE_ID = newConferenceId();
+    /* package */ static final ReservationId RESERVATION_ID = ReservationId.newBuilder().setUuid(ORDER_ID.getUuid()).build();
 
     private final TestProcessManager processManager;
     private final BoundedContext boundedContext = newBoundedContext();
 
-    /*package*/ Given() {
+    /* package */ Given() {
         processManager = new TestProcessManager(ID);
         processManager.setCommandSender(processManager.new MockCommandSender());
         boundedContext.getCommandBus().register(new StubCommandHandler());
@@ -86,16 +86,16 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     /**
      * Creates a new process manager ID with the generated UUID.
      */
-    /*package*/ static ProcessManagerId newProcessManagerId() {
+    /* package */ static ProcessManagerId newProcessManagerId() {
         return ProcessManagerId.newBuilder().setUuid(newUuid()).build();
     }
 
-    /*package*/ TestProcessManager processManager(RegistrationProcess.State processState) {
+    /* package */ TestProcessManager processManager(RegistrationProcess.State processState) {
         final TestProcessManager result = processManager(processState, /*isCompleted=*/false);
         return result;
     }
 
-    /*package*/ TestProcessManager processManager(RegistrationProcess.State processState, boolean isCompleted) {
+    /* package */ TestProcessManager processManager(RegistrationProcess.State processState, boolean isCompleted) {
         switch (processState) {
             case NOT_STARTED:
                 return processManager;
@@ -121,7 +121,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         return builder.build();
     }
 
-    /*package*/ static Timestamp reservationExpirationTimeBeforeNow() {
+    /* package */ static Timestamp reservationExpirationTimeBeforeNow() {
         final Timestamp result = Timestamps.secondsAgo(30);
         return result;
     }
@@ -132,7 +132,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         return add(now, delta);
     }
 
-    /*package*/ class TestProcessManager extends RegistrationProcessManager {
+    /* package */ class TestProcessManager extends RegistrationProcessManager {
 
         private final List<Message> commandsSent = newLinkedList();
 
@@ -175,20 +175,20 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     /**
      * A test utility class providing events.
      */
-    /*package*/ static class Event {
+    /* package */ static class Event {
 
-        /*package*/ static final EventContext CONTEXT = EventContext.getDefaultInstance();
+        /* package */ static final EventContext CONTEXT = EventContext.getDefaultInstance();
 
         private static final List<SeatQuantity> SEATS = ImmutableList.of(newSeatQuantity(5), newSeatQuantity(10));
 
         private Event() {}
 
-        /*package*/ static OrderPlaced orderPlaced() {
+        /* package */ static OrderPlaced orderPlaced() {
             final Timestamp afterNow = minutesAhead(15);
             return orderPlaced(afterNow);
         }
 
-        /*package*/ static OrderPlaced orderPlaced(Timestamp reservationExpiration) {
+        /* package */ static OrderPlaced orderPlaced(Timestamp reservationExpiration) {
             final OrderPlaced.Builder builder = OrderPlaced.newBuilder()
                     .setOrderId(ORDER_ID)
                     .setConferenceId(CONFERENCE_ID)
@@ -197,14 +197,14 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
             return builder.build();
         }
 
-        /*package*/ static OrderUpdated orderUpdated() {
+        /* package */ static OrderUpdated orderUpdated() {
             final OrderUpdated.Builder builder = OrderUpdated.newBuilder()
                     .setOrderId(ORDER_ID)
                     .addAllSeat(SEATS);
             return builder.build();
         }
 
-        /*package*/ static SeatsReserved seatsReserved() {
+        /* package */ static SeatsReserved seatsReserved() {
             final SeatsReserved.Builder builder = SeatsReserved.newBuilder()
                     .setReservationId(RESERVATION_ID)
                     .setConferenceId(CONFERENCE_ID)
@@ -212,13 +212,13 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
             return builder.build();
         }
 
-        /*package*/ static PaymentCompleted paymentCompleted() {
+        /* package */ static PaymentCompleted paymentCompleted() {
             final PaymentCompleted.Builder builder = PaymentCompleted.newBuilder()
                     .setOrderId(ORDER_ID);
             return builder.build();
         }
 
-        /*package*/ static OrderConfirmed orderConfirmed() {
+        /* package */ static OrderConfirmed orderConfirmed() {
             final OrderConfirmed.Builder builder = OrderConfirmed.newBuilder()
                     .setOrderId(ORDER_ID)
                     .addAllSeat(SEATS);
@@ -229,13 +229,13 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     /**
      * A test utility class providing commands.
      */
-    /*package*/ static class Command {
+    /* package */ static class Command {
 
-        /*package*/ static final CommandContext CONTEXT = CommandContext.getDefaultInstance();
+        /* package */ static final CommandContext CONTEXT = CommandContext.getDefaultInstance();
 
         private Command() {}
 
-        /*package*/ static ExpireRegistrationProcess expireRegistrationProcess() {
+        /* package */ static ExpireRegistrationProcess expireRegistrationProcess() {
             final ExpireRegistrationProcess.Builder builder = ExpireRegistrationProcess.newBuilder()
                     .setProcessManagerId(ID);
             return builder.build();

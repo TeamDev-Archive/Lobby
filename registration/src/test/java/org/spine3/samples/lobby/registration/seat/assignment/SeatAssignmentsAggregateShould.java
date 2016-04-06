@@ -252,9 +252,9 @@ public class SeatAssignmentsAggregateShould {
     }
 
     // TODO:2016-03-02:alexander.litus: move
-    /*package*/ static class TestSeatAssignmentsAggregate extends SeatAssignmentsAggregate {
+    /* package */ static class TestSeatAssignmentsAggregate extends SeatAssignmentsAggregate {
 
-        /*package*/ TestSeatAssignmentsAggregate(SeatAssignmentsId id) {
+        /* package */ TestSeatAssignmentsAggregate(SeatAssignmentsId id) {
             super(id);
         }
 
@@ -271,19 +271,19 @@ public class SeatAssignmentsAggregateShould {
             super.incrementState(newState);
         }
 
-        /*package*/ void apply(SeatAssignmentsCreated event) {
+        /* package */ void apply(SeatAssignmentsCreated event) {
             invokeApplyMethod(event);
         }
 
-        /*package*/ void apply(SeatAssigned event) {
+        /* package */ void apply(SeatAssigned event) {
             invokeApplyMethod(event);
         }
 
-        /*package*/ void apply(SeatUnassigned event) {
+        /* package */ void apply(SeatUnassigned event) {
             invokeApplyMethod(event);
         }
 
-        /*package*/ void apply(SeatAssignmentUpdated event) {
+        /* package */ void apply(SeatAssignmentUpdated event) {
             invokeApplyMethod(event);
         }
 

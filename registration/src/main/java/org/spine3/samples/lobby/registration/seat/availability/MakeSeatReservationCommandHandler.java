@@ -38,13 +38,13 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
  * The Method Object for handling {@link MakeSeatReservation} commands.
  */
 @SuppressWarnings("TypeMayBeWeakened"/** "OrBuilder" parameters are not applicable*/)
-/*package*/ class MakeSeatReservationCommandHandler {
+/* package */ class MakeSeatReservationCommandHandler {
 
     private final List<SeatQuantity> reservedSeatsUpdated = newLinkedList();
     private final List<SeatQuantity> availableSeatsUpdated = newLinkedList();
     private final SeatsAvailability state;
 
-    /*package*/ MakeSeatReservationCommandHandler(SeatsAvailability state) {
+    /* package */ MakeSeatReservationCommandHandler(SeatsAvailability state) {
         this.state = state;
     }
 
@@ -55,7 +55,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
      * @see #getReservedSeatsUpdated()
      * @see #getAvailableSeatsUpdated()
      */
-    /*package*/ void handle(MakeSeatReservation command) {
+    /* package */ void handle(MakeSeatReservation command) {
         final List<SeatQuantity> requestedSeats = command.getSeatList();
         checkAllSeatTypesAreAvailable(requestedSeats);
 
@@ -79,7 +79,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     }
 
     @VisibleForTesting
-    /*package*/ int calculateNewReservedSeatCount(int availableCount, int requestedCount, int reservedCount) {
+    /* package */ int calculateNewReservedSeatCount(int availableCount, int requestedCount, int reservedCount) {
         if (requestedCount > availableCount) {
             final int remainingCount = availableCount + reservedCount;
             return remainingCount;
@@ -89,7 +89,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     }
 
     @VisibleForTesting
-    /*package*/ int calculateNewAvailableSeatCount(int availableCount, int oldReservedCount, int newReservedCount) {
+    /* package */ int calculateNewAvailableSeatCount(int availableCount, int oldReservedCount, int newReservedCount) {
         //noinspection LocalVariableNamingConvention
         final int reservedOnThisRequestCount = newReservedCount - oldReservedCount;
         final int newAvailableCount = availableCount - reservedOnThisRequestCount;
@@ -127,11 +127,11 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         }
     }
 
-    /*package*/ List<SeatQuantity> getReservedSeatsUpdated() {
+    /* package */ List<SeatQuantity> getReservedSeatsUpdated() {
         return ImmutableList.copyOf(reservedSeatsUpdated);
     }
 
-    /*package*/ List<SeatQuantity> getAvailableSeatsUpdated() {
+    /* package */ List<SeatQuantity> getAvailableSeatsUpdated() {
         return ImmutableList.copyOf(availableSeatsUpdated);
     }
 }

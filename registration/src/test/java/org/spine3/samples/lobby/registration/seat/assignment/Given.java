@@ -50,15 +50,15 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
  * @author Alexander Litus
  */
 @SuppressWarnings("UtilityClass")
-/*package*/ class Given {
+/* package */ class Given {
 
     private static final SeatAssignmentsId ASSIGNMENTS_ID = newSeatAssignmentsId();
     private static final OrderId ORDER_ID = newOrderId();
 
-    /*package*/ static final SeatTypeId MAIN_SEAT_TYPE_ID = newSeatTypeId("main_" + newUuid());
-    /*package*/ static final int MAIN_SEAT_QUANTITY = 5;
-    /*package*/ static final SeatTypeId WORKSHOP_SEAT_TYPE_ID = newSeatTypeId("workshop_" + newUuid());
-    /*package*/ static final int WORKSHOP_SEAT_QUANTITY = 10;
+    /* package */ static final SeatTypeId MAIN_SEAT_TYPE_ID = newSeatTypeId("main_" + newUuid());
+    /* package */ static final int MAIN_SEAT_QUANTITY = 5;
+    /* package */ static final SeatTypeId WORKSHOP_SEAT_TYPE_ID = newSeatTypeId("workshop_" + newUuid());
+    /* package */ static final int WORKSHOP_SEAT_QUANTITY = 10;
 
     private static class Assignments {
 
@@ -86,15 +86,15 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
 
     private final SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate aggregate;
 
-    /*package*/ Given() {
+    /* package */ Given() {
         aggregate = new SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate(ASSIGNMENTS_ID);
     }
 
-    /*package*/ SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate emptySeatAssignments() {
+    /* package */ SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate emptySeatAssignments() {
         return aggregate;
     }
 
-    /*package*/ SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate seatAssignmentsWithAttendees() {
+    /* package */ SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate seatAssignmentsWithAttendees() {
         final SeatAssignments state = aggregate.getState().toBuilder()
                 .putAllAssignments(Assignments.MAP_WITH_ATTENDEES)
                 .build();
@@ -102,7 +102,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
         return aggregate;
     }
 
-    /*package*/ SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate seatAssignmentsWithoutAttendees() {
+    /* package */ SeatAssignmentsAggregateShould.TestSeatAssignmentsAggregate seatAssignmentsWithoutAttendees() {
         final SeatAssignments state = aggregate.getState().toBuilder()
                 .putAllAssignments(Assignments.MAP_WITHOUT_ATTENDEES)
                 .build();
@@ -118,7 +118,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
         return builder.build();
     }
 
-    /*package*/ static SeatAssignment newSeatAssignment(SeatTypeId seatTypeId, SeatPosition position, PersonalInfo attendee) {
+    /* package */ static SeatAssignment newSeatAssignment(SeatTypeId seatTypeId, SeatPosition position, PersonalInfo attendee) {
         final SeatAssignment.Builder builder = SeatAssignment.newBuilder()
                 .setSeatTypeId(seatTypeId)
                 .setPosition(position)
@@ -129,7 +129,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
     /**
      * A test utility class providing commands.
      */
-    /*package*/ static class Command {
+    /* package */ static class Command {
 
         private static final CommandContext CMD_CONTEXT = CommandContext.getDefaultInstance();
 
@@ -161,23 +161,23 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
 
         private Command() {}
 
-        /*package*/ static CommandContext context() {
+        /* package */ static CommandContext context() {
             return CMD_CONTEXT;
         }
 
-        /*package*/ static CreateSeatAssignments createSeatAssignments() {
+        /* package */ static CreateSeatAssignments createSeatAssignments() {
             return CREATE_SEAT_ASSIGNMENTS;
         }
 
-        /*package*/ static AssignSeat assignSeatToNewAttendee() {
+        /* package */ static AssignSeat assignSeatToNewAttendee() {
             return ASSIGN_SEAT_TO_NEW_ATTENDEE;
         }
 
-        /*package*/ static AssignSeat assignSeatToUpdatedAttendee() {
+        /* package */ static AssignSeat assignSeatToUpdatedAttendee() {
             return ASSIGN_SEAT_TO_UPDATED_ATTENDEE;
         }
 
-        /*package*/ static UnassignSeat unassignSeat() {
+        /* package */ static UnassignSeat unassignSeat() {
             return UNASSIGN_SEAT;
         }
     }
@@ -185,7 +185,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
     /**
      * A test utility class providing events.
      */
-    /*package*/ static class Event {
+    /* package */ static class Event {
 
         private static final SeatAssignmentsCreated SEAT_ASSIGNMENTS_CREATED = SeatAssignmentsCreated.newBuilder()
                 .setAssignmentsId(ASSIGNMENTS_ID)
@@ -215,19 +215,19 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
 
         private Event() {}
 
-        /*package*/ static SeatAssignmentsCreated seatAssignmentsCreated() {
+        /* package */ static SeatAssignmentsCreated seatAssignmentsCreated() {
             return SEAT_ASSIGNMENTS_CREATED;
         }
 
-        /*package*/ static SeatAssigned seatAssigned() {
+        /* package */ static SeatAssigned seatAssigned() {
             return SEAT_ASSIGNED;
         }
 
-        /*package*/ static SeatUnassigned seatUnassigned() {
+        /* package */ static SeatUnassigned seatUnassigned() {
             return SEAT_UNASSIGNED;
         }
 
-        /*package*/ static SeatAssignmentUpdated seatAssignmentUpdated() {
+        /* package */ static SeatAssignmentUpdated seatAssignmentUpdated() {
             return SEAT_ASSIGNMENT_UPDATED;
         }
     }

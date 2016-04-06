@@ -77,7 +77,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
     }
 
     @VisibleForTesting
-    /*package*/ void setCommandSender(CommandSender commandSender) {
+    /* package */ void setCommandSender(CommandSender commandSender) {
         this.commandSender = commandSender;
     }
 

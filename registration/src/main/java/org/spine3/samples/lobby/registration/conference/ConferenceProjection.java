@@ -79,7 +79,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         super(id);
     }
 
-    /*package*/ void setBoundedContext(BoundedContext boundedContext) {
+    /* package */ void setBoundedContext(BoundedContext boundedContext) {
         this.boundedContext = boundedContext;
     }
 
@@ -161,7 +161,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         }
     }
 
-    // TODO:2016-02-23:alexander.litus: why is it here and not in PM?!
+    // TODO:2016-02-23:alexander.litus: consider moving this method to Process Manager
     private void sendAddSeatsRequest(SeatTypeId seatTypeId, int quantity) {
         final AddSeats message = AddSeats.newBuilder()
                 .setConferenceId(getState().getId())
@@ -171,6 +171,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         boundedContext.process(command);
     }
 
+    // TODO:2016-02-23:alexander.litus: consider moving this method to Process Manager
     private void sendRemoveSeatsRequest(SeatTypeId seatTypeId, int quantity) {
         final RemoveSeats message = RemoveSeats.newBuilder()
                 .setConferenceId(getState().getId())

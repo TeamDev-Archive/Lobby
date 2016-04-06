@@ -302,9 +302,9 @@ public class OrderAggregateShould {
         }
     }
 
-    /*package*/ static class TestOrderAggregate extends OrderAggregate {
+    /* package */ static class TestOrderAggregate extends OrderAggregate {
 
-        /*package*/ TestOrderAggregate(OrderId id) {
+        /* package */ TestOrderAggregate(OrderId id) {
             super(id);
         }
 

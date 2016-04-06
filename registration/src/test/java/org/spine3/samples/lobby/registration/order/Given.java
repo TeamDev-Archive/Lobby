@@ -51,42 +51,42 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
  *
  * @author Alexander Litus
  */
-/*package*/ class Given {
+/* package */ class Given {
 
-    /*package*/ static final OrderId ORDER_ID = newOrderId();
+    /* package */ static final OrderId ORDER_ID = newOrderId();
     private static final ConferenceId CONFERENCE_ID = newConferenceId();
     private static final List<SeatQuantity> SEATS = ImmutableList.of(newSeatQuantity(5), newSeatQuantity(10));
 
     private final OrderAggregateShould.TestOrderAggregate aggregate;
 
-    /*package*/ Given() {
+    /* package */ Given() {
         aggregate = new OrderAggregateShould.TestOrderAggregate(ORDER_ID);
         aggregate.setOrderPricingService(new PricingServiceStub());
     }
 
-    /*package*/ OrderAggregateShould.TestOrderAggregate newOrder() {
+    /* package */ OrderAggregateShould.TestOrderAggregate newOrder() {
         return aggregate;
     }
 
-    /*package*/ OrderAggregateShould.TestOrderAggregate confirmedOrder() {
+    /* package */ OrderAggregateShould.TestOrderAggregate confirmedOrder() {
         final Order state = orderState(SEATS, true);
         aggregate.incrementState(state);
         return aggregate;
     }
 
-    /*package*/ OrderAggregateShould.TestOrderAggregate placedOrder() {
+    /* package */ OrderAggregateShould.TestOrderAggregate placedOrder() {
         final Order state = orderState(SEATS);
         aggregate.incrementState(state);
         return aggregate;
     }
 
-    /*package*/ OrderAggregateShould.TestOrderAggregate completelyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
+    /* package */ OrderAggregateShould.TestOrderAggregate completelyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
         final Order state = orderState(reservedSeats);
         aggregate.incrementState(state);
         return aggregate;
     }
 
-    /*package*/ OrderAggregateShould.TestOrderAggregate partiallyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
+    /* package */ OrderAggregateShould.TestOrderAggregate partiallyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
         final List<SeatQuantity> requestedSeats = newArrayList(reservedSeats);
         final int partlyReservedSeatIndex = 0;
         final SeatQuantity.Builder seat = requestedSeats.get(partlyReservedSeatIndex).toBuilder();
@@ -111,15 +111,15 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         return order.build();
     }
 
-    /*package*/ static class PricingServiceStub implements OrderPricingService {
+    /* package */ static class PricingServiceStub implements OrderPricingService {
 
-        /*package*/ static final Money TOTAL_PRICE = newMoney(100, USD);
+        /* package */ static final Money TOTAL_PRICE = newMoney(100, USD);
         private static final SeatOrderLine ORDER_LINE = SeatOrderLine.newBuilder()
                 .setQuantity(10)
                 .setUnitPrice(newMoney(10, USD))
                 .setLineTotal(TOTAL_PRICE)
                 .build();
-        /*package*/ static final List<SeatOrderLine> ORDER_LINES = singletonList(ORDER_LINE);
+        /* package */ static final List<SeatOrderLine> ORDER_LINES = singletonList(ORDER_LINE);
 
         @Override
         public OrderTotal calculateTotalOrderPrice(ConferenceId conferenceId, Iterable<SeatQuantity> seats) {
@@ -134,7 +134,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
      * A test utility class providing commands.
      */
     @SuppressWarnings("UtilityClass")
-    /*package*/ static class Command {
+    /* package */ static class Command {
 
         private static final CommandContext CMD_CONTEXT = CommandContext.getDefaultInstance();
 
@@ -162,27 +162,27 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         private Command() {
         }
 
-        /*package*/ static CommandContext context() {
+        /* package */ static CommandContext context() {
             return CMD_CONTEXT;
         }
 
-        /*package*/ static RegisterToConference registerToConference() {
+        /* package */ static RegisterToConference registerToConference() {
             return REGISTER_TO_CONFERENCE;
         }
 
-        /*package*/ static MarkSeatsAsReserved markSeatsAsReserved() {
+        /* package */ static MarkSeatsAsReserved markSeatsAsReserved() {
             return MARK_SEATS_AS_RESERVED;
         }
 
-        /*package*/ static ConfirmOrder confirmOrder() {
+        /* package */ static ConfirmOrder confirmOrder() {
             return CONFIRM_ORDER;
         }
 
-        /*package*/ static RejectOrder rejectOrder() {
+        /* package */ static RejectOrder rejectOrder() {
             return REJECT_ORDER;
         }
 
-        /*package*/ static AssignRegistrantDetails assignRegistrantDetails() {
+        /* package */ static AssignRegistrantDetails assignRegistrantDetails() {
             return ASSIGN_REGISTRANT_DETAILS;
         }
     }
@@ -191,7 +191,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
      * A test utility class providing events.
      */
     @SuppressWarnings({"UtilityClass", "MagicNumber"})
-    /*package*/ static class Event {
+    /* package */ static class Event {
 
         private static final OrderPlaced ORDER_PLACED = OrderPlaced.newBuilder()
                 .setOrderId(ORDER_ID)
@@ -203,11 +203,11 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
         private Event() {}
 
-        /*package*/ static OrderPlaced orderPlaced() {
+        /* package */ static OrderPlaced orderPlaced() {
             return ORDER_PLACED;
         }
 
-        /*package*/ static OrderUpdated orderUpdated() {
+        /* package */ static OrderUpdated orderUpdated() {
             final OrderUpdated.Builder result = OrderUpdated.newBuilder()
                     .setOrderId(ORDER_ID)
                     .addSeat(newSeatQuantity(16))
@@ -215,7 +215,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
             return result.build();
         }
 
-        /*package*/ static OrderPartiallyReserved orderPartiallyReserved() {
+        /* package */ static OrderPartiallyReserved orderPartiallyReserved() {
             final OrderPartiallyReserved.Builder result = OrderPartiallyReserved.newBuilder()
                     .setOrderId(ORDER_ID)
                     .addSeat(newSeatQuantity(64))
@@ -223,7 +223,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
             return result.build();
         }
 
-        /*package*/ static OrderReservationCompleted orderReservationCompleted() {
+        /* package */ static OrderReservationCompleted orderReservationCompleted() {
             final OrderReservationCompleted.Builder result = OrderReservationCompleted.newBuilder()
                     .setOrderId(ORDER_ID)
                     .addSeat(newSeatQuantity(256))
@@ -231,7 +231,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
             return result.build();
         }
 
-        /*package*/ static OrderConfirmed orderConfirmed() {
+        /* package */ static OrderConfirmed orderConfirmed() {
             return ORDER_CONFIRMED;
         }
     }
