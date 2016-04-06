@@ -61,6 +61,9 @@ public abstract class MakeSeatReservationCmdHandling extends TestCase {
         return AVAILABLE_SEATS;
     }
 
+    /**
+     * A test utility class providing commands.
+     */
     @SuppressWarnings("UtilityClass")
     public static class Command {
 

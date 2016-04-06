@@ -130,6 +130,9 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         }
     }
 
+    /**
+     * A test utility class providing commands.
+     */
     @SuppressWarnings("UtilityClass")
     /*package*/ static class Command {
 
@@ -184,6 +187,9 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         }
     }
 
+    /**
+     * A test utility class providing events.
+     */
     @SuppressWarnings({"UtilityClass", "MagicNumber"})
     /*package*/ static class Event {
 

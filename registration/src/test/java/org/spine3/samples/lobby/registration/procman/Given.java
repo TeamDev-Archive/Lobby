@@ -172,6 +172,9 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         }
     }
 
+    /**
+     * A test utility class providing events.
+     */
     /*package*/ static class Event {
 
         /*package*/ static final EventContext CONTEXT = EventContext.getDefaultInstance();
@@ -223,6 +226,9 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         }
     }
 
+    /**
+     * A test utility class providing commands.
+     */
     /*package*/ static class Command {
 
         /*package*/ static final CommandContext CONTEXT = CommandContext.getDefaultInstance();

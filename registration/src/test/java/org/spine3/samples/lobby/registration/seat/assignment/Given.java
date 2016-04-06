@@ -126,6 +126,9 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
         return builder.build();
     }
 
+    /**
+     * A test utility class providing commands.
+     */
     /*package*/ static class Command {
 
         private static final CommandContext CMD_CONTEXT = CommandContext.getDefaultInstance();
@@ -179,6 +182,9 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
         }
     }
 
+    /**
+     * A test utility class providing events.
+     */
     /*package*/ static class Event {
 
         private static final SeatAssignmentsCreated SEAT_ASSIGNMENTS_CREATED = SeatAssignmentsCreated.newBuilder()
