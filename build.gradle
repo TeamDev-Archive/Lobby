@@ -25,6 +25,7 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'idea'
     apply plugin: 'com.google.protobuf'
 
     sourceCompatibility = 1.7
@@ -55,6 +56,8 @@ subprojects {
     }
 
     dependencies {
+        compile 'io.grpc:grpc-all:0.13.2'
+
         // Spine
         compile group: 'org.spine3', name: 'server', version: project.SPINE_VERSION, changing: true
         compile group: 'org.spine3', name: 'client', version: project.SPINE_VERSION, changing: true
@@ -87,10 +90,14 @@ subprojects {
     final String GEN_MAIN_JAVA_DIR = "${GEN_ROOT_DIR}/main/java"
     final String GEN_TEST_JAVA_DIR = "${GEN_ROOT_DIR}/test/java"
 
+    idea.module {
+        generatedSourceDirs += file("${GEN_ROOT_DIR}/main/grpc");
+    }
+
     sourceSets {
         main {
             proto.srcDirs = ["${SRC_ROOT_DIR}/main/proto"]
-            java.srcDirs = [GEN_MAIN_JAVA_DIR, "${SRC_ROOT_DIR}/main/java"]
+            java.srcDirs = [GEN_MAIN_JAVA_DIR, "${SRC_ROOT_DIR}/main/java", "${GEN_ROOT_DIR}/main/grpc"]
             resources.srcDirs = ["${GEN_ROOT_DIR}/main/resources"]
         }
         test {
@@ -104,6 +111,17 @@ subprojects {
         generatedFilesBaseDir = "$projectDir/generated"
         protoc {
             artifact = project.PROTOBUF_DEPENDENCY
+        }
+        plugins {
+            // Define a plugin with name 'grpc'
+            grpc {
+                artifact = 'io.grpc:protoc-gen-grpc-java:0.13.2'
+            }
+        }
+        generateProtoTasks {
+            all()*.plugins {
+                grpc {}
+            }
         }
     }
 
