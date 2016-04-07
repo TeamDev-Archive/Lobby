@@ -1,0 +1,37 @@
+/*
+group 'sample.lobby'
+version '0.1'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.5
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+*/
+
+
+dependencies {
+   /* compile project(':common')
+    compile project(':conference-contracts')*/
+    compile project(':common')
+    compile project(':registration-contracts')
+    compile project(':conference-contracts')
+    compile project(':payment-contracts')
+}
+
+buildscript {
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+    dependencies {
+        classpath group: 'org.spine3.tools', name: 'proto-lookup-plugin', version: '1.1', changing: true
+    }
+}
+
+apply plugin: 'org.spine3.tools.protolookup'

@@ -18,7 +18,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration.conference;
+package org.spine.samples.lobby.conference;
 
 import org.junit.Test;
 import org.spine3.samples.lobby.conference.ConferenceServiceProto;

@@ -17,3 +17,6 @@ project(':registration-contracts').projectDir = "$rootDir/registration-contracts
 
 include ':conference-contracts'
 project(':conference-contracts').projectDir = "$rootDir/conference-contracts" as File
+
+include ':conference'
+project(':conference').projectDir = "$rootDir/conference" as File
