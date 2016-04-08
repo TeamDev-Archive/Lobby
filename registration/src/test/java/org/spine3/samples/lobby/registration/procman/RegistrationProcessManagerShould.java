@@ -23,6 +23,7 @@ package org.spine3.samples.lobby.registration.procman;
 import com.google.protobuf.Any;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.spine3.base.Command;
@@ -61,6 +62,11 @@ public class RegistrationProcessManagerShould {
         this.given = new Given();
     }
 
+    @After
+    public void tearDown() throws Exception {
+        processManager.getCommandBus().close();
+    }
+
     @Test
     public void handle_OrderPlaced_event_then_update_state_and_reserve_seats_if_reservation_not_expired()
             throws IllegalProcessStateFailure {
@@ -70,12 +76,16 @@ public class RegistrationProcessManagerShould {
         processManager.on(event, Given.Event.CONTEXT);
 
         assertStateUpdated(AWAITING_RESERVATION_CONFIRMATION, event);
-        final MakeSeatReservation cmd = assertCommandSent(MakeSeatReservation.class);
-        assertEquals(event.getConferenceId(), cmd.getConferenceId());
-        assertEquals(event.getOrderId().getUuid(), cmd.getReservationId() .getUuid());
-        assertEquals(event.getSeatList(), cmd.getSeatList());
+        final List<Message> commandsSent = processManager.getCommandsSent();
+        assertEquals(2, commandsSent.size());
 
-        // TODO:2016-03-02:alexander.litus: check that ExpireRegistrationProcess cmd is sent
+        final MakeSeatReservation reserveSeats = (MakeSeatReservation) commandsSent.get(0);
+        assertEquals(event.getConferenceId(), reserveSeats.getConferenceId());
+        assertEquals(event.getOrderId().getUuid(), reserveSeats.getReservationId().getUuid());
+        assertEquals(event.getSeatList(), reserveSeats.getSeatList());
+
+        final ExpireRegistrationProcess expireProcess = (ExpireRegistrationProcess) commandsSent.get(1);
+        assertEquals(processManager.getId(), expireProcess.getProcessManagerId());
     }
 
     @Test

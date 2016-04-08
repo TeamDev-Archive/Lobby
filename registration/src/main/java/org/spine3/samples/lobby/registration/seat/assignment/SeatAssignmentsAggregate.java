@@ -55,7 +55,7 @@ import static org.spine3.samples.lobby.registration.util.ValidationUtils.checkMe
  * @author Alexander Litus
  */
 @SuppressWarnings("OverlyCoupledClass")
-public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatAssignments> {
+public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatAssignments, SeatAssignments.Builder> {
 
     /**
      * Creates a new instance.

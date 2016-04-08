@@ -41,6 +41,7 @@ import java.util.List;
 
 import static com.google.common.base.Throwables.propagate;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Alexander Litus
@@ -256,6 +257,36 @@ public class OrderAggregateShould {
         assertEquals(true, aggregate.getState().getIsConfirmed());
     }
 
+    @Test
+    public void apply_OrderTotalsCalculated_event_and_update_state() {
+        final TestOrderAggregate aggregate = given.placedOrder();
+        final OrderTotalsCalculated event = Given.Event.orderTotalsCalculated();
+
+        aggregate.apply(event);
+
+        assertEquals(event.getTotal(), aggregate.getState().getPrice());
+    }
+
+    @Test
+    public void apply_OrderExpired_event_and_update_state() {
+        final TestOrderAggregate aggregate = given.placedOrder();
+        final OrderExpired event = Given.Event.orderExpired();
+
+        aggregate.apply(event);
+
+        assertTrue(aggregate.getState().getIsExpired());
+    }
+
+    @Test
+    public void apply_OrderRegistrantAssigned_event_and_update_state() {
+        final TestOrderAggregate aggregate = given.placedOrder();
+        final OrderRegistrantAssigned event = Given.Event.orderRegistrantAssigned();
+
+        aggregate.apply(event);
+
+        assertEquals(event.getPersonalInfo(), aggregate.getState().getRegistrant());
+    }
+
     private static class Assert {
 
         private static void eventIsValid(OrderPlaced event, RegisterToConference cmd) {
@@ -321,23 +352,43 @@ public class OrderAggregateShould {
             super.incrementState(newState);
         }
 
+        @VisibleForTesting
         private void apply(OrderPlaced event) {
             invokeApplyMethod(event);
         }
 
+        @VisibleForTesting
         private void apply(OrderUpdated event) {
             invokeApplyMethod(event);
         }
 
+        @VisibleForTesting
         private void apply(OrderPartiallyReserved event) {
             invokeApplyMethod(event);
         }
 
+        @VisibleForTesting
         private void apply(OrderReservationCompleted event) {
             invokeApplyMethod(event);
         }
 
+        @VisibleForTesting
         private void apply(OrderConfirmed event) {
+            invokeApplyMethod(event);
+        }
+
+        @VisibleForTesting
+        public void apply(OrderTotalsCalculated event) {
+            invokeApplyMethod(event);
+        }
+
+        @VisibleForTesting
+        public void apply(OrderExpired event) {
+            invokeApplyMethod(event);
+        }
+
+        @VisibleForTesting
+        public void apply(OrderRegistrantAssigned event) {
             invokeApplyMethod(event);
         }
 

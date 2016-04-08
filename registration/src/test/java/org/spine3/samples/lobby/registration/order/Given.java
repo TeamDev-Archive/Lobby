@@ -27,10 +27,13 @@ import org.spine3.money.Money;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
+import org.spine3.samples.lobby.registration.contracts.OrderExpired;
 import org.spine3.samples.lobby.registration.contracts.OrderPartiallyReserved;
 import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
+import org.spine3.samples.lobby.registration.contracts.OrderRegistrantAssigned;
 import org.spine3.samples.lobby.registration.contracts.OrderReservationCompleted;
 import org.spine3.samples.lobby.registration.contracts.OrderTotal;
+import org.spine3.samples.lobby.registration.contracts.OrderTotalsCalculated;
 import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatOrderLine;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
@@ -233,6 +236,26 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
         /* package */ static OrderConfirmed orderConfirmed() {
             return ORDER_CONFIRMED;
+        }
+
+        /* package */ static OrderTotalsCalculated orderTotalsCalculated() {
+            final OrderTotalsCalculated.Builder builder = OrderTotalsCalculated.newBuilder()
+                    .setOrderId(ORDER_ID)
+                    .setTotal(newMoney(100, USD));
+            return builder.build();
+        }
+
+        /* package */ static OrderExpired orderExpired() {
+            final OrderExpired.Builder builder = OrderExpired.newBuilder()
+                    .setOrderId(ORDER_ID);
+            return builder.build();
+        }
+
+        /* package */ static OrderRegistrantAssigned orderRegistrantAssigned() {
+            final OrderRegistrantAssigned.Builder builder = OrderRegistrantAssigned.newBuilder()
+                    .setOrderId(ORDER_ID)
+                    .setPersonalInfo(newPersonalInfo("Albert", "Einstein", "ein@stein.com"));
+            return builder.build();
         }
     }
 }

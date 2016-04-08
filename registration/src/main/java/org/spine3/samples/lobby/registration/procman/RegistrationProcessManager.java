@@ -21,6 +21,7 @@
 package org.spine3.samples.lobby.registration.procman;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.protobuf.Duration;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
 import org.slf4j.Logger;
@@ -29,7 +30,9 @@ import org.spine3.base.Command;
 import org.spine3.base.CommandContext;
 import org.spine3.base.Commands;
 import org.spine3.base.EventContext;
+import org.spine3.base.Schedule;
 import org.spine3.base.UserId;
+import org.spine3.protobuf.Durations;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.ReservationId;
@@ -63,6 +66,9 @@ import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.
  */
 public class RegistrationProcessManager extends ProcessManager<ProcessManagerId, RegistrationProcess> {
 
+    @SuppressWarnings("MagicNumber")
+    private static final Duration RESERVATION_EXPIRATION_OFFSET = Durations.minutes(15);
+
     private CommandSender commandSender;
 
     /**
@@ -95,7 +101,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
         } else {
             setProcessState(AWAITING_RESERVATION_CONFIRMATION);
             commandSender.reserveSeats(event);
-            // TODO:2016-02-26:alexander.litus: send ExpireRegistrationProcess cmd with 15 minutes delay
+            commandSender.expireRegistrationProcess(event, getId());
         }
     }
 
@@ -257,6 +263,13 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             send(message);
         }
 
+        private void expireRegistrationProcess(OrderPlaced event, ProcessManagerId id) {
+            final ExpireRegistrationProcess msg = ExpireRegistrationProcess.newBuilder()
+                    .setProcessManagerId(id)
+                    .build();
+            send(msg, RESERVATION_EXPIRATION_OFFSET);
+        }
+
         private CancelSeatReservation newCancelSeatReservationCommand(RegistrationProcess state) {
             final ReservationId reservationId = toReservationId(state.getOrderId());
             final CancelSeatReservation message = CancelSeatReservation.newBuilder()
@@ -271,12 +284,29 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             return builder.build();
         }
 
-        @VisibleForTesting
-        protected void send(Message commandMessage) {
+        private void send(Message cmdMsg) {
             // TODO:2016-02-29:alexander.litus: obtain user ID and zone offset
             final CommandContext context = Commands.createContext(UserId.getDefaultInstance(), ZoneOffset.getDefaultInstance());
-            final Command command = create(commandMessage, context);
-            getCommandBus().post(command);
+            final Command cmd = create(cmdMsg, context);
+            post(cmd);
+        }
+
+        private void send(Message cmdMsg, Duration delay) {
+            // TODO:2016-02-29:alexander.litus: obtain user ID and zone offset
+            final Schedule schedule = Schedule.newBuilder()
+                                           .setDelay(delay)
+                                           .build();
+            final CommandContext context = Commands.createContext(UserId.getDefaultInstance(), ZoneOffset.getDefaultInstance())
+                    .toBuilder()
+                    .setSchedule(schedule)
+                    .build();
+            final Command cmd = create(cmdMsg, context);
+            post(cmd);
+        }
+
+        @VisibleForTesting
+        protected void post(Command cmd) {
+            getCommandBus().post(cmd);
         }
     }
 

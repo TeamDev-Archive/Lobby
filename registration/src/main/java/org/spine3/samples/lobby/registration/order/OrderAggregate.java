@@ -22,7 +22,6 @@ package org.spine3.samples.lobby.registration.order;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.Duration;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
@@ -52,7 +51,6 @@ import org.spine3.server.entity.Entity;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import static com.google.common.collect.Collections2.filter;
 import static com.google.protobuf.util.TimeUtil.add;
@@ -65,7 +63,7 @@ import static org.spine3.samples.lobby.registration.order.OrderValidator.*;
  * @author Alexander Litus
  */
 @SuppressWarnings({"TypeMayBeWeakened", "OverlyCoupledClass"})
-public class OrderAggregate extends Aggregate<OrderId, Order> {
+public class OrderAggregate extends Aggregate<OrderId, Order, Order.Builder> {
 
     /**
      * The period in minutes after which the reservation expires.
@@ -75,10 +73,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     private static final Duration RESERVATION_EXPIRATION_PERIOD = Durations.ofMinutes(EXPIRATION_PERIOD_MINUTES);
 
     private static final int ACCESS_CODE_LENGTH = 8;
-
-    private static final ImmutableSet<Class<? extends Message>> STATE_NEUTRAL_EVENT_CLASSES =
-            ImmutableSet.<Class<? extends Message>>of(
-                    OrderTotalsCalculated.class, OrderExpired.class, OrderRegistrantAssigned.class);
 
     private OrderPricingService pricingService;
 
@@ -203,6 +197,27 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     }
 
     @Apply
+    private void apply(OrderTotalsCalculated event) {
+        final Order.Builder state = getState().toBuilder();
+        state.setPrice(event.getTotal());
+        incrementState(state.build());
+    }
+
+    @Apply
+    private void apply(OrderExpired event) {
+        final Order.Builder state = getState().toBuilder();
+        state.setIsExpired(true);
+        incrementState(state.build());
+    }
+
+    @Apply
+    private void apply(OrderRegistrantAssigned event) {
+        final Order.Builder state = getState().toBuilder();
+        state.setRegistrant(event.getPersonalInfo());
+        incrementState(state.build());
+    }
+
+    @Apply
     private void apply(OrderConfirmed event) {
         final Order.Builder state = getState().toBuilder();
         state.setIsConfirmed(true);
@@ -243,12 +258,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
             }
         });
         return result;
-    }
-
-    @Override
-    @SuppressWarnings({"RefusedBequest", "ReturnOfCollectionOrArrayField"/*it is immutable*/})
-    protected Set<Class<? extends Message>> getStateNeutralEventClasses() {
-        return STATE_NEUTRAL_EVENT_CLASSES;
     }
 
     @Override

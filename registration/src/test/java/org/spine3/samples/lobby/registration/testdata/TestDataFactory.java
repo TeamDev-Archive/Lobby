@@ -37,6 +37,7 @@ import org.spine3.server.BoundedContext;
 import org.spine3.server.CommandDispatcher;
 import org.spine3.server.command.CommandBus;
 import org.spine3.server.command.CommandStore;
+import org.spine3.server.command.ExecutorCommandScheduler;
 import org.spine3.server.event.EventBus;
 import org.spine3.server.event.EventStore;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
@@ -65,13 +66,22 @@ public class TestDataFactory {
                 .setStreamExecutor(MoreExecutors.directExecutor())
                 .setStorage(storageFactory.createEventStorage())
                 .build();
-        final CommandBus commandBus = CommandBus.create(new CommandStore(storageFactory.createCommandStorage()));
+        final CommandBus commandBus = newCommandBus(storageFactory);
         final BoundedContext.Builder result = BoundedContext.newBuilder()
                 .setName("Orders & Registrations tests")
                 .setStorageFactory(storageFactory)
                 .setCommandBus(commandBus)
                 .setEventBus(EventBus.newInstance(eventStore));
         return result.build();
+    }
+
+    private static CommandBus newCommandBus(InMemoryStorageFactory storageFactory) {
+        final CommandStore store = new CommandStore(storageFactory.createCommandStorage());
+        final CommandBus.Builder builder = CommandBus.newBuilder();
+        builder.setCommandStore(store);
+        // TODO:2016-04-08:alexander.litus: change to App Engine-compatible scheduler
+        builder.setScheduler(new ExecutorCommandScheduler(builder.build()));
+        return builder.build();
     }
 
     /**
