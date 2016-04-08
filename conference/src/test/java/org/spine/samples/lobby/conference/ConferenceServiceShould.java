@@ -20,17 +20,24 @@
 
 package org.spine.samples.lobby.conference;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.spine3.samples.lobby.conference.ConferenceServiceProto;
 
 /**
  * @author andrii.loboda
  */
 public class ConferenceServiceShould {
 
+    private Given given;
+
+    @Before
+    public void setUpTest() {
+        given = new Given();
+    }
+
+
     @Test
-    public void create_conference(){
-//        final ConferenceServiceProto conferenceServiceProto = new ConferenceServiceProto();
-//        conferenceServiceProto.
+    public void create_conference_and_generate_ConferenceCreated_event() {
+
     }
 }
