@@ -21,6 +21,8 @@
 package org.spine.samples.lobby.conference;
 
 import com.google.common.util.concurrent.MoreExecutors;
+import org.spine3.samples.lobby.conference.ConferenceInfo;
+import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.CommandDispatcher;
 import org.spine3.server.command.CommandBus;
@@ -51,7 +53,7 @@ public class Given {
                                                 .setStreamExecutor(MoreExecutors.directExecutor())
                                                 .setStorage(storageFactory.createEventStorage())
                                                 .build();
-        final CommandBus commandBus = CommandBus.create(new CommandStore(storageFactory.createCommandStorage()));
+        final CommandBus commandBus = CommandBus.newBuilder().setCommandStore(new CommandStore(storageFactory.createCommandStorage())).build();
         final EventBus eventBus = EventBus.newInstance(eventStore);
 
         final BoundedContext.Builder result = BoundedContext.newBuilder()
@@ -60,5 +62,16 @@ public class Given {
                                                             .setCommandBus(commandBus)
                                                             .setEventBus(eventBus);
         return result.build();
+    }
+
+    public static ConferenceServiceGrpc.ConferenceService getConferenceService() {
+        return new TestConferenceService();
+    }
+
+    public ConferenceInfo conferenceInfo() {
+        return null; //TODO:2016-04-11:andrii.loboda:
+    }
+
+    private static class TestConferenceService extends ConferenceServiceImpl {
     }
 }

@@ -21,43 +21,18 @@
 package org.spine.samples.lobby.conference;
 
 import io.grpc.stub.StreamObserver;
-import org.junit.Before;
-import org.junit.Test;
+import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
 
 /**
  * @author andrii.loboda
  */
-public class ConferenceServiceShould {
-
-    private final ConferenceServiceGrpc.ConferenceService conferenceService = Given.getConferenceService();
-
-    private Given given;
-
-    @Before
-    public void setUpTest() {
-        given = new Given();
-    }
-
-
-    @Test
-    public void create_conference_and_generate_ConferenceCreated_event() {
-        conferenceService.createConference(given.conferenceInfo(), new StreamObserver<CreateConferenceResponse>() {
-            @Override
-            public void onNext(CreateConferenceResponse createConferenceResponse) {
-                System.out.println(" conference is about to create");
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-
-            }
-
-            @Override
-            public void onCompleted() {
-
-            }
-        });
+public class ConferenceServiceImpl implements ConferenceServiceGrpc.ConferenceService {
+    @Override
+    public void createConference(ConferenceInfo request, StreamObserver<CreateConferenceResponse> responseObserver) {
+        final CreateConferenceResponse build = CreateConferenceResponse.newBuilder().build();
+        responseObserver.onNext(build);
+        responseObserver.onCompleted();
     }
 }
