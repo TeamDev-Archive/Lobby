@@ -44,7 +44,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
  * @author Alexander Litus
  */
 @SuppressWarnings({"TypeMayBeWeakened"/** "OrBuilder" parameters are not applicable*/, "OverlyCoupledClass"})
-public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, SeatsAvailability> {
+public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, SeatsAvailability, SeatsAvailability.Builder> {
 
     /**
      * Creates a new instance.

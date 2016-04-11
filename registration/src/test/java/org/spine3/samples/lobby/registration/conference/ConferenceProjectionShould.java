@@ -214,7 +214,7 @@ public class ConferenceProjectionShould {
     }
 
     @SuppressWarnings({"StaticNonFinalField", "AssignmentToStaticFieldFromInstanceMethod"})
-    private static class TestCommandHandler extends Aggregate<ConferenceId, StringValue> {
+    private static class TestCommandHandler extends Aggregate<ConferenceId, StringValue, StringValue.Builder> {
 
         private static boolean isAddSeatsCommandHandled = false;
         private static boolean isRemoveSeatsCommandHandled = false;

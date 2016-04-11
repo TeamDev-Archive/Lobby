@@ -56,6 +56,7 @@ import static com.google.protobuf.util.TimeUtil.add;
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static org.spine3.base.Identifiers.newUuid;
 import static org.spine3.protobuf.Durations.ofMinutes;
+import static org.spine3.protobuf.Messages.fromAny;
 import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
 import static org.spine3.samples.lobby.common.util.IdFactory.newOrderId;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
@@ -165,9 +166,10 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         private class MockCommandSender extends CommandSender {
 
             @Override
-            protected void send(Message commandMessage) {
-                commandsSent.add(commandMessage);
-                super.send(commandMessage);
+            protected void post(org.spine3.base.Command cmd) {
+                final Message msg = fromAny(cmd.getMessage());
+                commandsSent.add(msg);
+                super.post(cmd);
             }
         }
     }

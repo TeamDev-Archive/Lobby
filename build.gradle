@@ -39,7 +39,6 @@ subprojects {
     // org.gradle.java.home=/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/
 
     repositories {
-        mavenLocal()
         mavenCentral()
         maven {
             url = project.MAVEN_SNAPSHOTS_REPOSITORY_URL
@@ -83,6 +82,10 @@ subprojects {
         }
         testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
         testCompile group: 'org.mockito', name: 'mockito-core', version: '2.+'
+    }
+
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
 
     final String SRC_ROOT_DIR = "$projectDir/src"
