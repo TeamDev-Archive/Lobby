@@ -24,6 +24,7 @@ import com.google.protobuf.Message;
 import com.google.protobuf.util.TimeUtil;
 import org.spine3.base.EventContext;
 import org.spine3.base.EventId;
+import org.spine3.base.Identifiers;
 import org.spine3.protobuf.Messages;
 import org.spine3.samples.lobby.common.ConferenceId;
 
@@ -39,11 +40,11 @@ public final class EventUtils {
 
     public static EventContext createConferenceEventContext() {
         final Message conferenceIDMessage = ConferenceId.newBuilder()
-                                                        .setUuid(UUID.randomUUID().toString())
+                                                        .setUuid(Identifiers.newUuid())
                                                         .build();
 
         final EventId eventIDMessage = EventId.newBuilder()
-                                              .setUuid(UUID.randomUUID().toString())
+                                              .setUuid(Identifiers.newUuid())
                                               .build();
 
         final EventContext eventContext = EventContext.newBuilder()
