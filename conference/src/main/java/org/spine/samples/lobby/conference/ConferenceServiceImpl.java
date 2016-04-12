@@ -27,6 +27,7 @@ import org.spine3.base.Event;
 import org.spine3.base.Events;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
+import org.spine3.samples.lobby.conference.ConferenceServiceGrpc.ConferenceService;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
 import org.spine3.server.BoundedContext;
@@ -34,7 +35,7 @@ import org.spine3.server.BoundedContext;
 /**
  * @author andrii.loboda
  */
-public class ConferenceServiceImpl implements ConferenceServiceGrpc.ConferenceService {
+public class ConferenceServiceImpl implements ConferenceService {
 
     private final BoundedContext boundedContext;
 
