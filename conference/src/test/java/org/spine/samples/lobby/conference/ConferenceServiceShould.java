@@ -25,12 +25,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
+import org.spine3.server.BoundedContext;
+import org.spine3.server.event.EventStore;
 
 /**
  * @author andrii.loboda
  */
 public class ConferenceServiceShould {
 
+    public BoundedContext boundedContext = Given.boundedContext;
     private final ConferenceServiceGrpc.ConferenceService conferenceService = Given.getConferenceService();
 
     private Given given;
@@ -59,5 +62,10 @@ public class ConferenceServiceShould {
 
             }
         });
+
+        final EventStore eventStore = boundedContext.getEventBus()
+                                                    .getEventStore();
     }
+
+
 }

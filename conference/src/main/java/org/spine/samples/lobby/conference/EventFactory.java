@@ -20,36 +20,27 @@
 
 package org.spine.samples.lobby.conference;
 
+import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
-import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
-import org.spine3.server.BoundedContext;
+import org.spine3.samples.lobby.conference.contracts.Conference;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
 
 /**
  * @author andrii.loboda
  */
-public class Given {
-
-
-    protected static final BoundedContext boundedContext = ConferenceBoundedContext.INSTANCE.get();
-
-    /* package */ Given() {
-//        boundedContext.getEventBus().register(new StubCommandHandler());
+@SuppressWarnings("UtilityClass")
+class EventFactory {
+    private EventFactory() {
     }
 
-
-    public static ConferenceServiceGrpc.ConferenceService getConferenceService() {
-        return new TestConferenceService();
-    }
-
-    public ConferenceInfo conferenceInfo() {
-        return null; //TODO:2016-04-11:andrii.loboda:
-    }
-
-
-    private static class TestConferenceService extends ConferenceServiceImpl {
-        @Override
-        protected BoundedContext getBoundedContext() {
-            return boundedContext;
-        }
+    static ConferenceCreated conferenceCreated(ConferenceInfo conferenceToCreate) {
+        final ConferenceId conferenceID = ConferenceId.newBuilder()
+                                                      .build();
+        final Conference conference = Conference.newBuilder()
+                                                .setId(conferenceID)
+                                                .build();
+        return ConferenceCreated.newBuilder()
+                                .setConference(conference)
+                                .build();
     }
 }

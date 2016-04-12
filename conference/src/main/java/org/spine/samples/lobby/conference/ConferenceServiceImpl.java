@@ -20,19 +20,57 @@
 
 package org.spine.samples.lobby.conference;
 
+import com.google.common.collect.ImmutableList;
+import com.google.protobuf.Message;
 import io.grpc.stub.StreamObserver;
+import org.spine3.base.Event;
+import org.spine3.base.Events;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
+import org.spine3.server.BoundedContext;
 
 /**
  * @author andrii.loboda
  */
 public class ConferenceServiceImpl implements ConferenceServiceGrpc.ConferenceService {
+
+    private final BoundedContext boundedContext;
+
+
+    public ConferenceServiceImpl() {
+        boundedContext = getBoundedContext();
+    }
+
+    protected BoundedContext getBoundedContext() {
+        return null;
+    }
+
     @Override
-    public void createConference(ConferenceInfo request, StreamObserver<CreateConferenceResponse> responseObserver) {
-        final CreateConferenceResponse build = CreateConferenceResponse.newBuilder().build();
+    public void createConference(ConferenceInfo conferenceToCreate, StreamObserver<CreateConferenceResponse> responseObserver) {
+
+        final ImmutableList.Builder<Message> result = ImmutableList.builder();
+        final ConferenceCreated conferenceCreatedEvent = EventFactory.conferenceCreated(conferenceToCreate);
+
+        result.add(conferenceCreatedEvent);
+
+        final ImmutableList<Message> eventsToSend = result.build();
+
+        sendEvents(eventsToSend);
+
+        final CreateConferenceResponse build = CreateConferenceResponse.newBuilder()
+                                                                       .build();
+
         responseObserver.onNext(build);
         responseObserver.onCompleted();
     }
+
+    private void sendEvents(ImmutableList<Message> eventsToSend) {
+        for (Message message : eventsToSend) {
+            final Event event = Events.createEvent(message, EventUtils.createConferenceEventContext());
+            boundedContext.getEventBus().post(event);
+        }
+    }
+
 }
