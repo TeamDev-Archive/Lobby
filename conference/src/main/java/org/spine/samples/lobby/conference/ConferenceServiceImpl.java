@@ -25,12 +25,14 @@ import com.google.protobuf.Message;
 import io.grpc.stub.StreamObserver;
 import org.spine3.base.Event;
 import org.spine3.base.Events;
+import org.spine3.base.Identifiers;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
-import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc.ConferenceService;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
 import org.spine3.server.BoundedContext;
+
+import java.util.UUID;
 
 /**
  * @author andrii.loboda
@@ -61,6 +63,7 @@ public class ConferenceServiceImpl implements ConferenceService {
         sendEvents(eventsToSend);
 
         final CreateConferenceResponse build = CreateConferenceResponse.newBuilder()
+                                                                       .setId(Identifiers.newUuid())
                                                                        .build();
 
         responseObserver.onNext(build);
@@ -70,7 +73,8 @@ public class ConferenceServiceImpl implements ConferenceService {
     private void sendEvents(ImmutableList<Message> eventsToSend) {
         for (Message message : eventsToSend) {
             final Event event = Events.createEvent(message, EventUtils.createConferenceEventContext());
-            boundedContext.getEventBus().post(event);
+            boundedContext.getEventBus()
+                          .post(event);
         }
     }
 
