@@ -20,6 +20,8 @@
 
 package org.spine.samples.lobby.conference;
 
+import org.spine3.base.EmailAddress;
+import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
 import org.spine3.server.BoundedContext;
@@ -29,8 +31,9 @@ import org.spine3.server.BoundedContext;
  */
 public class Given {
 
-
     protected static final BoundedContext boundedContext = ConferenceBoundedContext.INSTANCE.get();
+    private static final ConferenceRepository conferenceRepository = new ConferenceRepository();
+
 
     /* package */ Given() {
 //        boundedContext.getEventBus().register(new StubCommandHandler());
@@ -42,7 +45,20 @@ public class Given {
     }
 
     public ConferenceInfo conferenceInfo() {
-        return null; //TODO:2016-04-11:andrii.loboda:
+        final EmailAddress email = EmailAddress.newBuilder()
+                                               .setValue("andrii.serebriyan@gmail.com")
+                                               .build();
+        final PersonalInfo owner = PersonalInfo.newBuilder()
+                                               .setEmail(email)
+                                               .build();
+        return ConferenceInfo.newBuilder()
+                             .setName("Test Conference #1")
+                             .setOwner(owner)
+                             .build();
+    }
+
+    public void dropData() {
+        conferenceRepository.deleteAll();
     }
 
 
@@ -50,6 +66,11 @@ public class Given {
         @Override
         protected BoundedContext getBoundedContext() {
             return boundedContext;
+        }
+
+        @Override
+        protected ConferenceRepository getRepository() {
+            return conferenceRepository;
         }
     }
 }

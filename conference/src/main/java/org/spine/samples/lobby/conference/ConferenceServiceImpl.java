@@ -26,28 +26,42 @@ import io.grpc.stub.StreamObserver;
 import org.spine3.base.Event;
 import org.spine3.base.Events;
 import org.spine3.base.Identifiers;
+import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc.ConferenceService;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
+import org.spine3.samples.lobby.conference.EditableConferenceInfo;
+import org.spine3.samples.lobby.conference.FindConferenceRequest;
+import org.spine3.samples.lobby.conference.UpdateConferenceResponse;
+import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
 import org.spine3.server.BoundedContext;
 
-import java.util.UUID;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 
 /**
  * @author andrii.loboda
  */
 public class ConferenceServiceImpl implements ConferenceService {
 
+
     private final BoundedContext boundedContext;
+    private final ConferenceRepository conferenceRepository;
 
 
     public ConferenceServiceImpl() {
         boundedContext = getBoundedContext();
+        conferenceRepository = getRepository();
     }
+
 
     protected BoundedContext getBoundedContext() {
         return null;
+    }
+
+    protected ConferenceRepository getRepository() {
+        return new ConferenceRepository();
     }
 
     @Override
@@ -60,14 +74,54 @@ public class ConferenceServiceImpl implements ConferenceService {
 
         final ImmutableList<Message> eventsToSend = result.build();
 
+        final String accessCode = generateAccessCode();
+        final Conference conference = asConference(conferenceToCreate);
+        final Conference conferenceToPersist = conference.toBuilder()
+                                                         .setAccessCode(accessCode)
+                                                         .build();
+        conferenceRepository.store(conferenceToPersist);
         sendEvents(eventsToSend);
 
         final CreateConferenceResponse build = CreateConferenceResponse.newBuilder()
-                                                                       .setId(Identifiers.newUuid())
+                                                                       .setId(conferenceToPersist.getId())
+                                                                       .setAccessCode(accessCode)
                                                                        .build();
 
         responseObserver.onNext(build);
         responseObserver.onCompleted();
+
+
+    }
+
+    private static String generateAccessCode() {
+        final SecureRandom random = new SecureRandom();
+        final int encodingBase = 32;
+        final int numBits = 130;
+        return new BigInteger(numBits, random).toString(encodingBase)
+                                              .substring(0, 6);
+    }
+
+    @Override
+    public void findConference(FindConferenceRequest request, StreamObserver<Conference> responseObserver) {
+        final Conference conference = conferenceRepository.loadByEmailAndAccessCode(request.getEmailAddress(), request.getAccessCode());
+
+
+        responseObserver.onNext(conference);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void updateConference(EditableConferenceInfo request, StreamObserver<UpdateConferenceResponse> responseObserver) {
+
+    }
+
+    private static Conference asConference(ConferenceInfo info) {
+        return Conference.newBuilder()
+                         .setId(ConferenceId.newBuilder()
+                                            .setUuid(Identifiers.newUuid()))
+                         .setName(info.getName())
+                         .setOwner(info.getOwner())
+                         .build();
     }
 
     private void sendEvents(ImmutableList<Message> eventsToSend) {

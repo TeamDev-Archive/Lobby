@@ -65,4 +65,7 @@ message Conference {
 
     // If the conference is published it is visible for users.
     bool is_published = 12;
+
+    // string token to access the conference.
+    string accessCode = 13;
 }
