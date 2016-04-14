@@ -44,6 +44,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author andrii.loboda
  */
+@SuppressWarnings("InstanceMethodNamingConvention")
 public class ConferenceServiceShould {
 
     private final BoundedContext boundedContext = Given.boundedContext;
@@ -63,7 +64,6 @@ public class ConferenceServiceShould {
     }
 
 
-    @SuppressWarnings("unchecked")
     @Test
     public void create_conference_and_generate_ConferenceCreated_event() {
         conferenceService.createConference(given.conferenceInfo(), TestStreamObserver.<CreateConferenceResponse>newBuilder()
@@ -84,6 +84,7 @@ public class ConferenceServiceShould {
         final TestStreamObserver conferenceCreatedObserver = TestStreamObserver.<Event>newBuilder()
                                                                                .setNextFunction(checkConferenceCreated)
                                                                                .build();
+        //noinspection unchecked
         eventStore.read(EventStreamQuery.newBuilder()
                                         .build(), conferenceCreatedObserver);
     }
@@ -118,6 +119,7 @@ public class ConferenceServiceShould {
                         return NO_RESULT;
                     }
                 };
+                //noinspection unchecked
                 conferenceService.findConference(build, TestStreamObserver.<Conference>newBuilder()
                                                                           .setNextFunction(checkConferenceCreated)
                                                                           .build());
@@ -125,6 +127,7 @@ public class ConferenceServiceShould {
                 return NO_RESULT;
             }
         };
+        //noinspection unchecked
         conferenceService.createConference(conferenceInfo, TestStreamObserver.<CreateConferenceResponse>newBuilder()
                                                                              .setNextFunction(createConferenceHandler)
                                                                              .build());

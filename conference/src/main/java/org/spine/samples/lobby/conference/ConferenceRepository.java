@@ -48,10 +48,10 @@ public class ConferenceRepository {
     public Conference loadByEmailAndAccessCode(EmailAddress emailAddress, String accessCode) {
         for (Conference conference : store.values()) {
             final boolean emailMatches = conference.getOwner()
-                                             .getEmail()
-                                             .equals(emailAddress);
+                                                   .getEmail()
+                                                   .equals(emailAddress);
             final boolean accessCodeMatches = conference.getAccessCode()
-                                             .equals(accessCode);
+                                                        .equals(accessCode);
             if (accessCodeMatches && emailMatches) {
                 return conference;
             }

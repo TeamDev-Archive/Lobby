@@ -21,9 +21,9 @@
 package org.spine.samples.lobby.conference;
 
 import com.google.common.collect.ImmutableList;
-import com.google.protobuf.Message;
 import io.grpc.stub.StreamObserver;
 import org.spine3.base.Event;
+import org.spine3.base.EventContext;
 import org.spine3.base.Events;
 import org.spine3.base.Identifiers;
 import org.spine3.samples.lobby.common.ConferenceId;
@@ -56,23 +56,8 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
 
-    protected BoundedContext getBoundedContext() {
-        return null;
-    }
-
-    protected ConferenceRepository getRepository() {
-        return new ConferenceRepository();
-    }
-
     @Override
     public void createConference(ConferenceInfo conferenceToCreate, StreamObserver<CreateConferenceResponse> responseObserver) {
-
-        final ImmutableList.Builder<Message> result = ImmutableList.builder();
-        final ConferenceCreated conferenceCreatedEvent = EventFactory.conferenceCreated(conferenceToCreate);
-
-        result.add(conferenceCreatedEvent);
-
-        final ImmutableList<Message> eventsToSend = result.build();
 
         final String accessCode = generateAccessCode();
         final Conference conference = asConference(conferenceToCreate);
@@ -80,7 +65,8 @@ public class ConferenceServiceImpl implements ConferenceService {
                                                          .setAccessCode(accessCode)
                                                          .build();
         conferenceRepository.store(conferenceToPersist);
-        sendEvents(eventsToSend);
+
+        sendConferenceCreatedEvent(conferenceToPersist);
 
         final CreateConferenceResponse build = CreateConferenceResponse.newBuilder()
                                                                        .setId(conferenceToPersist.getId())
@@ -89,8 +75,46 @@ public class ConferenceServiceImpl implements ConferenceService {
 
         responseObserver.onNext(build);
         responseObserver.onCompleted();
+    }
 
 
+    @Override
+    public void findConference(FindConferenceRequest request, StreamObserver<Conference> responseObserver) {
+        final Conference conference = conferenceRepository.loadByEmailAndAccessCode(request.getEmailAddress(), request.getAccessCode());
+
+        responseObserver.onNext(conference);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void updateConference(EditableConferenceInfo request, StreamObserver<UpdateConferenceResponse> responseObserver) {
+    }
+
+    protected BoundedContext getBoundedContext() {
+        //TODO:2016-04-14:andrii.loboda:  move to singleton and provide event bus, command bus, etc.
+        return BoundedContext.newBuilder()
+                             .build();
+    }
+
+    protected ConferenceRepository getRepository() {
+        return new ConferenceRepository();
+    }
+
+
+    private void sendConferenceCreatedEvent(Conference conferenceToPersist) {
+        final ImmutableList.Builder<Event> result = ImmutableList.builder();
+        final ConferenceCreated conferenceCreatedEvent = EventFactory.conferenceCreated(conferenceToPersist);
+        final EventContext conferenceEventContext = EventUtils.createConferenceEventContext(conferenceToPersist.getId());
+        result.add(Events.createEvent(conferenceCreatedEvent, conferenceEventContext));
+
+        sendEvents(result.build());
+    }
+
+    private void sendEvents(Iterable<Event> eventsToSend) {
+        for (Event event : eventsToSend) {
+            boundedContext.getEventBus()
+                          .post(event);
+        }
     }
 
     private static String generateAccessCode() {
@@ -101,35 +125,15 @@ public class ConferenceServiceImpl implements ConferenceService {
                                               .substring(0, 6);
     }
 
-    @Override
-    public void findConference(FindConferenceRequest request, StreamObserver<Conference> responseObserver) {
-        final Conference conference = conferenceRepository.loadByEmailAndAccessCode(request.getEmailAddress(), request.getAccessCode());
-
-
-        responseObserver.onNext(conference);
-        responseObserver.onCompleted();
-    }
-
-    @Override
-    public void updateConference(EditableConferenceInfo request, StreamObserver<UpdateConferenceResponse> responseObserver) {
-
-    }
-
     private static Conference asConference(ConferenceInfo info) {
+        final ConferenceId conferenceId = ConferenceId.newBuilder()
+                                                      .setUuid(Identifiers.newUuid())
+                                                      .build();
         return Conference.newBuilder()
-                         .setId(ConferenceId.newBuilder()
-                                            .setUuid(Identifiers.newUuid()))
+                         .setId(conferenceId)
                          .setName(info.getName())
                          .setOwner(info.getOwner())
                          .build();
-    }
-
-    private void sendEvents(ImmutableList<Message> eventsToSend) {
-        for (Message message : eventsToSend) {
-            final Event event = Events.createEvent(message, EventUtils.createConferenceEventContext());
-            boundedContext.getEventBus()
-                          .post(event);
-        }
     }
 
 }

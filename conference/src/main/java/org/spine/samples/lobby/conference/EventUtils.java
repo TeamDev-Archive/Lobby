@@ -20,15 +20,12 @@
 
 package org.spine.samples.lobby.conference;
 
-import com.google.protobuf.Message;
 import com.google.protobuf.util.TimeUtil;
 import org.spine3.base.EventContext;
 import org.spine3.base.EventId;
 import org.spine3.base.Identifiers;
 import org.spine3.protobuf.Messages;
 import org.spine3.samples.lobby.common.ConferenceId;
-
-import java.util.UUID;
 
 /**
  * @author andrii.loboda
@@ -38,10 +35,7 @@ public final class EventUtils {
     private EventUtils() {
     }
 
-    public static EventContext createConferenceEventContext() {
-        final Message conferenceIDMessage = ConferenceId.newBuilder()
-                                                        .setUuid(Identifiers.newUuid())
-                                                        .build();
+    public static EventContext createConferenceEventContext(ConferenceId conferenceId) {
 
         final EventId eventIDMessage = EventId.newBuilder()
                                               .setUuid(Identifiers.newUuid())
@@ -49,7 +43,7 @@ public final class EventUtils {
 
         final EventContext eventContext = EventContext.newBuilder()
                                                       .setEventId(eventIDMessage)
-                                                      .setProducerId(Messages.toAny(conferenceIDMessage))
+                                                      .setProducerId(Messages.toAny(conferenceId))
                                                       .setTimestamp(TimeUtil.getCurrentTime())
                                                       .build();
         return eventContext;

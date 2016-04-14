@@ -43,8 +43,6 @@ service ConferenceService{
 }
 
 message ConferenceInfo{
-    // The unique conference id.
-//    spine.samples.lobby.common.ConferenceId id = 1;
 
     // The conference name. Used in the slug.
     string name = 2;

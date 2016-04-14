@@ -20,8 +20,6 @@
 
 package org.spine.samples.lobby.conference;
 
-import org.spine3.samples.lobby.common.ConferenceId;
-import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
 
@@ -33,12 +31,7 @@ class EventFactory {
     private EventFactory() {
     }
 
-    static ConferenceCreated conferenceCreated(ConferenceInfo conferenceToCreate) {
-        final ConferenceId conferenceID = ConferenceId.newBuilder()
-                                                      .build();
-        final Conference conference = Conference.newBuilder()
-                                                .setId(conferenceID)
-                                                .build();
+    static ConferenceCreated conferenceCreated(Conference conference) {
         return ConferenceCreated.newBuilder()
                                 .setConference(conference)
                                 .build();

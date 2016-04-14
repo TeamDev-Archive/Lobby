@@ -63,11 +63,13 @@ public class Given {
 
 
     private static class TestConferenceService extends ConferenceServiceImpl {
+        @SuppressWarnings("RefusedBequest")
         @Override
         protected BoundedContext getBoundedContext() {
             return boundedContext;
         }
 
+        @SuppressWarnings("RefusedBequest")
         @Override
         protected ConferenceRepository getRepository() {
             return conferenceRepository;
