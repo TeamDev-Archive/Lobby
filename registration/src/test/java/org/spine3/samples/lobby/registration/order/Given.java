@@ -254,7 +254,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         /* package */ static OrderRegistrantAssigned orderRegistrantAssigned() {
             final OrderRegistrantAssigned.Builder builder = OrderRegistrantAssigned.newBuilder()
                     .setOrderId(ORDER_ID)
-                    .setPersonalInfo(newPersonalInfo("Albert", "Einstein", "ein@stein.com"));
+                    .setPersonalInfo(newPersonalInfo("Albert", "Einstein", "einstein@fu-berlin.de"));
             return builder.build();
         }
     }
