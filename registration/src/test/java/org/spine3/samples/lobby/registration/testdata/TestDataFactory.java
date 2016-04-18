@@ -80,7 +80,7 @@ public class TestDataFactory {
         final CommandBus.Builder builder = CommandBus.newBuilder();
         builder.setCommandStore(store);
         // TODO:2016-04-08:alexander.litus: change to App Engine-compatible scheduler
-        builder.setScheduler(new ExecutorCommandScheduler(builder.build()));
+        builder.setScheduler(new ExecutorCommandScheduler());
         return builder.build();
     }
 
