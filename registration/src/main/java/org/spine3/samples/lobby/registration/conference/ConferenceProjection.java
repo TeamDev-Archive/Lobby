@@ -64,7 +64,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
  * @author Alexander Litus
  * @see Projection
  */
-@SuppressWarnings("TypeMayBeWeakened")
+@SuppressWarnings({"TypeMayBeWeakened", "UnusedParameters"})
 public class ConferenceProjection extends Projection<ConferenceId, Conference> {
 
     private BoundedContext boundedContext;
@@ -161,7 +161,6 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         }
     }
 
-    // TODO:2016-02-23:alexander.litus: consider moving this method to Process Manager
     private void sendAddSeatsRequest(SeatTypeId seatTypeId, int quantity) {
         final AddSeats message = AddSeats.newBuilder()
                 .setConferenceId(getState().getId())
@@ -171,7 +170,6 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         boundedContext.process(command);
     }
 
-    // TODO:2016-02-23:alexander.litus: consider moving this method to Process Manager
     private void sendRemoveSeatsRequest(SeatTypeId seatTypeId, int quantity) {
         final RemoveSeats message = RemoveSeats.newBuilder()
                 .setConferenceId(getState().getId())
@@ -185,7 +183,8 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         final Iterable<SeatType> result = filter(seatTypes, new Predicate<SeatType>() {
             @Override
             public boolean apply(@Nullable SeatType input) {
-                return (input != null) && input.getId().equals(id);
+                return (input != null) && input.getId()
+                                               .equals(id);
             }
         });
         return ImmutableList.copyOf(result);
