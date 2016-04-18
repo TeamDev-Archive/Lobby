@@ -55,7 +55,7 @@ public class SeatAssignmentsAggregateShould {
 
     @Test
     public void handle_CreateSeatAssignments_command_and_generate_event() {
-        final TestSeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
+        final SeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
         final CreateSeatAssignments cmd = Given.Command.createSeatAssignments();
 
         final SeatAssignmentsCreated event = aggregate.handle(cmd, Given.Command.context());
@@ -65,13 +65,13 @@ public class SeatAssignmentsAggregateShould {
 
     @Test(expected = IllegalArgumentException.class)
     public void throw_exception_if_CreateSeatAssignments_command_is_empty() {
-        final TestSeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
+        final SeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
         aggregate.handle(CreateSeatAssignments.getDefaultInstance(), Given.Command.context());
     }
 
     @Test
     public void handle_AssignSeat_command_and_assign_seat_if_no_attendee_was_assigned_before() {
-        final TestSeatAssignmentsAggregate aggregate = given.seatAssignmentsWithoutAttendees();
+        final SeatAssignmentsAggregate aggregate = given.seatAssignmentsWithoutAttendees();
         final AssignSeat cmd = Given.Command.assignSeatToNewAttendee();
 
         final List<Message> events = aggregate.handle(cmd, Given.Command.context());
@@ -82,7 +82,7 @@ public class SeatAssignmentsAggregateShould {
 
     @Test
     public void handle_AssignSeat_command_and_reassign_seat_if_another_attendee_was_assigned_before() {
-        final TestSeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
+        final SeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
         final AssignSeat cmd = Given.Command.assignSeatToNewAttendee();
 
         final List<Message> events = aggregate.handle(cmd, Given.Command.context());
@@ -95,7 +95,7 @@ public class SeatAssignmentsAggregateShould {
 
     @Test
     public void handle_AssignSeat_command_and_update_assignment_if_this_attendee_was_assigned_before() {
-        final TestSeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
+        final SeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
         final AssignSeat cmd = Given.Command.assignSeatToUpdatedAttendee();
 
         final List<Message> events = aggregate.handle(cmd, Given.Command.context());
@@ -106,13 +106,13 @@ public class SeatAssignmentsAggregateShould {
 
     @Test(expected = IllegalArgumentException.class)
     public void throw_exception_if_AssignSeat_command_is_empty() {
-        final TestSeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
+        final SeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
         aggregate.handle(AssignSeat.getDefaultInstance(), Given.Command.context());
     }
 
     @Test(expected = IllegalStateException.class)
     public void throw_exception_on_AssignSeat_command_if_no_such_seat_position() {
-        final TestSeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
+        final SeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
         final AssignSeat cmd = Given.Command.assignSeatToNewAttendee();
 
         aggregate.handle(cmd, Given.Command.context());
@@ -121,7 +121,7 @@ public class SeatAssignmentsAggregateShould {
     @Test
     public void handle_UnassignSeat_command_and_unassign_attendee_if_one_was_assigned_before()
             throws CannotUnassignNotAssignedSeat {
-        final TestSeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
+        final SeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
         final UnassignSeat cmd = Given.Command.unassignSeat();
 
         final SeatUnassigned event = aggregate.handle(cmd, Given.Command.context());
@@ -131,7 +131,7 @@ public class SeatAssignmentsAggregateShould {
     @Test(expected = CannotUnassignNotAssignedSeat.class)
     public void throw_exception_on_UnassignSeat_command_if_no_attendee_was_assigned_before()
             throws CannotUnassignNotAssignedSeat {
-        final TestSeatAssignmentsAggregate aggregate = given.seatAssignmentsWithoutAttendees();
+        final SeatAssignmentsAggregate aggregate = given.seatAssignmentsWithoutAttendees();
         final UnassignSeat cmd = Given.Command.unassignSeat();
 
         aggregate.handle(cmd, Given.Command.context());
@@ -139,13 +139,13 @@ public class SeatAssignmentsAggregateShould {
 
     @Test(expected = IllegalArgumentException.class)
     public void throw_exception_if_UnassignSeat_command_is_empty() throws CannotUnassignNotAssignedSeat {
-        final TestSeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
+        final SeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
         aggregate.handle(UnassignSeat.getDefaultInstance(), Given.Command.context());
     }
 
     @Test(expected = IllegalStateException.class)
     public void throw_exception_on_UnassignSeat_command_if_no_such_seat_position() throws CannotUnassignNotAssignedSeat {
-        final TestSeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
+        final SeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
         final UnassignSeat cmd = Given.Command.unassignSeat();
 
         aggregate.handle(cmd, Given.Command.context());
@@ -153,11 +153,11 @@ public class SeatAssignmentsAggregateShould {
 
     @Test
     public void apply_SeatAssignmentsCreated_event_and_save_new_state() {
-        final TestSeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
+        final SeatAssignmentsAggregate aggregate = given.emptySeatAssignments();
         final SeatAssignmentsCreated event = Given.Event.seatAssignmentsCreated();
         final List<SeatAssignment> expectedAssignments = event.getAssignmentList();
 
-        aggregate.apply(event);
+        aggregate.testApply(event, Given.Command.context());
 
         final SeatAssignments state = aggregate.getState();
         assertEquals(event.getAssignmentsId(), state.getId());
@@ -168,12 +168,12 @@ public class SeatAssignmentsAggregateShould {
 
     @Test
     public void apply_SeatAssigned_event_and_assign_attendee() {
-        final TestSeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
+        final SeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
         final SeatAssigned event = Given.Event.seatAssigned();
         final SeatAssignment expected = event.getAssignment();
         final int position = expected.getPosition().getValue();
 
-        aggregate.apply(event);
+        aggregate.testApply(event, Given.Command.context());
 
         final SeatAssignment actual = aggregate.getState().getAssignments().get(position);
         assertEquals(expected, actual);
@@ -181,11 +181,11 @@ public class SeatAssignmentsAggregateShould {
 
     @Test
     public void apply_SeatUnassigned_event_and_unassign_attendee() {
-        final TestSeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
+        final SeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
         final SeatUnassigned event = Given.Event.seatUnassigned();
         final int position = event.getPosition().getValue();
 
-        aggregate.apply(event);
+        aggregate.testApply(event, Given.Command.context());
 
         final Map<Integer, SeatAssignment> assignments = aggregate.getState().getAssignments();
         final SeatAssignment assignment = assignments.get(position);
@@ -194,12 +194,12 @@ public class SeatAssignmentsAggregateShould {
 
     @Test
     public void apply_SeatAssignmentUpdated_event_and_update_assignment() {
-        final TestSeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
+        final SeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
         final SeatAssignmentUpdated event = Given.Event.seatAssignmentUpdated();
         final PersonalInfo expected = event.getAttendee();
         final int position = event.getPosition().getValue();
 
-        aggregate.apply(event);
+        aggregate.testApply(event, Given.Command.context());
 
         final Map<Integer, SeatAssignment> assignments = aggregate.getState().getAssignments();
         final PersonalInfo actual = assignments.get(position).getAttendee();
