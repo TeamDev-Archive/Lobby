@@ -294,7 +294,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
         private void send(Message cmdMsg, Duration delay) {
             // TODO:2016-02-29:alexander.litus: obtain user ID and zone offset
             final Schedule schedule = Schedule.newBuilder()
-                                           .setDelay(delay)
+                                           .setAfter(delay)
                                            .build();
             final CommandContext context = Commands.createContext(UserId.getDefaultInstance(), ZoneOffset.getDefaultInstance())
                     .toBuilder()

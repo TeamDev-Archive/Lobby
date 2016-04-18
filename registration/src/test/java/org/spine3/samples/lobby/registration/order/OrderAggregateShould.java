@@ -20,11 +20,9 @@
 
 package org.spine3.samples.lobby.registration.order;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.protobuf.Message;
 import org.junit.Before;
 import org.junit.Test;
-import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
 import org.spine3.samples.lobby.registration.contracts.OrderExpired;
 import org.spine3.samples.lobby.registration.contracts.OrderPartiallyReserved;
@@ -35,11 +33,8 @@ import org.spine3.samples.lobby.registration.contracts.OrderTotalsCalculated;
 import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
-import static com.google.common.base.Throwables.propagate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -58,7 +53,7 @@ public class OrderAggregateShould {
 
     @Test
     public void handle_RegisterToConference_command_and_generate_correct_events_if_order_is_new() {
-        final TestOrderAggregate aggregate = given.newOrder();
+        final OrderAggregate aggregate = given.newOrder();
         final RegisterToConference cmd = Given.Command.registerToConference();
 
         final List<Message> events = aggregate.handle(cmd, Given.Command.context());
@@ -72,7 +67,7 @@ public class OrderAggregateShould {
 
     @Test
     public void handle_RegisterToConference_command_and_generate_correct_events_if_order_is_already_placed() {
-        final TestOrderAggregate aggregate = given.placedOrder();
+        final OrderAggregate aggregate = given.placedOrder();
         final RegisterToConference cmd = Given.Command.registerToConference();
 
         final List<Message> events = aggregate.handle(cmd, Given.Command.context());
@@ -86,14 +81,14 @@ public class OrderAggregateShould {
 
     @Test(expected = IllegalStateException.class)
     public void handle_RegisterToConference_command_and_throw_exception_if_order_is_confirmed() {
-        final TestOrderAggregate aggregate = given.confirmedOrder();
+        final OrderAggregate aggregate = given.confirmedOrder();
         final RegisterToConference cmd = Given.Command.registerToConference();
         aggregate.handle(cmd, Given.Command.context());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void handle_RegisterToConference_command_and_throw_exception_if_it_is_empty() {
-        final TestOrderAggregate aggregate = given.newOrder();
+        final OrderAggregate aggregate = given.newOrder();
         final RegisterToConference cmd = RegisterToConference.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
     }
@@ -101,7 +96,7 @@ public class OrderAggregateShould {
     @Test
     public void handle_MarkSeatsAsReserved_command_and_generate_correct_events_if_order_is_completely_reserved() {
         final MarkSeatsAsReserved cmd = Given.Command.markSeatsAsReserved();
-        final TestOrderAggregate aggregate = given.completelyReservedOrder(cmd.getSeatList());
+        final OrderAggregate aggregate = given.completelyReservedOrder(cmd.getSeatList());
 
         final List<Message> events = aggregate.handle(cmd, Given.Command.context());
 
@@ -113,7 +108,7 @@ public class OrderAggregateShould {
     @Test
     public void handle_MarkSeatsAsReserved_command_and_generate_correct_events_if_order_is_partially_reserved() {
         final MarkSeatsAsReserved cmd = Given.Command.markSeatsAsReserved();
-        final TestOrderAggregate aggregate = given.partiallyReservedOrder(cmd.getSeatList());
+        final OrderAggregate aggregate = given.partiallyReservedOrder(cmd.getSeatList());
 
         final List<Message> events = aggregate.handle(cmd, Given.Command.context());
 
@@ -126,21 +121,21 @@ public class OrderAggregateShould {
 
     @Test(expected = IllegalStateException.class)
     public void handle_MarkSeatsAsReserved_command_and_throw_exception_if_order_is_confirmed() {
-        final TestOrderAggregate aggregate = given.confirmedOrder();
+        final OrderAggregate aggregate = given.confirmedOrder();
         final MarkSeatsAsReserved cmd = Given.Command.markSeatsAsReserved();
         aggregate.handle(cmd, Given.Command.context());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void handle_MarkSeatsAsReserved_command_and_throw_exception_if_it_is_empty() {
-        final TestOrderAggregate aggregate = given.newOrder();
+        final OrderAggregate aggregate = given.newOrder();
         final MarkSeatsAsReserved cmd = MarkSeatsAsReserved.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
     }
 
     @Test
     public void handle_RejectOrder_command_and_generate_OrderExpired_event() {
-        final TestOrderAggregate aggregate = given.newOrder();
+        final OrderAggregate aggregate = given.newOrder();
         final RejectOrder cmd = Given.Command.rejectOrder();
 
         final OrderExpired event = aggregate.handle(cmd, Given.Command.context());
@@ -150,21 +145,21 @@ public class OrderAggregateShould {
 
     @Test(expected = IllegalStateException.class)
     public void handle_RejectOrder_command_and_throw_exception_if_order_is_confirmed() {
-        final TestOrderAggregate aggregate = given.confirmedOrder();
+        final OrderAggregate aggregate = given.confirmedOrder();
         final RejectOrder cmd = Given.Command.rejectOrder();
         aggregate.handle(cmd, Given.Command.context());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void handle_RejectOrder_command_and_throw_exception_if_it_is_empty() {
-        final TestOrderAggregate aggregate = given.newOrder();
+        final OrderAggregate aggregate = given.newOrder();
         final RejectOrder cmd = RejectOrder.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
     }
 
     @Test
     public void handle_ConfirmOrder_command_and_generate_OrderConfirmed_event() {
-        final TestOrderAggregate aggregate = given.newOrder();
+        final OrderAggregate aggregate = given.newOrder();
         final ConfirmOrder cmd = Given.Command.confirmOrder();
 
         final OrderConfirmed event = aggregate.handle(cmd, Given.Command.context());
@@ -175,21 +170,21 @@ public class OrderAggregateShould {
 
     @Test(expected = IllegalStateException.class)
     public void handle_ConfirmOrder_command_and_throw_exception_if_order_is_confirmed() {
-        final TestOrderAggregate aggregate = given.confirmedOrder();
+        final OrderAggregate aggregate = given.confirmedOrder();
         final ConfirmOrder cmd = Given.Command.confirmOrder();
         aggregate.handle(cmd, Given.Command.context());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void handle_ConfirmOrder_command_and_throw_exception_if_it_is_empty() {
-        final TestOrderAggregate aggregate = given.newOrder();
+        final OrderAggregate aggregate = given.newOrder();
         final ConfirmOrder cmd = ConfirmOrder.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
     }
 
     @Test
     public void handle_AssignRegistrantDetails_command_and_generate_OrderRegistrantAssigned_event() {
-        final TestOrderAggregate aggregate = given.newOrder();
+        final OrderAggregate aggregate = given.newOrder();
         final AssignRegistrantDetails cmd = Given.Command.assignRegistrantDetails();
 
         final OrderRegistrantAssigned event = aggregate.handle(cmd, Given.Command.context());
@@ -199,17 +194,17 @@ public class OrderAggregateShould {
 
     @Test(expected = IllegalArgumentException.class)
     public void handle_AssignRegistrantDetails_command_and_throw_exception_if_it_is_empty() {
-        final TestOrderAggregate aggregate = given.newOrder();
+        final OrderAggregate aggregate = given.newOrder();
         final AssignRegistrantDetails cmd = AssignRegistrantDetails.getDefaultInstance();
         aggregate.handle(cmd, Given.Command.context());
     }
 
     @Test
     public void apply_OrderPlaced_event_and_save_new_state() {
-        final TestOrderAggregate aggregate = given.newOrder();
+        final OrderAggregate aggregate = given.newOrder();
         final OrderPlaced event = Given.Event.orderPlaced();
 
-        aggregate.apply(event);
+        aggregate.testApply(event, Given.Command.context());
 
         final Order state = aggregate.getState();
         assertEquals(event.getOrderId(), state.getId());
@@ -219,70 +214,70 @@ public class OrderAggregateShould {
 
     @Test
     public void apply_OrderUpdated_event_and_update_state() {
-        final TestOrderAggregate aggregate = given.placedOrder();
+        final OrderAggregate aggregate = given.placedOrder();
         final OrderUpdated event = Given.Event.orderUpdated();
 
-        aggregate.apply(event);
+        aggregate.testApply(event, Given.Command.context());
 
         assertEquals(event.getSeatList(), aggregate.getState().getSeatList());
     }
 
     @Test
     public void apply_OrderPartiallyReserved_event_and_update_state() {
-        final TestOrderAggregate aggregate = given.placedOrder();
+        final OrderAggregate aggregate = given.placedOrder();
         final OrderPartiallyReserved event = Given.Event.orderPartiallyReserved();
 
-        aggregate.apply(event);
+        aggregate.testApply(event, Given.Command.context());
 
         assertEquals(event.getSeatList(), aggregate.getState().getSeatList());
     }
 
     @Test
     public void apply_OrderReservationCompleted_event_and_update_state() {
-        final TestOrderAggregate aggregate = given.placedOrder();
+        final OrderAggregate aggregate = given.placedOrder();
         final OrderReservationCompleted event = Given.Event.orderReservationCompleted();
 
-        aggregate.apply(event);
+        aggregate.testApply(event, Given.Command.context());
 
         assertEquals(event.getSeatList(), aggregate.getState().getSeatList());
     }
 
     @Test
     public void apply_OrderConfirmed_event_and_update_state() {
-        final TestOrderAggregate aggregate = given.placedOrder();
+        final OrderAggregate aggregate = given.placedOrder();
         final OrderConfirmed event = Given.Event.orderConfirmed();
 
-        aggregate.apply(event);
+        aggregate.testApply(event, Given.Command.context());
 
         assertEquals(true, aggregate.getState().getIsConfirmed());
     }
 
     @Test
     public void apply_OrderTotalsCalculated_event_and_update_state() {
-        final TestOrderAggregate aggregate = given.placedOrder();
+        final OrderAggregate aggregate = given.placedOrder();
         final OrderTotalsCalculated event = Given.Event.orderTotalsCalculated();
 
-        aggregate.apply(event);
+        aggregate.testApply(event, Given.Command.context());
 
         assertEquals(event.getTotal(), aggregate.getState().getPrice());
     }
 
     @Test
     public void apply_OrderExpired_event_and_update_state() {
-        final TestOrderAggregate aggregate = given.placedOrder();
+        final OrderAggregate aggregate = given.placedOrder();
         final OrderExpired event = Given.Event.orderExpired();
 
-        aggregate.apply(event);
+        aggregate.testApply(event, Given.Command.context());
 
         assertTrue(aggregate.getState().getIsExpired());
     }
 
     @Test
     public void apply_OrderRegistrantAssigned_event_and_update_state() {
-        final TestOrderAggregate aggregate = given.placedOrder();
+        final OrderAggregate aggregate = given.placedOrder();
         final OrderRegistrantAssigned event = Given.Event.orderRegistrantAssigned();
 
-        aggregate.apply(event);
+        aggregate.testApply(event, Given.Command.context());
 
         assertEquals(event.getPersonalInfo(), aggregate.getState().getRegistrant());
     }
@@ -330,77 +325,6 @@ public class OrderAggregateShould {
         private static void eventIsValid(OrderRegistrantAssigned event, AssignRegistrantDetails cmd) {
             assertEquals(cmd.getOrderId(), event.getOrderId());
             assertEquals(cmd.getRegistrant(), event.getPersonalInfo());
-        }
-    }
-
-    /* package */ static class TestOrderAggregate extends OrderAggregate {
-
-        /* package */ TestOrderAggregate(OrderId id) {
-            super(id);
-        }
-
-        // Is overridden to do not throw exceptions while retrieving the default state via reflection.
-        @Override
-        @SuppressWarnings("RefusedBequest")
-        protected Order getDefaultState() {
-            return Order.getDefaultInstance();
-        }
-
-        @VisibleForTesting
-        @Override
-        public void incrementState(Order newState) {
-            super.incrementState(newState);
-        }
-
-        @VisibleForTesting
-        private void apply(OrderPlaced event) {
-            invokeApplyMethod(event);
-        }
-
-        @VisibleForTesting
-        private void apply(OrderUpdated event) {
-            invokeApplyMethod(event);
-        }
-
-        @VisibleForTesting
-        private void apply(OrderPartiallyReserved event) {
-            invokeApplyMethod(event);
-        }
-
-        @VisibleForTesting
-        private void apply(OrderReservationCompleted event) {
-            invokeApplyMethod(event);
-        }
-
-        @VisibleForTesting
-        private void apply(OrderConfirmed event) {
-            invokeApplyMethod(event);
-        }
-
-        @VisibleForTesting
-        public void apply(OrderTotalsCalculated event) {
-            invokeApplyMethod(event);
-        }
-
-        @VisibleForTesting
-        public void apply(OrderExpired event) {
-            invokeApplyMethod(event);
-        }
-
-        @VisibleForTesting
-        public void apply(OrderRegistrantAssigned event) {
-            invokeApplyMethod(event);
-        }
-
-        private void invokeApplyMethod(Message event) {
-            try {
-                //noinspection DuplicateStringLiteralInspection
-                final Method apply = OrderAggregate.class.getDeclaredMethod("apply", event.getClass());
-                apply.setAccessible(true);
-                apply.invoke(this, event);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                propagate(e);
-            }
         }
     }
 }
