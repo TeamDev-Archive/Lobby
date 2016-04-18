@@ -28,7 +28,7 @@ import org.spine3.samples.lobby.registration.seat.availability.CancelSeatReserva
 import org.spine3.samples.lobby.registration.seat.availability.SeatQuantities;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailability;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsReservationCancelled;
-import org.spine3.samples.lobby.registration.seat.availability.TestSeatsAvailabilityAggregate;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityAggregate;
 
 import java.util.List;
 
@@ -72,12 +72,12 @@ public abstract class CancelSeatReservationCmdHandling extends TestCase {
                         .put(RESERVATION_ID.getUuid(), TMP_RESERVED_SEATS).build();
 
         @Override
-        public TestSeatsAvailabilityAggregate givenAggregate() {
-            final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
+        public SeatsAvailabilityAggregate givenAggregate() {
+            final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .putAllPendingReservations(PENDING_RESERVATIONS)
                     .build();
-            aggregate.incrementState(state);
+            aggregate.testIncrementState(state);
             return aggregate;
         }
 

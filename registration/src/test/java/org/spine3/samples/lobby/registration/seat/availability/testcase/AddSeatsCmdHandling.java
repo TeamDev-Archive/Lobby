@@ -25,7 +25,7 @@ import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.seat.availability.AddSeats;
 import org.spine3.samples.lobby.registration.seat.availability.AddedAvailableSeats;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailability;
-import org.spine3.samples.lobby.registration.seat.availability.TestSeatsAvailabilityAggregate;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityAggregate;
 
 import static org.junit.Assert.assertEquals;
 import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
@@ -51,12 +51,12 @@ public class AddSeatsCmdHandling extends TestCase {
     }
 
     @Override
-    public TestSeatsAvailabilityAggregate givenAggregate() {
-        final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
+    public SeatsAvailabilityAggregate givenAggregate() {
+        final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
         final SeatsAvailability state = aggregate.getState().toBuilder()
                 .addAvailableSeat(newSeatQuantity(20))
                 .build();
-        aggregate.incrementState(state);
+        aggregate.testIncrementState(state);
         return aggregate;
     }
 

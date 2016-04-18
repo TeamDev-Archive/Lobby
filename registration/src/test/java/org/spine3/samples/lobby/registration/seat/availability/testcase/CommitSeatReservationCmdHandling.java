@@ -27,7 +27,7 @@ import org.spine3.samples.lobby.registration.seat.availability.CommitSeatReserva
 import org.spine3.samples.lobby.registration.seat.availability.SeatQuantities;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailability;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsReservationCommitted;
-import org.spine3.samples.lobby.registration.seat.availability.TestSeatsAvailabilityAggregate;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityAggregate;
 
 import static org.junit.Assert.assertEquals;
 import static org.spine3.samples.lobby.common.util.IdFactory.newReservationId;
@@ -65,12 +65,12 @@ public abstract class CommitSeatReservationCmdHandling extends TestCase {
                         .put(RESERVATION_ID.getUuid(), newSeatQuantities(newSeatQuantity(20))).build();
 
         @Override
-        public TestSeatsAvailabilityAggregate givenAggregate() {
-            final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
+        public SeatsAvailabilityAggregate givenAggregate() {
+            final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
             final SeatsAvailability state = aggregate.getState().toBuilder()
                     .putAllPendingReservations(PENDING_RESERVATIONS)
                     .build();
-            aggregate.incrementState(state);
+            aggregate.testIncrementState(state);
             return aggregate;
         }
     }

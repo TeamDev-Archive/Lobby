@@ -53,7 +53,7 @@ import static com.google.common.base.Throwables.propagate;
     @VisibleForTesting
     @Override
     public void incrementState(@Nonnull SeatAssignments newState) {
-        super.incrementState(newState);
+        super.testIncrementState(newState);
     }
 
     /* package */ void apply(SeatAssignmentsCreated event) {

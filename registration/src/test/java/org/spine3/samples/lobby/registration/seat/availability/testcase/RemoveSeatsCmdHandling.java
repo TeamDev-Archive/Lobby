@@ -26,7 +26,7 @@ import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.seat.availability.RemoveSeats;
 import org.spine3.samples.lobby.registration.seat.availability.RemovedAvailableSeats;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailability;
-import org.spine3.samples.lobby.registration.seat.availability.TestSeatsAvailabilityAggregate;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityAggregate;
 
 import static org.junit.Assert.assertEquals;
 import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
@@ -59,12 +59,12 @@ public class RemoveSeatsCmdHandling extends TestCase {
     }
 
     @Override
-    public TestSeatsAvailabilityAggregate givenAggregate() {
-        final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
+    public SeatsAvailabilityAggregate givenAggregate() {
+        final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
         final SeatsAvailability state = aggregate.getState().toBuilder()
                 .addAvailableSeat(AVAILABLE_QUANTITY)
                 .build();
-        aggregate.incrementState(state);
+        aggregate.testIncrementState(state);
         return aggregate;
     }
 
@@ -74,8 +74,8 @@ public class RemoveSeatsCmdHandling extends TestCase {
 
     public static class EmptyState extends RemoveSeatsCmdHandling {
         @Override
-        public TestSeatsAvailabilityAggregate givenAggregate() {
-            return new TestSeatsAvailabilityAggregate(newSeatsAvailabilityId());
+        public SeatsAvailabilityAggregate givenAggregate() {
+            return new SeatsAvailabilityAggregate(newSeatsAvailabilityId());
         }
     }
 }
