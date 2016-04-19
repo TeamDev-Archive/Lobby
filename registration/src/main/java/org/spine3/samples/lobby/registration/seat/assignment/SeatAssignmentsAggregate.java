@@ -36,9 +36,9 @@ import org.spine3.samples.lobby.registration.contracts.SeatPosition;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.contracts.SeatUnassigned;
 import org.spine3.samples.lobby.registration.util.ValidationUtils;
-import org.spine3.server.Assign;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
+import org.spine3.server.command.Assign;
 
 import java.util.List;
 import java.util.Map;
@@ -113,36 +113,32 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
 
     @Apply
     private void apply(SeatAssignmentsCreated event) {
-        final SeatAssignments.Builder state = getState().toBuilder();
+        final SeatAssignments.Builder state = getBuilder();
         state.setId(event.getAssignmentsId());
         final Map<Integer, SeatAssignment> assignments = state.getMutableAssignments();
         for (SeatAssignment newAssignment : event.getAssignmentList()) {
             final int position = newAssignment.getPosition().getValue();
             assignments.put(position, newAssignment);
         }
-        incrementState(state.build());
     }
 
     @Apply
     private void apply(SeatAssigned event) {
         final SeatAssignment assignment = event.getAssignment();
         final int position = assignment.getPosition().getValue();
-        final SeatAssignments.Builder state = getState().toBuilder();
+        final SeatAssignments.Builder state = getBuilder();
         state.getMutableAssignments().put(position, assignment);
-        incrementState(state.build());
     }
 
     @Apply
     private void apply(SeatUnassigned event) {
+        final Map<Integer, SeatAssignment> assignments = getBuilder().getMutableAssignments();
         final int position = event.getPosition().getValue();
-        final SeatAssignments.Builder state = getState().toBuilder();
-        final Map<Integer, SeatAssignment> assignments = state.getMutableAssignments();
         final SeatAssignment assignmentPrimary = assignments.get(position);
         final SeatAssignment assignmentNew = SeatAssignment.newBuilder()
                 .setSeatTypeId(assignmentPrimary.getSeatTypeId())
                 .setPosition(assignmentPrimary.getPosition()).build();
         assignments.put(position, assignmentNew);
-        incrementState(state.build());
     }
 
     @Apply
@@ -157,9 +153,8 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
         final SeatAssignment assignmentUpdated = assignmentPrimary.toBuilder()
                 .setAttendee(attendeeUpdated)
                 .build();
-        final SeatAssignments.Builder state = getState().toBuilder();
+        final SeatAssignments.Builder state = getBuilder();
         state.getMutableAssignments().put(seatPosition.getValue(), assignmentUpdated);
-        incrementState(state.build());
     }
 
     private SeatAssignment getAssignment(SeatPosition seatPosition) {

@@ -34,12 +34,12 @@ import org.spine3.base.Events;
 import org.spine3.base.PersonName;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.server.BoundedContext;
-import org.spine3.server.CommandDispatcher;
 import org.spine3.server.command.CommandBus;
 import org.spine3.server.command.CommandStore;
 import org.spine3.server.command.ExecutorCommandScheduler;
 import org.spine3.server.event.EventBus;
 import org.spine3.server.event.EventStore;
+import org.spine3.server.storage.StorageFactory;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
@@ -58,7 +58,7 @@ public class TestDataFactory {
 
     /**
      * Creates a new {@link BoundedContext} instance with {@link InMemoryStorageFactory},
-     * {@link CommandDispatcher} and {@link EventBus}.
+     * {@link CommandBus} and {@link EventBus}.
      */
     public static BoundedContext newBoundedContext() {
         final InMemoryStorageFactory storageFactory = InMemoryStorageFactory.getInstance();
@@ -75,12 +75,20 @@ public class TestDataFactory {
         return result.build();
     }
 
-    private static CommandBus newCommandBus(InMemoryStorageFactory storageFactory) {
+    /**
+     * Creates a new command bus with {@link InMemoryStorageFactory}.
+     */
+    public static CommandBus newCommandBus() {
+        final InMemoryStorageFactory storageFactory = InMemoryStorageFactory.getInstance();
+        return newCommandBus(storageFactory);
+    }
+
+    private static CommandBus newCommandBus(StorageFactory storageFactory) {
         final CommandStore store = new CommandStore(storageFactory.createCommandStorage());
         final CommandBus.Builder builder = CommandBus.newBuilder();
         builder.setCommandStore(store);
         // TODO:2016-04-08:alexander.litus: change to App Engine-compatible scheduler
-        builder.setScheduler(new ExecutorCommandScheduler(builder.build()));
+        builder.setScheduler(new ExecutorCommandScheduler());
         return builder.build();
     }
 

@@ -40,8 +40,8 @@ import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUnpublishe
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
 import org.spine3.samples.sample.lobby.conference.contracts.SeatTypeCreated;
 import org.spine3.samples.sample.lobby.conference.contracts.SeatTypeUpdated;
-import org.spine3.server.BoundedContext;
-import org.spine3.server.Subscribe;
+import org.spine3.server.command.CommandBus;
+import org.spine3.server.event.Subscribe;
 import org.spine3.server.projection.Projection;
 
 import javax.annotation.Nullable;
@@ -64,10 +64,10 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
  * @author Alexander Litus
  * @see Projection
  */
-@SuppressWarnings("TypeMayBeWeakened")
+@SuppressWarnings({"TypeMayBeWeakened", "UnusedParameters"})
 public class ConferenceProjection extends Projection<ConferenceId, Conference> {
 
-    private BoundedContext boundedContext;
+    private CommandBus commandBus;
 
     /**
      * Creates a new instance.
@@ -79,8 +79,8 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         super(id);
     }
 
-    /* package */ void setBoundedContext(BoundedContext boundedContext) {
-        this.boundedContext = boundedContext;
+    /* package */ void setCommandBus(CommandBus commandBus) {
+        this.commandBus = commandBus;
     }
 
     @Subscribe
@@ -161,31 +161,30 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         }
     }
 
-    // TODO:2016-02-23:alexander.litus: consider moving this method to Process Manager
     private void sendAddSeatsRequest(SeatTypeId seatTypeId, int quantity) {
         final AddSeats message = AddSeats.newBuilder()
                 .setConferenceId(getState().getId())
                 .setQuantity(newSeatQuantity(seatTypeId, quantity))
                 .build();
         final Command command = create(message, newCommandContext());
-        boundedContext.process(command);
+        commandBus.post(command);
     }
 
-    // TODO:2016-02-23:alexander.litus: consider moving this method to Process Manager
     private void sendRemoveSeatsRequest(SeatTypeId seatTypeId, int quantity) {
         final RemoveSeats message = RemoveSeats.newBuilder()
                 .setConferenceId(getState().getId())
                 .setQuantity(newSeatQuantity(seatTypeId, quantity))
                 .build();
         final Command command = create(message, newCommandContext());
-        boundedContext.process(command);
+        commandBus.post(command);
     }
 
     private static List<SeatType> filterById(final SeatTypeId id, List<SeatType> seatTypes) {
         final Iterable<SeatType> result = filter(seatTypes, new Predicate<SeatType>() {
             @Override
             public boolean apply(@Nullable SeatType input) {
-                return (input != null) && input.getId().equals(id);
+                return (input != null) && input.getId()
+                                               .equals(id);
             }
         });
         return ImmutableList.copyOf(result);

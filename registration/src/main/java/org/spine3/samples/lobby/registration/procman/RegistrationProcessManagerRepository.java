@@ -33,7 +33,7 @@ import org.spine3.samples.lobby.registration.seat.availability.SeatsReserved;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.entity.IdFunction;
 import org.spine3.server.procman.ProcessManagerRepository;
-import org.spine3.type.EventClass;
+import org.spine3.server.type.EventClass;
 
 import java.util.Map;
 

@@ -23,6 +23,7 @@ package org.spine3.samples.lobby.registration.conference;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.server.BoundedContext;
+import org.spine3.server.command.CommandBus;
 import org.spine3.server.projection.ProjectionRepository;
 
 import javax.annotation.Nonnull;
@@ -48,8 +49,8 @@ public class ConferenceProjectionRepository extends ProjectionRepository<Confere
     @Override
     public ConferenceProjection load(ConferenceId id) throws IllegalStateException {
         final ConferenceProjection conference = super.load(id);
-        final BoundedContext boundedContext = getBoundedContext();
-        conference.setBoundedContext(boundedContext);
+        final CommandBus commandBus = getBoundedContext().getCommandBus();
+        conference.setCommandBus(commandBus);
         return conference;
     }
 }

@@ -48,8 +48,8 @@ import org.spine3.samples.lobby.registration.seat.availability.CancelSeatReserva
 import org.spine3.samples.lobby.registration.seat.availability.CommitSeatReservation;
 import org.spine3.samples.lobby.registration.seat.availability.MakeSeatReservation;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsReserved;
-import org.spine3.server.Assign;
-import org.spine3.server.Subscribe;
+import org.spine3.server.command.Assign;
+import org.spine3.server.event.Subscribe;
 import org.spine3.server.procman.CommandRouted;
 import org.spine3.server.procman.ProcessManager;
 import org.spine3.time.ZoneOffset;
@@ -294,7 +294,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
         private void send(Message cmdMsg, Duration delay) {
             // TODO:2016-02-29:alexander.litus: obtain user ID and zone offset
             final Schedule schedule = Schedule.newBuilder()
-                                           .setDelay(delay)
+                                           .setAfter(delay)
                                            .build();
             final CommandContext context = Commands.createContext(UserId.getDefaultInstance(), ZoneOffset.getDefaultInstance())
                     .toBuilder()

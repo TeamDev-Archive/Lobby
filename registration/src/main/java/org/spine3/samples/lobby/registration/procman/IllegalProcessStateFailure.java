@@ -22,7 +22,7 @@ package org.spine3.samples.lobby.registration.procman;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.Message;
-import org.spine3.server.FailureThrowable;
+import org.spine3.server.failure.FailureThrowable;
 
 /**
  * A business failure which is thrown if a registration process is in inappropriate state for the requested operation.

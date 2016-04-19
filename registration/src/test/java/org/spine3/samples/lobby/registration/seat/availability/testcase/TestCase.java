@@ -20,24 +20,24 @@
 
 package org.spine3.samples.lobby.registration.seat.availability.testcase;
 
+import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityAggregate;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityId;
-import org.spine3.samples.lobby.registration.seat.availability.TestSeatsAvailabilityAggregate;
 
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatsAvailabilityId;
 
 /**
- * The default test case which contains a {@link TestSeatsAvailabilityAggregate} with the default state.
+ * The default test case which contains a {@link SeatsAvailabilityAggregate} with the default state.
  */
 public class TestCase {
 
-    private final TestSeatsAvailabilityAggregate aggregate;
+    private final SeatsAvailabilityAggregate aggregate;
 
     public TestCase() {
         final SeatsAvailabilityId id = newSeatsAvailabilityId();
-        aggregate = new TestSeatsAvailabilityAggregate(id);
+        aggregate = new SeatsAvailabilityAggregate(id);
     }
 
-    public TestSeatsAvailabilityAggregate givenAggregate() {
+    public SeatsAvailabilityAggregate givenAggregate() {
         return aggregate;
     }
 }

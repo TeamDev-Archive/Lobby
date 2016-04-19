@@ -60,43 +60,43 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     private static final ConferenceId CONFERENCE_ID = newConferenceId();
     private static final List<SeatQuantity> SEATS = ImmutableList.of(newSeatQuantity(5), newSeatQuantity(10));
 
-    private final OrderAggregateShould.TestOrderAggregate aggregate;
+    private final OrderAggregate aggregate;
 
     /* package */ Given() {
-        aggregate = new OrderAggregateShould.TestOrderAggregate(ORDER_ID);
+        aggregate = new OrderAggregate(ORDER_ID);
         aggregate.setOrderPricingService(new PricingServiceStub());
     }
 
-    /* package */ OrderAggregateShould.TestOrderAggregate newOrder() {
+    /* package */ OrderAggregate newOrder() {
         return aggregate;
     }
 
-    /* package */ OrderAggregateShould.TestOrderAggregate confirmedOrder() {
+    /* package */ OrderAggregate confirmedOrder() {
         final Order state = orderState(SEATS, true);
-        aggregate.incrementState(state);
+        aggregate.incrementStateForTest(state);
         return aggregate;
     }
 
-    /* package */ OrderAggregateShould.TestOrderAggregate placedOrder() {
+    /* package */ OrderAggregate placedOrder() {
         final Order state = orderState(SEATS);
-        aggregate.incrementState(state);
+        aggregate.incrementStateForTest(state);
         return aggregate;
     }
 
-    /* package */ OrderAggregateShould.TestOrderAggregate completelyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
+    /* package */ OrderAggregate completelyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
         final Order state = orderState(reservedSeats);
-        aggregate.incrementState(state);
+        aggregate.incrementStateForTest(state);
         return aggregate;
     }
 
-    /* package */ OrderAggregateShould.TestOrderAggregate partiallyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
+    /* package */ OrderAggregate partiallyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
         final List<SeatQuantity> requestedSeats = newArrayList(reservedSeats);
         final int partlyReservedSeatIndex = 0;
         final SeatQuantity.Builder seat = requestedSeats.get(partlyReservedSeatIndex).toBuilder();
         seat.setQuantity(seat.getQuantity() + 5);
         requestedSeats.set(partlyReservedSeatIndex, seat.build());
         final Order state = orderState(requestedSeats);
-        aggregate.incrementState(state);
+        aggregate.incrementStateForTest(state);
         return aggregate;
     }
 
@@ -254,7 +254,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         /* package */ static OrderRegistrantAssigned orderRegistrantAssigned() {
             final OrderRegistrantAssigned.Builder builder = OrderRegistrantAssigned.newBuilder()
                     .setOrderId(ORDER_ID)
-                    .setPersonalInfo(newPersonalInfo("Albert", "Einstein", "ein@stein.com"));
+                    .setPersonalInfo(newPersonalInfo("Albert", "Einstein", "einstein@fu-berlin.de"));
             return builder.build();
         }
     }

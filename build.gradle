@@ -1,5 +1,5 @@
 project.ext {
-    SPINE_VERSION = '0.2-SNAPSHOT'
+    SPINE_VERSION = '0.3-SNAPSHOT'
     PROTOBUF_VERSION = '3.0.0-beta-1'
     PROTOBUF_DEPENDENCY = "com.google.protobuf:protoc:${project.PROTOBUF_VERSION}"
     MAVEN_REPOSITORY_URL = 'http://maven.teamdev.com/repository/spine'
@@ -115,17 +115,23 @@ subprojects {
         protoc {
             artifact = project.PROTOBUF_DEPENDENCY
         }
+        generateProtoTasks {
+            all().each { final task ->
+                task.generateDescriptorSet = true
+                task.descriptorSetOptions.path = "${projectDir}/build/descriptors/${task.sourceSet.name}.desc"
+                task.descriptorSetOptions.includeImports = true
+            }
+            all()*.plugins {
+                grpc {}
+            }
+        }
         plugins {
             // Define a plugin with name 'grpc'
             grpc {
                 artifact = 'io.grpc:protoc-gen-grpc-java:0.13.2'
             }
         }
-        generateProtoTasks {
-            all()*.plugins {
-                grpc {}
-            }
-        }
+        
     }
 
     jacocoTestReport {

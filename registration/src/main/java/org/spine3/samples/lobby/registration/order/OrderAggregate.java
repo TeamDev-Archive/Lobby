@@ -43,7 +43,7 @@ import org.spine3.samples.lobby.registration.contracts.OrderTotalsCalculated;
 import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.util.Seats;
-import org.spine3.server.Assign;
+import org.spine3.server.command.Assign;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
 import org.spine3.server.entity.Entity;
@@ -174,11 +174,10 @@ public class OrderAggregate extends Aggregate<OrderId, Order, Order.Builder> {
 
     @Apply
     private void apply(OrderPlaced event) {
-        final Order.Builder state = Order.newBuilder()
+        getBuilder()
                 .setId(event.getOrderId())
                 .setConferenceId(event.getConferenceId())
                 .addAllSeat(event.getSeatList());
-        incrementState(state.build());
     }
 
     @Apply
@@ -198,37 +197,28 @@ public class OrderAggregate extends Aggregate<OrderId, Order, Order.Builder> {
 
     @Apply
     private void apply(OrderTotalsCalculated event) {
-        final Order.Builder state = getState().toBuilder();
-        state.setPrice(event.getTotal());
-        incrementState(state.build());
+        final Money price = event.getTotal();
+        getBuilder().setPrice(price);
     }
 
     @Apply
     private void apply(OrderExpired event) {
-        final Order.Builder state = getState().toBuilder();
-        state.setIsExpired(true);
-        incrementState(state.build());
+        getBuilder().setIsExpired(true);
     }
 
     @Apply
     private void apply(OrderRegistrantAssigned event) {
-        final Order.Builder state = getState().toBuilder();
-        state.setRegistrant(event.getPersonalInfo());
-        incrementState(state.build());
+        getBuilder().setRegistrant(event.getPersonalInfo());
     }
 
     @Apply
     private void apply(OrderConfirmed event) {
-        final Order.Builder state = getState().toBuilder();
-        state.setIsConfirmed(true);
-        incrementState(state.build());
+        getBuilder().setIsConfirmed(true);
     }
 
     private void updateSeats(List<SeatQuantity> newSeats) {
-        final Order.Builder state = getState().toBuilder();
-        state.clearSeat();
-        state.addAllSeat(newSeats);
-        incrementState(state.build());
+        getBuilder().clearSeat()
+                    .addAllSeat(newSeats);
     }
 
     private boolean isOrderPartiallyReserved(final List<SeatQuantity> reservedSeats) {
