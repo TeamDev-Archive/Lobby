@@ -40,7 +40,7 @@ public class EnoughSeatsAndNoPendingReservations extends MakeSeatReservationCmdH
         final SeatsAvailability state = aggregate.getState().toBuilder()
                 .addAllAvailableSeat(getAvailableSeats())
                 .build();
-        aggregate.testIncrementState(state);
+        aggregate.incrementStateForTest(state);
         return aggregate;
     }
 

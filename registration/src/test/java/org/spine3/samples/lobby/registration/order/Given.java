@@ -73,19 +73,19 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
     /* package */ OrderAggregate confirmedOrder() {
         final Order state = orderState(SEATS, true);
-        aggregate.testIncrementState(state);
+        aggregate.incrementStateForTest(state);
         return aggregate;
     }
 
     /* package */ OrderAggregate placedOrder() {
         final Order state = orderState(SEATS);
-        aggregate.testIncrementState(state);
+        aggregate.incrementStateForTest(state);
         return aggregate;
     }
 
     /* package */ OrderAggregate completelyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
         final Order state = orderState(reservedSeats);
-        aggregate.testIncrementState(state);
+        aggregate.incrementStateForTest(state);
         return aggregate;
     }
 
@@ -96,7 +96,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         seat.setQuantity(seat.getQuantity() + 5);
         requestedSeats.set(partlyReservedSeatIndex, seat.build());
         final Order state = orderState(requestedSeats);
-        aggregate.testIncrementState(state);
+        aggregate.incrementStateForTest(state);
         return aggregate;
     }
 

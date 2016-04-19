@@ -56,7 +56,7 @@ public class EnoughSeatsAndExistPendingReservations extends MakeSeatReservationC
                 .addAllAvailableSeat(getAvailableSeats())
                 .putAllPendingReservations(PENDING_RESERVATIONS)
                 .build();
-        aggregate.testIncrementState(state);
+        aggregate.incrementStateForTest(state);
         return aggregate;
     }
 

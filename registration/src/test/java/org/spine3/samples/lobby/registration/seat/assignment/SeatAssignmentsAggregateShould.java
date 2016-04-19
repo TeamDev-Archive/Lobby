@@ -157,7 +157,7 @@ public class SeatAssignmentsAggregateShould {
         final SeatAssignmentsCreated event = Given.Event.seatAssignmentsCreated();
         final List<SeatAssignment> expectedAssignments = event.getAssignmentList();
 
-        aggregate.testApply(event, Given.Command.context());
+        aggregate.applyForTest(event, Given.Command.context());
 
         final SeatAssignments state = aggregate.getState();
         assertEquals(event.getAssignmentsId(), state.getId());
@@ -173,7 +173,7 @@ public class SeatAssignmentsAggregateShould {
         final SeatAssignment expected = event.getAssignment();
         final int position = expected.getPosition().getValue();
 
-        aggregate.testApply(event, Given.Command.context());
+        aggregate.applyForTest(event, Given.Command.context());
 
         final SeatAssignment actual = aggregate.getState().getAssignments().get(position);
         assertEquals(expected, actual);
@@ -185,7 +185,7 @@ public class SeatAssignmentsAggregateShould {
         final SeatUnassigned event = Given.Event.seatUnassigned();
         final int position = event.getPosition().getValue();
 
-        aggregate.testApply(event, Given.Command.context());
+        aggregate.applyForTest(event, Given.Command.context());
 
         final Map<Integer, SeatAssignment> assignments = aggregate.getState().getAssignments();
         final SeatAssignment assignment = assignments.get(position);
@@ -199,7 +199,7 @@ public class SeatAssignmentsAggregateShould {
         final PersonalInfo expected = event.getAttendee();
         final int position = event.getPosition().getValue();
 
-        aggregate.testApply(event, Given.Command.context());
+        aggregate.applyForTest(event, Given.Command.context());
 
         final Map<Integer, SeatAssignment> assignments = aggregate.getState().getAssignments();
         final PersonalInfo actual = assignments.get(position).getAttendee();
