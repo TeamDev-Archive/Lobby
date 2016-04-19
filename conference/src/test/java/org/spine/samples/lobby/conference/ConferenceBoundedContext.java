@@ -62,7 +62,7 @@ public enum ConferenceBoundedContext {
         final CommandStore store = new CommandStore(storageFactory.createCommandStorage());
         final CommandBus.Builder builder = CommandBus.newBuilder();
         builder.setCommandStore(store);
-        builder.setScheduler(new ExecutorCommandScheduler(builder.build()));
+        builder.setScheduler(new ExecutorCommandScheduler());
         return builder.build();
     }
 
