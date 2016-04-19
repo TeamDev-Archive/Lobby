@@ -36,9 +36,9 @@ import org.spine3.samples.lobby.registration.contracts.SeatPosition;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.contracts.SeatUnassigned;
 import org.spine3.samples.lobby.registration.util.ValidationUtils;
-import org.spine3.server.Assign;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
+import org.spine3.server.command.Assign;
 
 import java.util.List;
 import java.util.Map;

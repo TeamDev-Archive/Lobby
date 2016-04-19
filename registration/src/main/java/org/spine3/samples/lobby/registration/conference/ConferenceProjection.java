@@ -40,8 +40,8 @@ import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUnpublishe
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
 import org.spine3.samples.sample.lobby.conference.contracts.SeatTypeCreated;
 import org.spine3.samples.sample.lobby.conference.contracts.SeatTypeUpdated;
-import org.spine3.server.BoundedContext;
-import org.spine3.server.Subscribe;
+import org.spine3.server.command.CommandBus;
+import org.spine3.server.event.Subscribe;
 import org.spine3.server.projection.Projection;
 
 import javax.annotation.Nullable;
@@ -67,7 +67,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 @SuppressWarnings({"TypeMayBeWeakened", "UnusedParameters"})
 public class ConferenceProjection extends Projection<ConferenceId, Conference> {
 
-    private BoundedContext boundedContext;
+    private CommandBus commandBus;
 
     /**
      * Creates a new instance.
@@ -79,8 +79,8 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         super(id);
     }
 
-    /* package */ void setBoundedContext(BoundedContext boundedContext) {
-        this.boundedContext = boundedContext;
+    /* package */ void setCommandBus(CommandBus commandBus) {
+        this.commandBus = commandBus;
     }
 
     @Subscribe
@@ -167,7 +167,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                 .setQuantity(newSeatQuantity(seatTypeId, quantity))
                 .build();
         final Command command = create(message, newCommandContext());
-        boundedContext.process(command);
+        commandBus.post(command);
     }
 
     private void sendRemoveSeatsRequest(SeatTypeId seatTypeId, int quantity) {
@@ -176,7 +176,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                 .setQuantity(newSeatQuantity(seatTypeId, quantity))
                 .build();
         final Command command = create(message, newCommandContext());
-        boundedContext.process(command);
+        commandBus.post(command);
     }
 
     private static List<SeatType> filterById(final SeatTypeId id, List<SeatType> seatTypes) {

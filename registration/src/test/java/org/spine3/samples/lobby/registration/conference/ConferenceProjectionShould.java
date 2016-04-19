@@ -39,11 +39,11 @@ import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUnpublishe
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
 import org.spine3.samples.sample.lobby.conference.contracts.SeatTypeCreated;
 import org.spine3.samples.sample.lobby.conference.contracts.SeatTypeUpdated;
-import org.spine3.server.Assign;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.AggregateRepository;
 import org.spine3.server.aggregate.Apply;
+import org.spine3.server.command.Assign;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import java.util.List;
@@ -66,7 +66,7 @@ public class ConferenceProjectionShould {
         final TestCommandHandlerRepository repository = new TestCommandHandlerRepository(boundedContext);
         repository.initStorage(InMemoryStorageFactory.getInstance());
         boundedContext.register(repository);
-        projection.setBoundedContext(boundedContext);
+        projection.setCommandBus(boundedContext.getCommandBus());
     }
 
     @After

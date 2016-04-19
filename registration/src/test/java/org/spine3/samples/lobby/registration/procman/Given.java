@@ -43,10 +43,11 @@ import org.spine3.samples.lobby.registration.seat.availability.CancelSeatReserva
 import org.spine3.samples.lobby.registration.seat.availability.CommitSeatReservation;
 import org.spine3.samples.lobby.registration.seat.availability.MakeSeatReservation;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsReserved;
-import org.spine3.server.Assign;
+import org.spine3.server.command.Assign;
 import org.spine3.server.BoundedContext;
-import org.spine3.server.CommandHandler;
+import org.spine3.server.command.CommandHandler;
 import org.spine3.server.command.CommandBus;
+import org.spine3.server.event.EventBus;
 import org.spine3.server.procman.CommandRouted;
 
 import java.util.List;
@@ -81,7 +82,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     /* package */ Given() {
         processManager = new TestProcessManager(ID);
         processManager.setCommandSender(processManager.new MockCommandSender());
-        boundedContext.getCommandBus().register(new StubCommandHandler());
+        boundedContext.getCommandBus().register(new StubCommandHandler(newUuid(), boundedContext.getEventBus()));
     }
 
     /**
@@ -244,7 +245,11 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         }
     }
 
-    private static class StubCommandHandler implements CommandHandler {
+    private static class StubCommandHandler extends CommandHandler {
+
+        protected StubCommandHandler(String id, EventBus eventBus) {
+            super(id, eventBus);
+        }
 
         @Assign
         public CommandRouted handle(MakeSeatReservation cmd, CommandContext context) {
