@@ -37,7 +37,7 @@ service ConferenceService{
     rpc createConference(ConferenceInfo) returns (CreateConferenceResponse){}
     rpc findConference(FindConferenceRequest) returns (spine.samples.lobby.conference.contracts.Conference){}
     rpc updateConference(EditableConferenceInfo) returns (UpdateConferenceResponse){}
-//    rpc publish(ConferenceId) returns (UpdateConferenceResponse){}
+    rpc publish(PublishConferenceRequest) returns (PublishConferenceResponse){}
 
 
 }
@@ -85,7 +85,7 @@ message CreateConferenceResponse{
 
 message EditableConferenceInfo{
     // The unique conference id.
-        spine.samples.lobby.common.ConferenceId id = 1;
+    spine.samples.lobby.common.ConferenceId id = 1;
 
     // The conference name. Used in the slug.
     string name = 2;
@@ -121,10 +121,18 @@ message EditableConferenceInfo{
     bool is_published = 12;
 }
 message UpdateConferenceResponse{
-    string id = 1;
+    spine.samples.lobby.common.ConferenceId id = 1;
 }
 
 message FindConferenceRequest{
     spine.base.EmailAddress emailAddress = 1;
     string accessCode = 2;
+}
+
+message PublishConferenceResponse{
+    spine.samples.lobby.common.ConferenceId id = 1;
+}
+
+message PublishConferenceRequest{
+    spine.samples.lobby.common.ConferenceId id = 1;
 }

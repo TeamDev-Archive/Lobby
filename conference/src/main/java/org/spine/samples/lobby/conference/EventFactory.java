@@ -22,6 +22,8 @@ package org.spine.samples.lobby.conference;
 
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferencePublished;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
 
 /**
  * @author andrii.loboda
@@ -35,5 +37,18 @@ class EventFactory {
         return ConferenceCreated.newBuilder()
                                 .setConference(conference)
                                 .build();
+    }
+
+    public static ConferenceUpdated conferenceUpdated(Conference updatedConference) {
+        return ConferenceUpdated.newBuilder()
+                                .setConference(updatedConference)
+                                .build();
+    }
+
+    public static ConferencePublished conferencePublished(Conference publishedConference) {
+        return ConferencePublished.newBuilder()
+                                  .setConferenceId(publishedConference.getId())
+                                  .build();
+
     }
 }

@@ -32,13 +32,19 @@ import org.spine3.samples.lobby.conference.ConferenceServiceGrpc.ConferenceServi
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
 import org.spine3.samples.lobby.conference.EditableConferenceInfo;
 import org.spine3.samples.lobby.conference.FindConferenceRequest;
+import org.spine3.samples.lobby.conference.PublishConferenceRequest;
+import org.spine3.samples.lobby.conference.PublishConferenceResponse;
 import org.spine3.samples.lobby.conference.UpdateConferenceResponse;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferencePublished;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
 import org.spine3.server.BoundedContext;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author andrii.loboda
@@ -88,6 +94,48 @@ public class ConferenceServiceImpl implements ConferenceService {
 
     @Override
     public void updateConference(EditableConferenceInfo request, StreamObserver<UpdateConferenceResponse> responseObserver) {
+        final Conference existingConference = conferenceRepository.load(request.getId());
+
+        checkNotNull(existingConference, "Can't finde conference with specified id: " + request.getId());
+
+        final Conference updatedConference = updateFromConferenceInfo(existingConference, request);
+        conferenceRepository.store(updatedConference);
+
+        sendConferenceUpdatedEvent(updatedConference);
+        final UpdateConferenceResponse response = UpdateConferenceResponse.newBuilder()
+                                                                          .setId(updatedConference.getId())
+                                                                          .build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    private Conference updateFromConferenceInfo(Conference target, EditableConferenceInfo info) {
+        return target.toBuilder()
+                     .setName(info.getName())
+                     .build();
+    }
+
+    @Override
+    public void publish(PublishConferenceRequest request, StreamObserver<PublishConferenceResponse> responseObserver) {
+        final Conference persistedConference = conferenceRepository.load(request.getId());
+        //TODO:2016-04-19:andrii.loboda: handle if no conference to publish
+        if (!persistedConference.getIsPublished()) {
+            final Conference publishedConference = persistedConference.toBuilder()
+                                                                      .setIsPublished(true)
+                                                                      .build();
+
+            sendConferencePublishedEvent(publishedConference);
+            final PublishConferenceResponse response = PublishConferenceResponse.newBuilder()
+                                                                                .setId(persistedConference.getId())
+                                                                                .build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } else {
+
+            //TODO:2016-04-19:andrii.loboda: handle if conference is already published
+        }
+
     }
 
     protected BoundedContext getBoundedContext() {
@@ -101,14 +149,33 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
 
-    private void sendConferenceCreatedEvent(Conference conferenceToPersist) {
+    private void sendConferenceCreatedEvent(Conference createdConference) {
         final ImmutableList.Builder<Event> result = ImmutableList.builder();
-        final ConferenceCreated conferenceCreatedEvent = EventFactory.conferenceCreated(conferenceToPersist);
-        final EventContext conferenceEventContext = EventUtils.createConferenceEventContext(conferenceToPersist.getId());
+        final ConferenceCreated conferenceCreatedEvent = EventFactory.conferenceCreated(createdConference);
+        final EventContext conferenceEventContext = EventUtils.createConferenceEventContext(createdConference.getId());
         result.add(Events.createEvent(conferenceCreatedEvent, conferenceEventContext));
 
         sendEvents(result.build());
     }
+
+    private void sendConferenceUpdatedEvent(Conference updatedConference) {
+        final ImmutableList.Builder<Event> result = ImmutableList.builder();
+        final ConferenceUpdated conferenceUpdatedEvent = EventFactory.conferenceUpdated(updatedConference);
+        final EventContext conferenceEventContext = EventUtils.createConferenceEventContext(updatedConference.getId());
+        result.add(Events.createEvent(conferenceUpdatedEvent, conferenceEventContext));
+//TODO:2016-04-19:andrii.loboda: looks weird
+        sendEvents(result.build());
+    }
+
+    private void sendConferencePublishedEvent(Conference publishedConference) {
+        final ImmutableList.Builder<Event> result = ImmutableList.builder();
+        final ConferencePublished conferencePublishedEvent = EventFactory.conferencePublished(publishedConference);
+        final EventContext conferenceEventContext = EventUtils.createConferenceEventContext(publishedConference.getId());
+        result.add(Events.createEvent(conferencePublishedEvent, conferenceEventContext));
+
+        sendEvents(result.build());
+    }
+
 
     private void sendEvents(Iterable<Event> eventsToSend) {
         for (Event event : eventsToSend) {
