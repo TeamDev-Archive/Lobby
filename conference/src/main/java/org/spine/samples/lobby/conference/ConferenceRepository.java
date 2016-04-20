@@ -33,6 +33,8 @@ import static com.google.common.collect.Maps.newHashMap;
  * @author andrii.loboda
  */
 public class ConferenceRepository {
+
+    // TODO:2016-04-20:alexander.litus: what storage to use?
     private final Map<ConferenceId, Conference> store = newHashMap();
 
     public void store(Conference entity) {
