@@ -205,7 +205,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
         return result;
     }
 
-    @VisibleForTesting
+    @VisibleForTesting // otherwise it would be private, but it is needed in tests
     @SuppressWarnings("OverlyCoupledClass")
     protected class CommandSender {
 
@@ -304,7 +304,7 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             post(cmd);
         }
 
-        @VisibleForTesting
+        @VisibleForTesting // otherwise it would be private
         protected void post(Command cmd) {
             getCommandBus().post(cmd);
         }
