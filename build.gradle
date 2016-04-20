@@ -117,12 +117,12 @@ subprojects {
         }
         generateProtoTasks {
             all().each { final task ->
-                task.generateDescriptorSet = true
-                task.descriptorSetOptions.path = "${projectDir}/build/descriptors/${task.sourceSet.name}.desc"
-                task.descriptorSetOptions.includeImports = true
-            }
-            all()*.plugins {
-                grpc {}
+                task.plugins {
+                    grpc {}
+                    task.generateDescriptorSet = true
+                    task.descriptorSetOptions.path = "${projectDir}/build/descriptors/${task.sourceSet.name}.desc"
+                    task.descriptorSetOptions.includeImports = true
+                }
             }
         }
         plugins {
