@@ -26,12 +26,14 @@ import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
 import org.spine3.server.BoundedContext;
 
+import static org.spine3.samples.lobby.common.util.testdata.TestDataFactory.newBoundedContext;
+
 /**
  * @author andrii.loboda
  */
 public class Given {
 
-    protected static final BoundedContext boundedContext = ConferenceBoundedContext.INSTANCE.get();
+    protected static final BoundedContext boundedContext = newBoundedContext();
     private static final ConferenceRepository conferenceRepository = new ConferenceRepository();
 
 

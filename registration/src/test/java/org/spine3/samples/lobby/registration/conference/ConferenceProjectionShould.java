@@ -49,7 +49,7 @@ import org.spine3.server.storage.memory.InMemoryStorageFactory;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
+import static org.spine3.samples.lobby.common.util.testdata.TestDataFactory.newBoundedContext;
 
 /**
  * @author Alexander Litus

@@ -41,7 +41,7 @@ import java.util.Map;
 import static org.spine3.base.Identifiers.newUuid;
 import static org.spine3.samples.lobby.common.util.IdFactory.newOrderId;
 import static org.spine3.samples.lobby.common.util.IdFactory.newSeatTypeId;
-import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newPersonalInfo;
+import static org.spine3.samples.lobby.common.util.testdata.TestDataFactory.newPersonalInfo;
 import static org.spine3.samples.lobby.registration.util.Seats.*;
 
 /**

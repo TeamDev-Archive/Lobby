@@ -18,8 +18,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration.testdata;
+package org.spine3.samples.lobby.common.util.testdata;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
@@ -43,6 +44,7 @@ import org.spine3.server.storage.StorageFactory;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
+import static org.spine3.base.Identifiers.newUuid;
 import static org.spine3.protobuf.Messages.toAny;
 
 /**
@@ -51,15 +53,16 @@ import static org.spine3.protobuf.Messages.toAny;
  * @author Alexander Litus
  */
 @SuppressWarnings("UtilityClass")
+@VisibleForTesting
 public class TestDataFactory {
 
-    private TestDataFactory() {
-    }
+    private TestDataFactory() {}
 
     /**
      * Creates a new {@link BoundedContext} instance with {@link InMemoryStorageFactory},
      * {@link CommandBus} and {@link EventBus}.
      */
+    @VisibleForTesting
     public static BoundedContext newBoundedContext() {
         final InMemoryStorageFactory storageFactory = InMemoryStorageFactory.getInstance();
         final EventStore eventStore = EventStore.newBuilder()
@@ -67,8 +70,9 @@ public class TestDataFactory {
                 .setStorage(storageFactory.createEventStorage())
                 .build();
         final CommandBus commandBus = newCommandBus(storageFactory);
+        final String name = "BC-" + newUuid();
         final BoundedContext.Builder result = BoundedContext.newBuilder()
-                .setName("Orders & Registrations tests")
+                .setName(name)
                 .setStorageFactory(storageFactory)
                 .setCommandBus(commandBus)
                 .setEventBus(EventBus.newInstance(eventStore));
@@ -78,6 +82,7 @@ public class TestDataFactory {
     /**
      * Creates a new command bus with {@link InMemoryStorageFactory}.
      */
+    @VisibleForTesting
     public static CommandBus newCommandBus() {
         final InMemoryStorageFactory storageFactory = InMemoryStorageFactory.getInstance();
         return newCommandBus(storageFactory);
@@ -95,6 +100,7 @@ public class TestDataFactory {
     /**
      * Creates a new {@link PersonalInfo} instance with the given {@code givenName}, {@code familyName} and {@code email}.
      */
+    @VisibleForTesting
     public static PersonalInfo newPersonalInfo(String givenName, String familyName, String email) {
         final PersonName.Builder name = PersonName.newBuilder().setGivenName(givenName).setFamilyName(familyName);
         final EmailAddress.Builder emailAddress = EmailAddress.newBuilder().setValue(email);
@@ -105,6 +111,7 @@ public class TestDataFactory {
     /**
      * Creates a new {@link Event} instance with the given {@code event}, and {@code aggregateId}.
      */
+    @VisibleForTesting
     public static Event newEvent(Message event) {
         final CommandId commandId = Commands.generateId();
         final EventId eventId = Events.generateId();
