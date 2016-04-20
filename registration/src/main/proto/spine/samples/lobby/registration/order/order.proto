@@ -28,6 +28,8 @@ option java_multiple_files = true;
 import "spine/samples/lobby/common/common.proto";
 import "spine/samples/lobby/registration/contracts/registration.proto";
 
+import "spine/money/money.proto";
+
 // The order made by a user (registrant) to reserve seats for a conference.
 message Order {
     // The unique order id.
@@ -41,4 +43,13 @@ message Order {
 
     // The order is confirmed when the registrant has successfully paid for the order items.
     bool is_confirmed = 4;
+
+    // The order is expired when it is rejected.
+    bool is_expired = 5;
+
+    // The total price of the order.
+    spine.money.Money price = 6;
+
+    // The registrant assigned to the order.
+    spine.samples.lobby.common.PersonalInfo registrant = 7;
 }

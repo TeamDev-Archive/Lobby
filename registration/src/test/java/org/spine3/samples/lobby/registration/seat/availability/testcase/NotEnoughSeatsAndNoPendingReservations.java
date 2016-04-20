@@ -23,7 +23,7 @@ package org.spine3.samples.lobby.registration.seat.availability.testcase;
 import com.google.common.collect.ImmutableList;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailability;
-import org.spine3.samples.lobby.registration.seat.availability.TestSeatsAvailabilityAggregate;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityAggregate;
 
 import java.util.List;
 
@@ -48,12 +48,12 @@ public class NotEnoughSeatsAndNoPendingReservations extends MakeSeatReservationC
             newSeatQuantity(WORKSHOP_SEAT_TYPE_ID, WORKSHOP_SEAT_COUNT_AVAILABLE));
 
     @Override
-    public TestSeatsAvailabilityAggregate givenAggregate() {
-        final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
+    public SeatsAvailabilityAggregate givenAggregate() {
+        final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
         final SeatsAvailability state = aggregate.getState().toBuilder()
                 .addAllAvailableSeat(AVAILABLE_SEATS)
                 .build();
-        aggregate.incrementState(state);
+        aggregate.incrementStateForTest(state);
         return aggregate;
     }
 
@@ -69,7 +69,7 @@ public class NotEnoughSeatsAndNoPendingReservations extends MakeSeatReservationC
     }
 
     @Override
-    @SuppressWarnings({"RefusedBequest", "LocalVariableNamingConvention"})
+    @SuppressWarnings("RefusedBequest")
     public void checkAvailableSeatsUpdated(List<SeatQuantity> availableSeats, List<SeatQuantity> requestedSeats) {
         assertEquals(requestedSeats.size(), availableSeats.size());
 

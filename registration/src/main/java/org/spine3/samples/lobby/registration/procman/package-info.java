@@ -18,26 +18,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration.seat.availability.testcase;
+@ParametersAreNonnullByDefault
+package org.spine3.samples.lobby.registration.procman;
 
-import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityAggregate;
-import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityId;
-
-import static org.spine3.samples.lobby.registration.util.Seats.newSeatsAvailabilityId;
-
-/**
- * The default test case which contains a {@link SeatsAvailabilityAggregate} with the default state.
- */
-public class TestCase {
-
-    private final SeatsAvailabilityAggregate aggregate;
-
-    public TestCase() {
-        final SeatsAvailabilityId id = newSeatsAvailabilityId();
-        aggregate = new SeatsAvailabilityAggregate(id);
-    }
-
-    public SeatsAvailabilityAggregate givenAggregate() {
-        return aggregate;
-    }
-}
+import javax.annotation.ParametersAreNonnullByDefault;

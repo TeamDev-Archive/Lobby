@@ -20,25 +20,32 @@
 
 package org.spine3.samples.lobby.registration.conference;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.StringValue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.spine3.base.CommandContext;
+import org.spine3.base.EventContext;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.SeatType;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.lobby.registration.seat.availability.AddSeats;
 import org.spine3.samples.lobby.registration.seat.availability.RemoveSeats;
-import org.spine3.samples.sample.lobby.conference.contracts.*;
-import org.spine3.server.Assign;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferencePublished;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUnpublished;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
+import org.spine3.samples.sample.lobby.conference.contracts.SeatTypeCreated;
+import org.spine3.samples.sample.lobby.conference.contracts.SeatTypeUpdated;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.aggregate.Aggregate;
-import org.spine3.server.aggregate.AggregateRepositoryBase;
+import org.spine3.server.aggregate.AggregateRepository;
 import org.spine3.server.aggregate.Apply;
+import org.spine3.server.command.Assign;
+import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -47,20 +54,23 @@ import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.new
 /**
  * @author Alexander Litus
  */
-@SuppressWarnings({"TypeMayBeWeakened", "InstanceMethodNamingConvention", "ClassWithTooManyMethods", "UtilityClass"})
+@SuppressWarnings("InstanceMethodNamingConvention")
 public class ConferenceProjectionShould {
 
+    private static final EventContext CONTEXT = EventContext.getDefaultInstance();
     private final BoundedContext boundedContext = newBoundedContext();
     private final TestConferenceProjection projection = new TestConferenceProjection(Given.CONFERENCE_ID);
 
     @Before
     public void setUpTest() {
-        boundedContext.register(new TestCommandHandlerRepository());
-        projection.setBoundedContext(boundedContext);
+        final TestCommandHandlerRepository repository = new TestCommandHandlerRepository(boundedContext);
+        repository.initStorage(InMemoryStorageFactory.getInstance());
+        boundedContext.register(repository);
+        projection.setCommandBus(boundedContext.getCommandBus());
     }
 
     @After
-    public void tearDownTest() throws IOException {
+    public void tearDownTest() throws Exception {
         boundedContext.close();
     }
 
@@ -68,7 +78,7 @@ public class ConferenceProjectionShould {
     public void handle_ConferenceCreated_event_and_update_state() {
         final ConferenceCreated event = Given.conferenceCreated();
 
-        projection.on(event);
+        projection.on(event, CONTEXT);
 
         assertEquals(event.getConference(), projection.getState());
     }
@@ -77,7 +87,7 @@ public class ConferenceProjectionShould {
     public void handle_ConferenceUpdated_event_and_update_state() {
         final ConferenceUpdated event = Given.conferenceUpdated();
 
-        projection.on(event);
+        projection.on(event, CONTEXT);
 
         assertEquals(event.getConference(), projection.getState());
     }
@@ -86,7 +96,7 @@ public class ConferenceProjectionShould {
     public void handle_ConferencePublished_event_and_update_state() {
         final ConferencePublished event = Given.conferencePublished();
 
-        projection.on(event);
+        projection.on(event, CONTEXT);
 
         assertTrue(projection.getState().getIsPublished());
     }
@@ -95,7 +105,7 @@ public class ConferenceProjectionShould {
     public void handle_ConferenceUnpublished_event_and_update_state() {
         final ConferenceUnpublished event = Given.conferenceUnpublished();
 
-        projection.on(event);
+        projection.on(event, CONTEXT);
 
         assertFalse(projection.getState().getIsPublished());
     }
@@ -105,7 +115,7 @@ public class ConferenceProjectionShould {
         projection.incrementState(Given.conference());
         final SeatTypeCreated event = Given.seatTypeCreated(5);
 
-        projection.on(event);
+        projection.on(event, CONTEXT);
 
         assertSeatTypesConsistOf(event.getSeatType());
     }
@@ -115,8 +125,8 @@ public class ConferenceProjectionShould {
         projection.incrementState(Given.conference());
         final SeatTypeCreated event = Given.seatTypeCreated(5);
 
-        projection.on(event);
-        projection.on(event);
+        projection.on(event, CONTEXT);
+        projection.on(event, CONTEXT);
 
         assertSeatTypesConsistOf(event.getSeatType());
     }
@@ -124,10 +134,10 @@ public class ConferenceProjectionShould {
     @Test
     public void handle_SeatTypeUpdated_event_and_update_state() {
         projection.incrementState(Given.conference());
-        projection.on(Given.seatTypeCreated("old-description", 5));
+        projection.on(Given.seatTypeCreated("old-description", 5), CONTEXT);
 
         final SeatTypeUpdated updatedEvent = Given.seatTypeUpdated("new-description", 7);
-        projection.on(updatedEvent);
+        projection.on(updatedEvent, CONTEXT);
 
         assertSeatTypesConsistOf(updatedEvent.getSeatType());
     }
@@ -136,8 +146,8 @@ public class ConferenceProjectionShould {
     public void handle_SeatTypeUpdated_event_and_send_AddSeats_command_when_seats_added() {
         projection.incrementState(Given.conference());
 
-        projection.on(Given.seatTypeCreated(3));
-        projection.on(Given.seatTypeUpdated(7));
+        projection.on(Given.seatTypeCreated(3), CONTEXT);
+        projection.on(Given.seatTypeUpdated(7), CONTEXT);
 
         assertTrue(TestCommandHandler.isAddSeatsCommandHandled());
     }
@@ -146,8 +156,8 @@ public class ConferenceProjectionShould {
     public void handle_SeatTypeUpdated_event_and_send_AddSeats_command_when_seats_removed() {
         projection.incrementState(Given.conference());
 
-        projection.on(Given.seatTypeCreated(7));
-        projection.on(Given.seatTypeUpdated(3));
+        projection.on(Given.seatTypeCreated(7), CONTEXT);
+        projection.on(Given.seatTypeUpdated(3), CONTEXT);
 
         assertTrue(TestCommandHandler.isRemoveSeatsCommandHandled());
     }
@@ -157,10 +167,10 @@ public class ConferenceProjectionShould {
         projection.incrementState(Given.conference());
         final int seatQuantity = 5;
 
-        projection.on(Given.seatTypeCreated(seatQuantity));
+        projection.on(Given.seatTypeCreated(seatQuantity), CONTEXT);
         TestCommandHandler.setIsAddSeatsCommandHandled(false);
 
-        projection.on(Given.seatTypeUpdated(seatQuantity));
+        projection.on(Given.seatTypeUpdated(seatQuantity), CONTEXT);
 
         assertFalse(TestCommandHandler.isAddSeatsCommandHandled());
         assertFalse(TestCommandHandler.isRemoveSeatsCommandHandled());
@@ -173,12 +183,20 @@ public class ConferenceProjectionShould {
         assertTrue(actualTypes.containsAll(expectedTypes));
     }
 
-    public static class TestConferenceProjection extends ConferenceProjection {
+    private static class TestConferenceProjection extends ConferenceProjection {
 
-        public TestConferenceProjection(ConferenceId id) {
+        private TestConferenceProjection(ConferenceId id) {
             super(id);
         }
 
+        // Is overridden to do not throw exceptions while retrieving the default state via reflection.
+        @Override
+        @SuppressWarnings("RefusedBequest")
+        protected Conference getDefaultState() {
+            return Conference.getDefaultInstance();
+        }
+
+        @VisibleForTesting
         @Override
         public void incrementState(Conference newState) {
             super.incrementState(newState);
@@ -188,15 +206,20 @@ public class ConferenceProjectionShould {
     /**
      * Handles commands sent by ConferenceProjection.
      */
-    public static class TestCommandHandlerRepository extends AggregateRepositoryBase<ConferenceId, TestCommandHandler> {
+    private static class TestCommandHandlerRepository extends AggregateRepository<ConferenceId, TestCommandHandler> {
+
+        private TestCommandHandlerRepository(BoundedContext boundedContext) {
+            super(boundedContext);
+        }
     }
 
     @SuppressWarnings({"StaticNonFinalField", "AssignmentToStaticFieldFromInstanceMethod"})
-    public static class TestCommandHandler extends Aggregate<ConferenceId, StringValue> {
+    private static class TestCommandHandler extends Aggregate<ConferenceId, StringValue, StringValue.Builder> {
 
         private static boolean isAddSeatsCommandHandled = false;
         private static boolean isRemoveSeatsCommandHandled = false;
 
+        @SuppressWarnings("PublicConstructorInNonPublicClass") // it is required
         public TestCommandHandler(ConferenceId id) {
             super(id);
             isAddSeatsCommandHandled = false;
@@ -229,11 +252,6 @@ public class ConferenceProjectionShould {
 
         public static boolean isRemoveSeatsCommandHandled() {
             return isRemoveSeatsCommandHandled;
-        }
-
-        @Override
-        protected StringValue getDefaultState() {
-            return StringValue.getDefaultInstance();
         }
     }
 }

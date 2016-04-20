@@ -19,17 +19,17 @@
 //
 syntax = "proto3";
 
-package spine.samples.lobby.registration.process;
+package spine.samples.lobby.registration.procman;
 
-option java_package="org.spine3.samples.lobby.registration.process";
-option java_outer_classname = "ProcessCommandsProto";
+option java_package="org.spine3.samples.lobby.registration.procman";
+option java_outer_classname = "ProcessManagerCommandsProto";
 option java_multiple_files = true;
 
-import "spine/samples/lobby/registration/process/process.proto";
+import "spine/samples/lobby/registration/procman/procman.proto";
 
 // The request to stop a registration process.
 // Is sent when a reservation is confirmed.
 message ExpireRegistrationProcess {
-    // The ID of the process to expire.
-    spine.samples.lobby.registration.process.ProcessId process_id = 1;
+    // The ID of the process manager which must expire the process.
+    spine.samples.lobby.registration.procman.ProcessManagerId process_manager_id = 1;
 }

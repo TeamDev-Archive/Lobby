@@ -20,7 +20,8 @@
 
 package org.spine3.samples.lobby.registration.seat.availability;
 
-import org.spine3.server.aggregate.AggregateRepositoryBase;
+import org.spine3.server.BoundedContext;
+import org.spine3.server.aggregate.AggregateRepository;
 
 /**
  * The repository for SeatsAvailability aggregates.
@@ -28,7 +29,14 @@ import org.spine3.server.aggregate.AggregateRepositoryBase;
  * @see SeatsAvailabilityAggregate
  * @author Alexander Litus
  */
-@SuppressWarnings("EmptyClass")
-public class SeatsAvailabilityRepository extends AggregateRepositoryBase<SeatsAvailabilityId, SeatsAvailabilityAggregate> {
+public class SeatsAvailabilityRepository extends AggregateRepository<SeatsAvailabilityId, SeatsAvailabilityAggregate> {
 
+    /**
+     * Creates a new repository instance.
+     *
+     * @param boundedContext the bounded context to which this repository belongs
+     */
+    public SeatsAvailabilityRepository(BoundedContext boundedContext) {
+        super(boundedContext);
+    }
 }

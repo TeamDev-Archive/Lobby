@@ -22,7 +22,6 @@ package org.spine3.samples.lobby.registration.order;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.Duration;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
@@ -32,17 +31,26 @@ import org.spine3.protobuf.Durations;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
-import org.spine3.samples.lobby.registration.contracts.*;
+import org.spine3.samples.lobby.registration.contracts.OrderAccessCode;
+import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
+import org.spine3.samples.lobby.registration.contracts.OrderExpired;
+import org.spine3.samples.lobby.registration.contracts.OrderPartiallyReserved;
+import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
+import org.spine3.samples.lobby.registration.contracts.OrderRegistrantAssigned;
+import org.spine3.samples.lobby.registration.contracts.OrderReservationCompleted;
+import org.spine3.samples.lobby.registration.contracts.OrderTotal;
+import org.spine3.samples.lobby.registration.contracts.OrderTotalsCalculated;
+import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
+import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.util.Seats;
-import org.spine3.server.Assign;
-import org.spine3.server.Entity;
+import org.spine3.server.command.Assign;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
+import org.spine3.server.entity.Entity;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import static com.google.common.collect.Collections2.filter;
 import static com.google.protobuf.util.TimeUtil.add;
@@ -54,8 +62,8 @@ import static org.spine3.samples.lobby.registration.order.OrderValidator.*;
  *
  * @author Alexander Litus
  */
-@SuppressWarnings({"TypeMayBeWeakened", "OverlyCoupledClass", "ClassWithTooManyMethods"})
-public class OrderAggregate extends Aggregate<OrderId, Order> {
+@SuppressWarnings({"TypeMayBeWeakened", "OverlyCoupledClass"})
+public class OrderAggregate extends Aggregate<OrderId, Order, Order.Builder> {
 
     /**
      * The period in minutes after which the reservation expires.
@@ -65,10 +73,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     private static final Duration RESERVATION_EXPIRATION_PERIOD = Durations.ofMinutes(EXPIRATION_PERIOD_MINUTES);
 
     private static final int ACCESS_CODE_LENGTH = 8;
-
-    private static final ImmutableSet<Class<? extends Message>> STATE_NEUTRAL_EVENT_CLASSES =
-            ImmutableSet.<Class<? extends Message>>of(
-                    OrderTotalsCalculated.class, OrderExpired.class, OrderRegistrantAssigned.class);
 
     private OrderPricingService pricingService;
 
@@ -90,11 +94,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
      */
     public void setOrderPricingService(OrderPricingService service) {
         this.pricingService = service;
-    }
-
-    @Override
-    protected Order getDefaultState() {
-        return Order.getDefaultInstance();
     }
 
     @Assign
@@ -151,10 +150,12 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Assign
     public OrderConfirmed handle(ConfirmOrder command, CommandContext context) {
-        checkNotConfirmed(getState(), command);
+        final Order state = getState();
+        checkNotConfirmed(state, command);
         validateCommand(command);
         final OrderConfirmed result = OrderConfirmed.newBuilder()
                 .setOrderId(command.getOrderId())
+                .addAllSeat(state.getSeatList())
                 .build();
         return result;
     }
@@ -173,11 +174,10 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
 
     @Apply
     private void apply(OrderPlaced event) {
-        final Order.Builder state = Order.newBuilder()
+        getBuilder()
                 .setId(event.getOrderId())
                 .setConferenceId(event.getConferenceId())
                 .addAllSeat(event.getSeatList());
-        incrementState(state.build());
     }
 
     @Apply
@@ -196,17 +196,29 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
     }
 
     @Apply
+    private void apply(OrderTotalsCalculated event) {
+        final Money price = event.getTotal();
+        getBuilder().setPrice(price);
+    }
+
+    @Apply
+    private void apply(OrderExpired event) {
+        getBuilder().setIsExpired(true);
+    }
+
+    @Apply
+    private void apply(OrderRegistrantAssigned event) {
+        getBuilder().setRegistrant(event.getPersonalInfo());
+    }
+
+    @Apply
     private void apply(OrderConfirmed event) {
-        final Order.Builder state = getState().toBuilder();
-        state.setIsConfirmed(true);
-        incrementState(state.build());
+        getBuilder().setIsConfirmed(true);
     }
 
     private void updateSeats(List<SeatQuantity> newSeats) {
-        final Order.Builder state = getState().toBuilder();
-        state.clearSeat();
-        state.addAllSeat(newSeats);
-        incrementState(state.build());
+        getBuilder().clearSeat()
+                    .addAllSeat(newSeats);
     }
 
     private boolean isOrderPartiallyReserved(final List<SeatQuantity> reservedSeats) {
@@ -237,13 +249,6 @@ public class OrderAggregate extends Aggregate<OrderId, Order> {
         });
         return result;
     }
-
-    @Override
-    @SuppressWarnings({"RefusedBequest", "ReturnOfCollectionOrArrayField"/*it is immutable*/})
-    protected Set<Class<? extends Message>> getStateNeutralEventClasses() {
-        return STATE_NEUTRAL_EVENT_CLASSES;
-    }
-
 
     @Override
     @SuppressWarnings("RefusedBequest") // method from superclass does nothing

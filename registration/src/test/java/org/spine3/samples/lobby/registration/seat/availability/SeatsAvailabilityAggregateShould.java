@@ -23,7 +23,20 @@ package org.spine3.samples.lobby.registration.seat.availability;
 import org.junit.Test;
 import org.spine3.base.CommandContext;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
-import org.spine3.samples.lobby.registration.seat.availability.testcase.*;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.AddSeatsCmdHandling;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.AddedAvailableSeatsEventApplying;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.CancelSeatReservationCmdHandling;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.CommitSeatReservationCmdHandling;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.EnoughSeatsAndExistPendingReservations;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.EnoughSeatsAndNoPendingReservations;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.MakeSeatReservationCmdHandling;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.NotEnoughSeatsAndNoPendingReservations;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.RemoveSeatsCmdHandling;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.RemovedAvailableSeatsEventApplying;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.SeatsReservationCancelledEventApplying;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.SeatsReservationCommittedEventApplying;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.SeatsReservedEventApplying;
+import org.spine3.samples.lobby.registration.seat.availability.testcase.TestCase;
 
 import java.util.List;
 import java.util.Map;
@@ -36,10 +49,12 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
  * @author Alexander Litus
  */
 @SuppressWarnings({"InstanceMethodNamingConvention", "MagicNumber", "ClassWithTooManyMethods",
-        "LocalVariableNamingConvention", "OverlyCoupledClass"})
+        "OverlyCoupledClass"})
 public class SeatsAvailabilityAggregateShould {
 
-    private final TestSeatsAvailabilityAggregate defaultAggregate = new TestCase().givenAggregate();
+    private static final CommandContext CMD_CONTEXT = CommandContext.getDefaultInstance();
+
+    private final SeatsAvailabilityAggregate defaultAggregate = new TestCase().givenAggregate();
 
     /**
      * MakeSeatReservation command handling tests.
@@ -64,7 +79,7 @@ public class SeatsAvailabilityAggregateShould {
     }
 
     private static void makeSeatReservationCommandHandlingTest(MakeSeatReservationCmdHandling testCase) {
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final MakeSeatReservation cmd = testCase.givenCommand();
         final CommandContext context = testCase.givenCommandContext();
 
@@ -76,7 +91,7 @@ public class SeatsAvailabilityAggregateShould {
     @Test(expected = IllegalArgumentException.class)
     public void handle_MakeSeatReservation_command_and_throw_exception_if_it_is_empty() {
         final MakeSeatReservation cmd = MakeSeatReservation.getDefaultInstance();
-        defaultAggregate.handle(cmd, CommandContext.getDefaultInstance());
+        defaultAggregate.handle(cmd, CMD_CONTEXT);
     }
 
     @Test
@@ -164,7 +179,7 @@ public class SeatsAvailabilityAggregateShould {
     @Test
     public void handle_CommitSeatReservation_command_if_exists_pending_reservation() {
         final CommitSeatReservationCmdHandling testCase = new CommitSeatReservationCmdHandling.ExistsPendingReservation();
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final CommitSeatReservation cmd = testCase.givenCommand();
         final CommandContext context = testCase.givenCommandContext();
 
@@ -176,13 +191,13 @@ public class SeatsAvailabilityAggregateShould {
     @Test(expected = IllegalArgumentException.class)
     public void handle_CommitSeatReservation_command_and_throw_exception_if_it_is_empty() {
         final CommitSeatReservation cmd = CommitSeatReservation.getDefaultInstance();
-        defaultAggregate.handle(cmd, CommandContext.getDefaultInstance());
+        defaultAggregate.handle(cmd, CMD_CONTEXT);
     }
 
     @Test(expected = IllegalStateException.class)
     public void handle_CommitSeatReservation_command_and_throw_exception_if_no_pending_reservation_exists() {
         final CommitSeatReservationCmdHandling testCase = new CommitSeatReservationCmdHandling.EmptyState();
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final CommitSeatReservation cmd = testCase.givenCommand();
         final CommandContext context = testCase.givenCommandContext();
 
@@ -196,7 +211,7 @@ public class SeatsAvailabilityAggregateShould {
     @Test
     public void handle_CancelSeatReservation_command_if_exists_pending_reservation() {
         final CancelSeatReservationCmdHandling testCase = new CancelSeatReservationCmdHandling.ExistsPendingReservation();
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final CancelSeatReservation cmd = testCase.givenCommand();
         final CommandContext context = testCase.givenCommandContext();
 
@@ -208,13 +223,13 @@ public class SeatsAvailabilityAggregateShould {
     @Test(expected = IllegalArgumentException.class)
     public void handle_CancelSeatReservation_command_and_throw_exception_if_it_is_empty() {
         final CancelSeatReservation cmd = CancelSeatReservation.getDefaultInstance();
-        defaultAggregate.handle(cmd, CommandContext.getDefaultInstance());
+        defaultAggregate.handle(cmd, CMD_CONTEXT);
     }
 
     @Test(expected = IllegalStateException.class)
     public void handle_CancelSeatReservation_command_and_throw_exception_if_no_pending_reservation_exists() {
         final CancelSeatReservationCmdHandling testCase = new CancelSeatReservationCmdHandling.EmptyState();
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final CancelSeatReservation cmd = testCase.givenCommand();
         final CommandContext context = testCase.givenCommandContext();
 
@@ -228,7 +243,7 @@ public class SeatsAvailabilityAggregateShould {
     @Test
     public void handle_AddSeats_command() {
         final AddSeatsCmdHandling testCase = new AddSeatsCmdHandling();
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final AddSeats cmd = testCase.givenCommand();
         final CommandContext context = testCase.givenCommandContext();
 
@@ -240,7 +255,7 @@ public class SeatsAvailabilityAggregateShould {
     @Test(expected = IllegalArgumentException.class)
     public void handle_AddSeats_command_and_throw_exception_if_it_is_empty() {
         final AddSeats cmd = AddSeats.getDefaultInstance();
-        defaultAggregate.handle(cmd, CommandContext.getDefaultInstance());
+        defaultAggregate.handle(cmd, CMD_CONTEXT);
     }
 
     /**
@@ -250,7 +265,7 @@ public class SeatsAvailabilityAggregateShould {
     @Test
     public void handle_RemoveSeats_command() {
         final RemoveSeatsCmdHandling testCase = new RemoveSeatsCmdHandling();
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final RemoveSeats cmd = testCase.givenCommand();
         final CommandContext context = testCase.givenCommandContext();
 
@@ -262,7 +277,7 @@ public class SeatsAvailabilityAggregateShould {
     @Test(expected = IllegalStateException.class)
     public void handle_RemoveSeats_command_and_throw_exception_if_no_such_available_seat_exists() {
         final RemoveSeatsCmdHandling testCase = new RemoveSeatsCmdHandling.EmptyState();
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final RemoveSeats cmd = testCase.givenCommand();
         final CommandContext context = testCase.givenCommandContext();
 
@@ -272,7 +287,7 @@ public class SeatsAvailabilityAggregateShould {
     @Test(expected = IllegalArgumentException.class)
     public void handle_RemoveSeats_command_and_throw_exception_if_it_is_empty() {
         final RemoveSeats cmd = RemoveSeats.getDefaultInstance();
-        defaultAggregate.handle(cmd, CommandContext.getDefaultInstance());
+        defaultAggregate.handle(cmd, CMD_CONTEXT);
     }
 
     /**
@@ -282,11 +297,11 @@ public class SeatsAvailabilityAggregateShould {
     @Test
     public void apply_SeatsReserved_event_and_update_state() {
         final SeatsReservedEventApplying testCase = new SeatsReservedEventApplying();
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final SeatsReserved event = testCase.givenEvent();
         final String reservationId = event.getReservationId().getUuid();
 
-        aggregate.apply(event);
+        aggregate.applyForTest(event, CMD_CONTEXT);
 
         final SeatsAvailability state = aggregate.getState();
         assertEquals(event.getAvailableSeatUpdatedList(), state.getAvailableSeatList());
@@ -298,9 +313,9 @@ public class SeatsAvailabilityAggregateShould {
     public void apply_SeatsReservationCommitted_event_and_remove_pending_reservation() {
         final SeatsReservationCommittedEventApplying testCase = new SeatsReservationCommittedEventApplying();
         final SeatsReservationCommitted event = testCase.givenEvent();
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
 
-        aggregate.apply(event);
+        aggregate.applyForTest(event, CMD_CONTEXT);
 
         final Map<String, SeatQuantities> pendingReservations = aggregate.getState().getPendingReservations();
         assertEquals(0, pendingReservations.size());
@@ -310,9 +325,9 @@ public class SeatsAvailabilityAggregateShould {
     public void apply_SeatsReservationCancelled_event_and_remove_pending_reservation_and_update_available_seats() {
         final SeatsReservationCancelledEventApplying testCase = new SeatsReservationCancelledEventApplying();
         final SeatsReservationCancelled event = testCase.givenEvent();
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
 
-        aggregate.apply(event);
+        aggregate.applyForTest(event, CMD_CONTEXT);
 
         final SeatsAvailability state = aggregate.getState();
         final Map<String, SeatQuantities> pendingReservations = state.getPendingReservations();
@@ -326,10 +341,10 @@ public class SeatsAvailabilityAggregateShould {
     @Test
     public void apply_AddedAvailableSeats_event_and_add_new_seat_type_if_no_such_type_existed() {
         final AddedAvailableSeatsEventApplying testCase = new AddedAvailableSeatsEventApplying.AddingNewSeatType();
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final AddedAvailableSeats event = testCase.givenEvent();
 
-        aggregate.apply(event);
+        aggregate.applyForTest(event, CMD_CONTEXT);
 
         final SeatsAvailability state = aggregate.getState();
         final SeatQuantity addedQuantity = event.getQuantity();
@@ -340,10 +355,10 @@ public class SeatsAvailabilityAggregateShould {
     @Test
     public void apply_AddedAvailableSeats_event_and_update_existing_seat_type() {
         final AddedAvailableSeatsEventApplying testCase = new AddedAvailableSeatsEventApplying.UpdatingSeatType();
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final AddedAvailableSeats event = testCase.givenEvent();
 
-        aggregate.apply(event);
+        aggregate.applyForTest(event, CMD_CONTEXT);
 
         final List<SeatQuantity> availableSeatsUpdated = aggregate.getState().getAvailableSeatList();
         final SeatQuantity primarySeat = testCase.getPrimarySeat();
@@ -373,10 +388,10 @@ public class SeatsAvailabilityAggregateShould {
 
     private static void applyRemovedAvailableSeatsEventTest(RemovedAvailableSeatsEventApplying testCase,
                                                             int expectedNewQuantity) {
-        final TestSeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
+        final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final RemovedAvailableSeats event = testCase.givenEvent();
 
-        aggregate.apply(event);
+        aggregate.applyForTest(event, CMD_CONTEXT);
 
         final List<SeatQuantity> availableSeatsUpdated = aggregate.getState().getAvailableSeatList();
         final SeatQuantity primaryQuantity = testCase.getPrimarySeat();

@@ -25,9 +25,9 @@ import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.util.Seats;
-import org.spine3.server.Assign;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
+import org.spine3.server.command.Assign;
 
 import java.util.List;
 import java.util.Map;
@@ -44,7 +44,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
  * @author Alexander Litus
  */
 @SuppressWarnings({"TypeMayBeWeakened"/** "OrBuilder" parameters are not applicable*/, "OverlyCoupledClass"})
-public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, SeatsAvailability> {
+public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, SeatsAvailability, SeatsAvailability.Builder> {
 
     /**
      * Creates a new instance.
@@ -54,11 +54,6 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
      */
     public SeatsAvailabilityAggregate(SeatsAvailabilityId id) {
         super(id);
-    }
-
-    @Override
-    protected SeatsAvailability getDefaultState() {
-        return SeatsAvailability.getDefaultInstance();
     }
 
     @Assign
@@ -93,7 +88,6 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         validateState(state, cmd);
 
         final ReservationId reservationId = cmd.getReservationId();
-        //noinspection LocalVariableNamingConvention
         final List<SeatQuantity> availableSeatsUpdated = newLinkedList(state.getAvailableSeatList());
         final SeatQuantities unreservedSeats = state.getPendingReservations().get(reservationId.getUuid());
         availableSeatsUpdated.addAll(unreservedSeats.getItemList());
@@ -128,47 +122,35 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
 
     @Apply
     private void apply(SeatsReserved event) {
-        final SeatsAvailability.Builder state = getState().toBuilder();
-
+        final SeatsAvailability.Builder state = getBuilder();
         state.clearAvailableSeat();
         state.addAllAvailableSeat(event.getAvailableSeatUpdatedList());
-
         final Map<String, SeatQuantities> pendingReservations = state.getMutablePendingReservations();
         final String reservationId = event.getReservationId().getUuid();
         pendingReservations.put(reservationId, newSeatQuantities(event.getReservedSeatUpdatedList()));
-
-        incrementState(state.build());
     }
 
     @Apply
     private void apply(SeatsReservationCommitted event) {
-        final SeatsAvailability.Builder state = getState().toBuilder();
-
+        final SeatsAvailability.Builder state = getBuilder();
         final Map<String, SeatQuantities> pendingReservations = state.getMutablePendingReservations();
         final String reservationId = event.getReservationId().getUuid();
         pendingReservations.remove(reservationId);
-
-        incrementState(state.build());
     }
 
     @Apply
     private void apply(SeatsReservationCancelled event) {
-        final SeatsAvailability.Builder state = getState().toBuilder();
-
+        final SeatsAvailability.Builder state = getBuilder();
         final Map<String, SeatQuantities> pendingReservations = state.getMutablePendingReservations();
         final String reservationId = event.getReservationId().getUuid();
         pendingReservations.remove(reservationId);
-
         state.clearAvailableSeat();
         state.addAllAvailableSeat(event.getAvailableSeatUpdatedList());
-
-        incrementState(state.build());
     }
 
     @Apply
     private void apply(AddedAvailableSeats event) {
-        final SeatsAvailability.Builder state = getState().toBuilder();
-
+        final SeatsAvailability.Builder state = getBuilder();
         final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
         final SeatQuantity addedQuantity = event.getQuantity();
         final SeatTypeId seatTypeId = addedQuantity.getSeatTypeId();
@@ -180,14 +162,11 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         } else {
             state.addAvailableSeat(addedQuantity);
         }
-
-        incrementState(state.build());
     }
 
     @Apply
     private void apply(RemovedAvailableSeats event) {
-        final SeatsAvailability.Builder state = getState().toBuilder();
-
+        final SeatsAvailability.Builder state = getBuilder();
         final SeatQuantity removedQuantity = event.getQuantity();
         final SeatTypeId seatTypeId = removedQuantity.getSeatTypeId();
         final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
@@ -195,8 +174,6 @@ public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, S
         final int indexOfOldValue = availableSeats.indexOf(existingOne);
         final int newQuantity = calculateNewQuantity(removedQuantity, existingOne);
         state.setAvailableSeat(indexOfOldValue, newSeatQuantity(seatTypeId, newQuantity));
-
-        incrementState(state.build());
     }
 
     private static int calculateNewQuantity(SeatQuantity removedQuantity, SeatQuantity existingOne) {

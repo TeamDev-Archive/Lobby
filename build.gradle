@@ -1,37 +1,34 @@
 project.ext {
-    PROTOBUF_VERSION = '3.0.0-beta-1';
-    PROTOBUF_DEPENDENCY = "com.google.protobuf:protoc:${project.PROTOBUF_VERSION}";
+    SPINE_VERSION = '0.3-SNAPSHOT'
+    PROTOBUF_VERSION = '3.0.0-beta-1'
+    PROTOBUF_DEPENDENCY = "com.google.protobuf:protoc:${project.PROTOBUF_VERSION}"
+    MAVEN_REPOSITORY_URL = 'http://maven.teamdev.com/repository/spine'
+    MAVEN_SNAPSHOTS_REPOSITORY_URL = 'http://maven.teamdev.com/repository/spine-snapshots'
 }
 
 buildscript {
-    configurations.all {
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    }
     repositories {
         mavenCentral()
-        mavenLocal()
     }
     dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.7.0'
-        classpath group: 'org.spine3.tools', name: 'proto-lookup-plugin', version: '1.0', changing: true
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.7.4'
     }
 }
 
 allprojects {
-    apply plugin: 'java';
-    apply plugin: 'maven';
+    apply plugin: 'maven'
+    apply plugin: 'jacoco'
 
-    group = 'sample.lobby';
-    version = '0.1';
+    group = 'sample.lobby'
+    version = '0.1'
 }
 
 subprojects {
-    apply plugin: 'java';
-    apply plugin: 'com.google.protobuf';
-    apply plugin: 'org.spine3.tools.protolookup';
+    apply plugin: 'java'
+    apply plugin: 'com.google.protobuf'
 
-    sourceCompatibility = 1.7;
-    targetCompatibility = 1.7;
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
 
     // Set Java home to point to JDK7 in gradle.properties file.
     //
@@ -41,15 +38,26 @@ subprojects {
     // org.gradle.java.home=/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/
 
     repositories {
-        mavenLocal()
         mavenCentral()
+        maven {
+            url = project.MAVEN_SNAPSHOTS_REPOSITORY_URL
+        }
+    }
+
+    buildscript {
+        repositories {
+            mavenCentral()
+            maven {
+                url = project.MAVEN_REPOSITORY_URL
+            }
+        }
     }
 
     dependencies {
-        // TODO:2015-11-16:alexander.litus: change Spine local dependency to Maven central repository dependency
-        // when Spine can be used for evaluation in real projects.
         // Spine
-        compile group: 'org.spine3', name: 'core-java', version: '0.2', changing: true
+        compile group: 'org.spine3', name: 'server', version: project.SPINE_VERSION, changing: true
+        compile group: 'org.spine3', name: 'client', version: project.SPINE_VERSION, changing: true
+        compile group: 'org.spine3', name: 'values', version: project.SPINE_VERSION, changing: true
 
         // Guava
         compile group: 'com.google.guava', name: 'guava', version: '19.0'
@@ -70,12 +78,17 @@ subprojects {
             exclude(module: 'hamcrest-core')
         }
         testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
+        testCompile group: 'org.mockito', name: 'mockito-core', version: '2.+'
     }
 
-    final String SRC_ROOT_DIR = "$projectDir/src";
-    final String GEN_ROOT_DIR = "$projectDir/generated";
-    final String GEN_MAIN_JAVA_DIR = "${GEN_ROOT_DIR}/main/java";
-    final String GEN_TEST_JAVA_DIR = "${GEN_ROOT_DIR}/test/java";
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
+    final String SRC_ROOT_DIR = "$projectDir/src"
+    final String GEN_ROOT_DIR = "$projectDir/generated"
+    final String GEN_MAIN_JAVA_DIR = "${GEN_ROOT_DIR}/main/java"
+    final String GEN_TEST_JAVA_DIR = "${GEN_ROOT_DIR}/test/java"
 
     sourceSets {
         main {
@@ -95,5 +108,21 @@ subprojects {
         protoc {
             artifact = project.PROTOBUF_DEPENDENCY
         }
+        generateProtoTasks {
+            all().each { final task ->
+                task.generateDescriptorSet = true
+                task.descriptorSetOptions.path = "${projectDir}/build/descriptors/${task.sourceSet.name}.desc"
+                task.descriptorSetOptions.includeImports = true
+            }
+        }
     }
+
+    jacocoTestReport {
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
+    }
+
+    check.dependsOn jacocoTestReport
 }

@@ -22,7 +22,7 @@ package org.spine3.samples.lobby.registration.seat.availability.testcase;
 
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailability;
-import org.spine3.samples.lobby.registration.seat.availability.TestSeatsAvailabilityAggregate;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityAggregate;
 
 import java.util.List;
 
@@ -35,12 +35,12 @@ import static org.junit.Assert.assertTrue;
 public class EnoughSeatsAndNoPendingReservations extends MakeSeatReservationCmdHandling {
 
     @Override
-    public TestSeatsAvailabilityAggregate givenAggregate() {
-        final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
+    public SeatsAvailabilityAggregate givenAggregate() {
+        final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
         final SeatsAvailability state = aggregate.getState().toBuilder()
                 .addAllAvailableSeat(getAvailableSeats())
                 .build();
-        aggregate.incrementState(state);
+        aggregate.incrementStateForTest(state);
         return aggregate;
     }
 

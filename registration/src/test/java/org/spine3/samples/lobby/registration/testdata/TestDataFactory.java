@@ -20,15 +20,29 @@
 
 package org.spine3.samples.lobby.registration.testdata;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.Message;
-import com.google.protobuf.util.TimeUtil;
-import org.spine3.base.*;
-import org.spine3.eventbus.EventBus;
+import com.google.protobuf.Timestamp;
+import org.spine3.base.CommandContext;
+import org.spine3.base.CommandId;
+import org.spine3.base.Commands;
+import org.spine3.base.EmailAddress;
+import org.spine3.base.Event;
+import org.spine3.base.EventContext;
+import org.spine3.base.EventId;
+import org.spine3.base.Events;
+import org.spine3.base.PersonName;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.server.BoundedContext;
-import org.spine3.server.CommandDispatcher;
+import org.spine3.server.command.CommandBus;
+import org.spine3.server.command.CommandStore;
+import org.spine3.server.command.ExecutorCommandScheduler;
+import org.spine3.server.event.EventBus;
+import org.spine3.server.event.EventStore;
+import org.spine3.server.storage.StorageFactory;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
+import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static org.spine3.protobuf.Messages.toAny;
 
 /**
@@ -44,15 +58,38 @@ public class TestDataFactory {
 
     /**
      * Creates a new {@link BoundedContext} instance with {@link InMemoryStorageFactory},
-     * {@link CommandDispatcher} and {@link EventBus}.
+     * {@link CommandBus} and {@link EventBus}.
      */
     public static BoundedContext newBoundedContext() {
+        final InMemoryStorageFactory storageFactory = InMemoryStorageFactory.getInstance();
+        final EventStore eventStore = EventStore.newBuilder()
+                .setStreamExecutor(MoreExecutors.directExecutor())
+                .setStorage(storageFactory.createEventStorage())
+                .build();
+        final CommandBus commandBus = newCommandBus(storageFactory);
         final BoundedContext.Builder result = BoundedContext.newBuilder()
                 .setName("Orders & Registrations tests")
-                .setStorageFactory(InMemoryStorageFactory.getInstance())
-                .setCommandDispatcher(CommandDispatcher.getInstance())
-                .setEventBus(EventBus.newInstance());
+                .setStorageFactory(storageFactory)
+                .setCommandBus(commandBus)
+                .setEventBus(EventBus.newInstance(eventStore));
         return result.build();
+    }
+
+    /**
+     * Creates a new command bus with {@link InMemoryStorageFactory}.
+     */
+    public static CommandBus newCommandBus() {
+        final InMemoryStorageFactory storageFactory = InMemoryStorageFactory.getInstance();
+        return newCommandBus(storageFactory);
+    }
+
+    private static CommandBus newCommandBus(StorageFactory storageFactory) {
+        final CommandStore store = new CommandStore(storageFactory.createCommandStorage());
+        final CommandBus.Builder builder = CommandBus.newBuilder();
+        builder.setCommandStore(store);
+        // TODO:2016-04-08:alexander.litus: change to App Engine-compatible scheduler
+        builder.setScheduler(new ExecutorCommandScheduler());
+        return builder.build();
     }
 
     /**
@@ -66,18 +103,21 @@ public class TestDataFactory {
     }
 
     /**
-     * Creates a new {@link EventRecord} instance with the given {@code event}, and {@code aggregateId}.
+     * Creates a new {@link Event} instance with the given {@code event}, and {@code aggregateId}.
      */
-    public static EventRecord newEventRecord(Message event, Message aggregateId) {
-        final CommandId commandId = CommandId.newBuilder().setTimestamp(TimeUtil.getCurrentTime()).build();
-        final EventId eventId = EventId.newBuilder().setCommandId(commandId).build();
-        final EventContext context = EventContext.newBuilder()
-                .setAggregateId(toAny(aggregateId))
+    public static Event newEvent(Message event) {
+        final CommandId commandId = Commands.generateId();
+        final EventId eventId = Events.generateId();
+        final CommandContext commandContext = CommandContext.newBuilder().setCommandId(commandId).build();
+        final Timestamp currentTime = getCurrentTime();
+        final EventContext eventContext = EventContext.newBuilder()
+                .setCommandContext(commandContext)
                 .setEventId(eventId)
+                .setTimestamp(currentTime)
                 .build();
-        final EventRecord.Builder result = EventRecord.newBuilder()
-                .setContext(context)
-                .setEvent(toAny(event));
+        final Event.Builder result = Event.newBuilder()
+                .setContext(eventContext)
+                .setMessage(toAny(event));
         return result.build();
     }
 }

@@ -24,7 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.seat.availability.SeatQuantities;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailability;
-import org.spine3.samples.lobby.registration.seat.availability.TestSeatsAvailabilityAggregate;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityAggregate;
 
 import java.util.List;
 
@@ -50,13 +50,13 @@ public class EnoughSeatsAndExistPendingReservations extends MakeSeatReservationC
                     ).build();
 
     @Override
-    public TestSeatsAvailabilityAggregate givenAggregate() {
-        final TestSeatsAvailabilityAggregate aggregate = super.givenAggregate();
+    public SeatsAvailabilityAggregate givenAggregate() {
+        final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
         final SeatsAvailability state = aggregate.getState().toBuilder()
                 .addAllAvailableSeat(getAvailableSeats())
                 .putAllPendingReservations(PENDING_RESERVATIONS)
                 .build();
-        aggregate.incrementState(state);
+        aggregate.incrementStateForTest(state);
         return aggregate;
     }
 

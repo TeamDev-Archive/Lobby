@@ -28,6 +28,8 @@ option java_multiple_files = true;
 import "spine/samples/lobby/common/common.proto";
 import "spine/samples/lobby/registration/contracts/registration.proto";
 
+// TODO:2016-02-29:alexander.litus: add SeatsAvailabilityIds
+
 // The request to reserve one or more seats.
 // Is sent from a RegistrationProcessManager to a SeatsAvailability aggregate when the order is placed/updated.
 message MakeSeatReservation {

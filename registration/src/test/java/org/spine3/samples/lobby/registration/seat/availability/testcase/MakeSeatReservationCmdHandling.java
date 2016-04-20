@@ -32,16 +32,15 @@ import org.spine3.samples.lobby.registration.seat.availability.SeatsReserved;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
-import static org.spine3.samples.lobby.common.util.IdFactory.newReservationId;
+import static org.spine3.base.Identifiers.newUuid;
+import static org.spine3.samples.lobby.common.util.IdFactory.*;
 import static org.spine3.samples.lobby.registration.util.Seats.findById;
 import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
-import static org.spine3.util.Identifiers.newUuid;
 
 /**
  * @author Alexander Litus
  */
-@SuppressWarnings({"TypeMayBeWeakened", "LocalVariableNamingConvention"})
+@SuppressWarnings("TypeMayBeWeakened")
 public abstract class MakeSeatReservationCmdHandling extends TestCase {
 
     private static final ConferenceId CONFERENCE_ID = newConferenceId();
@@ -62,6 +61,9 @@ public abstract class MakeSeatReservationCmdHandling extends TestCase {
         return AVAILABLE_SEATS;
     }
 
+    /**
+     * A test utility class providing commands.
+     */
     @SuppressWarnings("UtilityClass")
     public static class Command {
 
@@ -110,9 +112,5 @@ public abstract class MakeSeatReservationCmdHandling extends TestCase {
         final int expectedWorkshopSeatCount = WORKSHOP_SEAT_COUNT_AVAILABLE - Command.WORKSHOP_SEAT_COUNT_REQUESTED;
         final SeatQuantity workshopSeatAvailable = findById(availableSeats, WORKSHOP_SEAT_TYPE_ID);
         assertEquals(expectedWorkshopSeatCount, workshopSeatAvailable.getQuantity());
-    }
-
-    private static SeatTypeId newSeatTypeId(String uuid) {
-        return SeatTypeId.newBuilder().setUuid(uuid).build();
     }
 }

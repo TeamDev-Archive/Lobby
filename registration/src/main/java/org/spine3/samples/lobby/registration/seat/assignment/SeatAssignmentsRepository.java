@@ -18,47 +18,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration.order;
+package org.spine3.samples.lobby.registration.seat.assignment;
 
-import org.spine3.samples.lobby.common.OrderId;
+import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsId;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.aggregate.AggregateRepository;
 
-import javax.annotation.Nonnull;
-
 /**
- * The repository for order aggregates.
+ * The repository managing {@link SeatAssignmentsAggregate}s.
  *
- * @see OrderAggregate
  * @author Alexander Litus
  */
-public class OrderRepository extends AggregateRepository<OrderId, OrderAggregate> {
-
-    private final OrderPricingService orderPricingService;
+public class SeatAssignmentsRepository extends AggregateRepository<SeatAssignmentsId, SeatAssignmentsAggregate> {
 
     /**
      * Creates a new repository instance.
      *
      * @param boundedContext the bounded context to which this repository belongs
-     * @param orderPricingService the pricing service to inject to order aggregates
      */
-    public OrderRepository(BoundedContext boundedContext, OrderPricingService orderPricingService) {
+    public SeatAssignmentsRepository(BoundedContext boundedContext) {
         super(boundedContext);
-        this.orderPricingService = orderPricingService;
-    }
-
-    /**
-     * Loads an aggregate by an ID and injects required services to it.
-     *
-     * @param id id of the aggregate to load
-     * @return the loaded object
-     * @throws IllegalStateException if the repository wasn't configured prior to calling this method
-     */
-    @Nonnull
-    @Override
-    public OrderAggregate load(OrderId id) throws IllegalStateException {
-        final OrderAggregate order = super.load(id);
-        order.setOrderPricingService(orderPricingService);
-        return order;
     }
 }
