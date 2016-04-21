@@ -90,22 +90,26 @@ subprojects {
 
     final String SRC_ROOT_DIR = "$projectDir/src"
     final String GEN_ROOT_DIR = "$projectDir/generated"
-    final String GEN_MAIN_JAVA_DIR = "${GEN_ROOT_DIR}/main/java"
-    final String GEN_TEST_JAVA_DIR = "${GEN_ROOT_DIR}/test/java"
 
     idea.module {
         generatedSourceDirs += file("${GEN_ROOT_DIR}/main/grpc");
+        generatedSourceDirs += file("${GEN_ROOT_DIR}/generated/main/java");
+        generatedSourceDirs += file("${GEN_ROOT_DIR}/generated/main/spine");
     }
 
     sourceSets {
         main {
             proto.srcDirs = ["${SRC_ROOT_DIR}/main/proto"]
-            java.srcDirs = [GEN_MAIN_JAVA_DIR, "${SRC_ROOT_DIR}/main/java", "${GEN_ROOT_DIR}/main/grpc"]
+            java.srcDirs = ["${GEN_ROOT_DIR}/main/java",
+                            "${GEN_ROOT_DIR}/main/spine",
+                            "${SRC_ROOT_DIR}/main/java",
+                            "${GEN_ROOT_DIR}/main/grpc"]
             resources.srcDirs = ["${GEN_ROOT_DIR}/main/resources"]
         }
         test {
             proto.srcDirs = ["${SRC_ROOT_DIR}/test/proto"]
-            java.srcDirs = [GEN_TEST_JAVA_DIR, "${SRC_ROOT_DIR}/test/java"]
+            java.srcDirs = ["${GEN_ROOT_DIR}/test/java",
+                            "${SRC_ROOT_DIR}/test/java"]
             resources.srcDirs = ["${GEN_ROOT_DIR}/test/resources"]
         }
     }

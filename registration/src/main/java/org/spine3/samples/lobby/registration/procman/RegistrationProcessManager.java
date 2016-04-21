@@ -21,6 +21,7 @@
 package org.spine3.samples.lobby.registration.procman;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.protobuf.Any;
 import com.google.protobuf.Duration;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
@@ -198,10 +199,11 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
         incrementState(newState);
     }
 
-    private IllegalProcessStateFailure newIllegalProcessStateFailure(Message messageHandled) {
+    private IllegalProcessStateFailure newIllegalProcessStateFailure(Message msgHandled) {
         final ProcessManagerId id = getId();
         final RegistrationProcess.State processState = getState().getProcessState();
-        final IllegalProcessStateFailure result = new IllegalProcessStateFailure(id, processState, messageHandled);
+        final Any msgAny = Any.pack(msgHandled);
+        final IllegalProcessStateFailure result = new IllegalProcessStateFailure(id, processState, msgAny);
         return result;
     }
 
