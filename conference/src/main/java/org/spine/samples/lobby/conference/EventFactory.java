@@ -29,7 +29,7 @@ import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
  * @author andrii.loboda
  */
 @SuppressWarnings("UtilityClass")
-class EventFactory {
+/* package */ class EventFactory {
     private EventFactory() {
     }
 

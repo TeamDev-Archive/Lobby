@@ -161,10 +161,7 @@ public class ConferenceServiceShould {
                 final Function<UpdateConferenceResponse, Void> checkConferenceUpdated = new Function<UpdateConferenceResponse, Void>() {
                     @Override
                     public Void apply(UpdateConferenceResponse input) {
-
                         Assert.assertEquals(input.getId(), id);
-
-
                         return NO_RESULT;
                     }
                 };
@@ -196,18 +193,18 @@ public class ConferenceServiceShould {
         };
 
 
+        final Function<Void, Void> onCompleteUpdate = new Function<Void, Void>() {
+            @Override
+            public Void apply(Void input) {
+                assertTrue(accumulatedMessages.contains(ConferenceCreated.class));
+                assertTrue(accumulatedMessages.contains(ConferenceUpdated.class));
+                return NO_RESULT;
+            }
+        };
 
         final TestStreamObserver conferenceUpdatedObserver = TestStreamObserver.<Event>newBuilder()
                                                                                .setNextFunction(checkConferenceUpdated)
-                .setOnCompleteFunction(new Function<Void, Void>() {
-                    @Nullable
-                    @Override
-                    public Void apply(Void input) {
-                        assertTrue(accumulatedMessages.contains(ConferenceCreated.class));
-                        assertTrue(accumulatedMessages.contains(ConferenceUpdated.class));
-                        return NO_RESULT;
-                    }
-                })
+                                                                               .setOnCompleteFunction(onCompleteUpdate)
                                                                                .build();
         //noinspection unchecked
         eventStore.read(EventStreamQuery.newBuilder()

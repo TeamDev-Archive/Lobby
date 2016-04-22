@@ -21,6 +21,7 @@
 package org.spine.samples.lobby.conference;
 
 import com.google.common.collect.ImmutableList;
+import com.google.protobuf.Message;
 import io.grpc.stub.StreamObserver;
 import org.spine3.base.Event;
 import org.spine3.base.EventContext;
@@ -71,7 +72,8 @@ public class ConferenceServiceImpl implements ConferenceService {
                                                          .build();
         conferenceRepository.store(conferenceToPersist);
 
-        sendConferenceCreatedEvent(conferenceToPersist);
+        final ConferenceCreated conferenceCreatedEvent = EventFactory.conferenceCreated(conference);
+        sendEvent(conference, conferenceCreatedEvent);
 
         final CreateConferenceResponse build = CreateConferenceResponse.newBuilder()
                                                                        .setId(conferenceToPersist.getId())
@@ -95,14 +97,16 @@ public class ConferenceServiceImpl implements ConferenceService {
     public void updateConference(EditableConferenceInfo request, StreamObserver<UpdateConferenceResponse> responseObserver) {
         final Conference existingConference = conferenceRepository.load(request.getId());
 
-        checkNotNull(existingConference, "Can't finde conference with specified id: " + request.getId());
+        checkNotNull(existingConference, "Can't find the conference with specified id: " + request.getId());
 
-        final Conference updatedConference = updateFromConferenceInfo(existingConference, request);
-        conferenceRepository.store(updatedConference);
+        final Conference conference = updateFromConferenceInfo(existingConference, request);
+        conferenceRepository.store(conference);
 
-        sendConferenceUpdatedEvent(updatedConference);
+        final ConferenceUpdated conferenceUpdatedEvent = EventFactory.conferenceUpdated(conference);
+        sendEvent(conference, conferenceUpdatedEvent);
+
         final UpdateConferenceResponse response = UpdateConferenceResponse.newBuilder()
-                                                                          .setId(updatedConference.getId())
+                                                                          .setId(conference.getId())
                                                                           .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -125,9 +129,11 @@ public class ConferenceServiceImpl implements ConferenceService {
                                                                       .setIsPublished(true)
                                                                       .build();
 
-            sendConferencePublishedEvent(publishedConference);
+            final ConferencePublished conferencePublishedEvent = EventFactory.conferencePublished(publishedConference);
+            sendEvent(publishedConference, conferencePublishedEvent);
+
             final PublishConferenceResponse response = PublishConferenceResponse.newBuilder()
-                                                                                .setId(conference.getId())
+                                                                                .setId(publishedConference.getId())
                                                                                 .build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
@@ -140,37 +146,11 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
 
-    private void sendConferenceCreatedEvent(Conference createdConference) {
-        final ImmutableList.Builder<Event> result = ImmutableList.builder();
-        final ConferenceCreated conferenceCreatedEvent = EventFactory.conferenceCreated(createdConference);
-        final EventContext conferenceEventContext = EventUtils.createConferenceEventContext(createdConference.getId());
-        result.add(Events.createEvent(conferenceCreatedEvent, conferenceEventContext));
-
-        sendEvents(result.build());
-    }
-
-    //TODO:2016-04-22:andrii.loboda: get rid of copy-paste
-    private void sendConferenceUpdatedEvent(Conference conference) {
-        final ImmutableList.Builder<Event> result = ImmutableList.builder();
-        final ConferenceUpdated conferenceUpdatedEvent = EventFactory.conferenceUpdated(conference);
+    private void sendEvent(Conference conference, Message ... messages) {
         final EventContext conferenceEventContext = EventUtils.createConferenceEventContext(conference.getId());
-        result.add(Events.createEvent(conferenceUpdatedEvent, conferenceEventContext));
 
-        sendEvents(result.build());
-    }
-
-    private void sendConferencePublishedEvent(Conference conference) {
-        final ImmutableList.Builder<Event> result = ImmutableList.builder();
-        final ConferencePublished conferencePublishedEvent = EventFactory.conferencePublished(conference);
-        final EventContext conferenceEventContext = EventUtils.createConferenceEventContext(conference.getId());
-        result.add(Events.createEvent(conferencePublishedEvent, conferenceEventContext));
-
-        sendEvents(result.build());
-    }
-
-
-    private void sendEvents(Iterable<Event> eventsToSend) {
-        for (Event event : eventsToSend) {
+        for (Message message : messages) {
+            final Event event = Events.createEvent(message, conferenceEventContext);
             boundedContext.getEventBus()
                           .post(event);
         }
