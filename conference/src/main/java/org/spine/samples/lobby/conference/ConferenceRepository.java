@@ -47,7 +47,7 @@ public class ConferenceRepository {
     }
 
     @Nullable
-    public Conference loadByEmailAndAccessCode(EmailAddress emailAddress, String accessCode) {
+    public Conference load(EmailAddress emailAddress, String accessCode) {
         for (Conference conference : store.values()) {
             final boolean emailMatches = conference.getOwner()
                                                    .getEmail()

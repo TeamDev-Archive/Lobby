@@ -86,7 +86,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 
     @Override
     public void findConference(FindConferenceRequest request, StreamObserver<Conference> responseObserver) {
-        final Conference conference = conferenceRepository.loadByEmailAndAccessCode(request.getEmailAddress(), request.getAccessCode());
+        final Conference conference = conferenceRepository.load(request.getEmailAddress(), request.getAccessCode());
 
         responseObserver.onNext(conference);
         responseObserver.onCompleted();
