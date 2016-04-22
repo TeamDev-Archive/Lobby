@@ -42,7 +42,6 @@ import org.spine3.server.BoundedContext;
 import org.spine3.server.event.EventStore;
 import org.spine3.server.event.EventStreamQuery;
 
-import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,7 +54,7 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings("InstanceMethodNamingConvention")
 public class ConferenceServiceShould {
 
-    private final BoundedContext boundedContext = Given.boundedContext;
+    private final BoundedContext boundedContext = Given.BOUNDED_CONTEXT;
     private final ConferenceServiceGrpc.ConferenceService conferenceService = Given.getConferenceService();
     private static final Void NO_RESULT = null;
 
@@ -72,6 +71,7 @@ public class ConferenceServiceShould {
     }
 
 
+    @SuppressWarnings("unchecked")
     @Test
     public void create_conference_and_generate_ConferenceCreated_event() {
         conferenceService.createConference(given.conferenceInfo(), TestStreamObserver.<CreateConferenceResponse>newBuilder()
@@ -92,11 +92,13 @@ public class ConferenceServiceShould {
         final TestStreamObserver conferenceCreatedObserver = TestStreamObserver.<Event>newBuilder()
                                                                                .setNextFunction(checkConferenceCreated)
                                                                                .build();
-        //noinspection unchecked
+
         eventStore.read(EventStreamQuery.newBuilder()
                                         .build(), conferenceCreatedObserver);
     }
 
+
+    @SuppressWarnings("unchecked")
     @Test
     public void load_conference_by_email_and_access_code() {
 
@@ -127,7 +129,6 @@ public class ConferenceServiceShould {
                         return NO_RESULT;
                     }
                 };
-                //noinspection unchecked
                 conferenceService.findConference(build, TestStreamObserver.<Conference>newBuilder()
                                                                           .setNextFunction(checkConferenceCreated)
                                                                           .build());
@@ -135,13 +136,14 @@ public class ConferenceServiceShould {
                 return NO_RESULT;
             }
         };
-        //noinspection unchecked
         conferenceService.createConference(conferenceInfo, TestStreamObserver.<CreateConferenceResponse>newBuilder()
                                                                              .setNextFunction(createConferenceHandler)
                                                                              .build());
 
     }
 
+
+    @SuppressWarnings("unchecked")
     @Test
     public void update_conference_info_and_publish_ConferenceUpdated_event() {
         final ConferenceInfo conferenceInfo = given.conferenceInfo();
@@ -165,7 +167,7 @@ public class ConferenceServiceShould {
                         return NO_RESULT;
                     }
                 };
-                //noinspection unchecked
+
                 conferenceService.updateConference(build, TestStreamObserver.<UpdateConferenceResponse>newBuilder()
                                                                             .setNextFunction(checkConferenceUpdated)
                                                                             .build());
@@ -174,7 +176,6 @@ public class ConferenceServiceShould {
             }
         };
 
-        //noinspection unchecked
         conferenceService.createConference(conferenceInfo, TestStreamObserver.<CreateConferenceResponse>newBuilder()
                                                                              .setNextFunction(createConferenceHandler)
                                                                              .build());
@@ -206,7 +207,7 @@ public class ConferenceServiceShould {
                                                                                .setNextFunction(checkConferenceUpdated)
                                                                                .setOnCompleteFunction(onCompleteUpdate)
                                                                                .build();
-        //noinspection unchecked
+
         eventStore.read(EventStreamQuery.newBuilder()
                                         .build(), conferenceUpdatedObserver);
     }

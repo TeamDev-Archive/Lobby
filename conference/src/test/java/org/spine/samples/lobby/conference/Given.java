@@ -33,20 +33,20 @@ import static org.spine3.samples.lobby.common.util.testdata.TestDataFactory.newB
  */
 public class Given {
 
-    protected static final BoundedContext boundedContext = newBoundedContext();
-    private static final ConferenceRepository conferenceRepository = new ConferenceRepository();
+    /* package */  static final BoundedContext BOUNDED_CONTEXT = newBoundedContext();
+    private static final ConferenceRepository CONFERENCE_REPOSITORY = new ConferenceRepository();
 
 
     /* package */ Given() {
-//        boundedContext.getEventBus().register(new StubCommandHandler());
+//        BOUNDED_CONTEXT.getEventBus().register(new StubCommandHandler());
     }
 
 
-    public static ConferenceServiceGrpc.ConferenceService getConferenceService() {
-        return new TestConferenceService(boundedContext, conferenceRepository);
+    /* package */  static ConferenceServiceGrpc.ConferenceService getConferenceService() {
+        return new TestConferenceService(BOUNDED_CONTEXT, CONFERENCE_REPOSITORY);
     }
 
-    public ConferenceInfo conferenceInfo() {
+    /* package */  ConferenceInfo conferenceInfo() {
         final EmailAddress email = EmailAddress.newBuilder()
                                                .setValue("andrii.serebriyan@gmail.com")
                                                .build();
@@ -59,8 +59,8 @@ public class Given {
                              .build();
     }
 
-    public void dropData() {
-        conferenceRepository.deleteAll();
+    /* package */  void dropData() {
+        CONFERENCE_REPOSITORY.deleteAll();
     }
 
 
