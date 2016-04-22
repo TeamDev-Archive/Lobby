@@ -28,6 +28,7 @@ import org.spine3.base.EventContext;
 import org.spine3.base.Events;
 import org.spine3.base.Identifiers;
 import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc.ConferenceService;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
@@ -157,11 +158,7 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
     private static String generateAccessCode() {
-        final SecureRandom random = new SecureRandom();
-        final int encodingBase = 32;
-        final int numBits = 130;
-        return new BigInteger(numBits, random).toString(encodingBase)
-                                              .substring(0, 6);
+        return RandomPasswordGenerator.generate(6);
     }
 
     private static Conference asConference(ConferenceInfo info) {
