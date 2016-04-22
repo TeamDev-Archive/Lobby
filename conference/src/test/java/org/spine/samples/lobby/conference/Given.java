@@ -43,7 +43,7 @@ public class Given {
 
 
     public static ConferenceServiceGrpc.ConferenceService getConferenceService() {
-        return new TestConferenceService();
+        return new TestConferenceService(boundedContext, conferenceRepository);
     }
 
     public ConferenceInfo conferenceInfo() {
@@ -65,16 +65,9 @@ public class Given {
 
 
     private static class TestConferenceService extends ConferenceServiceImpl {
-        @SuppressWarnings("RefusedBequest")
-        @Override
-        protected BoundedContext getBoundedContext() {
-            return boundedContext;
-        }
 
-        @SuppressWarnings("RefusedBequest")
-        @Override
-        protected ConferenceRepository getRepository() {
-            return conferenceRepository;
+        private TestConferenceService(BoundedContext boundedContext, ConferenceRepository conferenceRepository) {
+            super(boundedContext, conferenceRepository);
         }
     }
 }

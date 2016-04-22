@@ -56,11 +56,10 @@ public class ConferenceServiceImpl implements ConferenceService {
     private final ConferenceRepository conferenceRepository;
 
 
-    public ConferenceServiceImpl() {
-        boundedContext = getBoundedContext();
-        conferenceRepository = getRepository();
+    public ConferenceServiceImpl(BoundedContext boundedContext, ConferenceRepository conferenceRepository) {
+        this.boundedContext = boundedContext;
+        this.conferenceRepository = conferenceRepository;
     }
-
 
     @Override
     public void createConference(ConferenceInfo conferenceToCreate, StreamObserver<CreateConferenceResponse> responseObserver) {
@@ -109,7 +108,7 @@ public class ConferenceServiceImpl implements ConferenceService {
         responseObserver.onCompleted();
     }
 
-    private Conference updateFromConferenceInfo(Conference target, EditableConferenceInfo info) {
+    private static Conference updateFromConferenceInfo(Conference target, EditableConferenceInfo info) {
         return target.toBuilder()
                      .setName(info.getName())
                      .build();
@@ -117,16 +116,18 @@ public class ConferenceServiceImpl implements ConferenceService {
 
     @Override
     public void publish(PublishConferenceRequest request, StreamObserver<PublishConferenceResponse> responseObserver) {
-        final Conference persistedConference = conferenceRepository.load(request.getId());
-        //TODO:2016-04-19:andrii.loboda: handle if no conference to publish
-        if (!persistedConference.getIsPublished()) {
-            final Conference publishedConference = persistedConference.toBuilder()
+        final Conference conference = conferenceRepository.load(request.getId());
+
+        checkNotNull(conference, "No conference found");
+
+        if (!conference.getIsPublished()) {
+            final Conference publishedConference = conference.toBuilder()
                                                                       .setIsPublished(true)
                                                                       .build();
 
             sendConferencePublishedEvent(publishedConference);
             final PublishConferenceResponse response = PublishConferenceResponse.newBuilder()
-                                                                                .setId(persistedConference.getId())
+                                                                                .setId(conference.getId())
                                                                                 .build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
@@ -136,16 +137,6 @@ public class ConferenceServiceImpl implements ConferenceService {
             //TODO:2016-04-19:andrii.loboda: handle if conference is already published
         }
 
-    }
-
-    protected BoundedContext getBoundedContext() {
-        //TODO:2016-04-14:andrii.loboda:  move to singleton and provide event bus, command bus, etc.
-        return BoundedContext.newBuilder()
-                             .build();
-    }
-
-    protected ConferenceRepository getRepository() {
-        return new ConferenceRepository();
     }
 
 
@@ -158,19 +149,20 @@ public class ConferenceServiceImpl implements ConferenceService {
         sendEvents(result.build());
     }
 
-    private void sendConferenceUpdatedEvent(Conference updatedConference) {
+    //TODO:2016-04-22:andrii.loboda: get rid of copy-paste
+    private void sendConferenceUpdatedEvent(Conference conference) {
         final ImmutableList.Builder<Event> result = ImmutableList.builder();
-        final ConferenceUpdated conferenceUpdatedEvent = EventFactory.conferenceUpdated(updatedConference);
-        final EventContext conferenceEventContext = EventUtils.createConferenceEventContext(updatedConference.getId());
+        final ConferenceUpdated conferenceUpdatedEvent = EventFactory.conferenceUpdated(conference);
+        final EventContext conferenceEventContext = EventUtils.createConferenceEventContext(conference.getId());
         result.add(Events.createEvent(conferenceUpdatedEvent, conferenceEventContext));
-//TODO:2016-04-19:andrii.loboda: looks weird
+
         sendEvents(result.build());
     }
 
-    private void sendConferencePublishedEvent(Conference publishedConference) {
+    private void sendConferencePublishedEvent(Conference conference) {
         final ImmutableList.Builder<Event> result = ImmutableList.builder();
-        final ConferencePublished conferencePublishedEvent = EventFactory.conferencePublished(publishedConference);
-        final EventContext conferenceEventContext = EventUtils.createConferenceEventContext(publishedConference.getId());
+        final ConferencePublished conferencePublishedEvent = EventFactory.conferencePublished(conference);
+        final EventContext conferenceEventContext = EventUtils.createConferenceEventContext(conference.getId());
         result.add(Events.createEvent(conferencePublishedEvent, conferenceEventContext));
 
         sendEvents(result.build());
