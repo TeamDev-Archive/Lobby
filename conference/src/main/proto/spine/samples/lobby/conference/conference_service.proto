@@ -28,7 +28,7 @@ option java_multiple_files = true;
 import "spine/samples/lobby/common/common.proto";
 import "spine/samples/lobby/conference/contracts/conference.proto";
 import "spine/base/email.proto";
-import "google/protobuf/timestamp.proto";
+import "spine/time/time.proto";
 
 
 service ConferenceService {

@@ -49,7 +49,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.spine.samples.lobby.conference.EventFactory.conferenceCreated;
 import static org.spine.samples.lobby.conference.EventFactory.conferencePublished;
 import static org.spine.samples.lobby.conference.EventFactory.conferenceUpdated;
-import static org.spine.samples.lobby.conference.EventUtils.createConferenceEventContext;
 import static org.spine3.base.Events.createEvent;
 
 /**
