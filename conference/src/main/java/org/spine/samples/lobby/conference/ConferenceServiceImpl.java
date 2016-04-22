@@ -20,13 +20,15 @@
 
 package org.spine.samples.lobby.conference;
 
-import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Message;
+import com.google.protobuf.util.TimeUtil;
 import io.grpc.stub.StreamObserver;
 import org.spine3.base.Event;
 import org.spine3.base.EventContext;
+import org.spine3.base.EventId;
 import org.spine3.base.Events;
 import org.spine3.base.Identifiers;
+import org.spine3.protobuf.Messages;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
@@ -43,10 +45,12 @@ import org.spine3.samples.sample.lobby.conference.contracts.ConferencePublished;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
 import org.spine3.server.BoundedContext;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.spine.samples.lobby.conference.EventFactory.conferenceCreated;
+import static org.spine.samples.lobby.conference.EventFactory.conferencePublished;
+import static org.spine.samples.lobby.conference.EventFactory.conferenceUpdated;
+import static org.spine.samples.lobby.conference.EventUtils.createConferenceEventContext;
+import static org.spine3.base.Events.createEvent;
 
 /**
  * @author andrii.loboda
@@ -73,8 +77,8 @@ public class ConferenceServiceImpl implements ConferenceService {
                                                          .build();
         conferenceRepository.store(conferenceToPersist);
 
-        final ConferenceCreated conferenceCreatedEvent = EventFactory.conferenceCreated(conference);
-        sendEvent(conference, conferenceCreatedEvent);
+        final ConferenceCreated conferenceCreatedEvent = conferenceCreated(conference);
+        postEvents(conference, conferenceCreatedEvent);
 
         final CreateConferenceResponse build = CreateConferenceResponse.newBuilder()
                                                                        .setId(conferenceToPersist.getId())
@@ -103,8 +107,8 @@ public class ConferenceServiceImpl implements ConferenceService {
         final Conference conference = updateFromConferenceInfo(existingConference, request);
         conferenceRepository.store(conference);
 
-        final ConferenceUpdated conferenceUpdatedEvent = EventFactory.conferenceUpdated(conference);
-        sendEvent(conference, conferenceUpdatedEvent);
+        final ConferenceUpdated conferenceUpdatedEvent = conferenceUpdated(conference);
+        postEvents(conference, conferenceUpdatedEvent);
 
         final UpdateConferenceResponse response = UpdateConferenceResponse.newBuilder()
                                                                           .setId(conference.getId())
@@ -130,8 +134,8 @@ public class ConferenceServiceImpl implements ConferenceService {
                                                                       .setIsPublished(true)
                                                                       .build();
 
-            final ConferencePublished conferencePublishedEvent = EventFactory.conferencePublished(publishedConference);
-            sendEvent(publishedConference, conferencePublishedEvent);
+            final ConferencePublished conferencePublishedEvent = conferencePublished(publishedConference);
+            postEvents(publishedConference, conferencePublishedEvent);
 
             final PublishConferenceResponse response = PublishConferenceResponse.newBuilder()
                                                                                 .setId(publishedConference.getId())
@@ -147,14 +151,29 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
 
-    private void sendEvent(Conference conference, Message ... messages) {
-        final EventContext conferenceEventContext = EventUtils.createConferenceEventContext(conference.getId());
+    private void postEvents(Conference conference, Message... messages) {
+
+        final EventContext context = createConferenceEventContext(conference.getId());
 
         for (Message message : messages) {
-            final Event event = Events.createEvent(message, conferenceEventContext);
+            final Event event = createEvent(message, context);
             boundedContext.getEventBus()
                           .post(event);
         }
+    }
+
+    private static EventContext createConferenceEventContext(ConferenceId conferenceId) {
+
+        final EventId eventIDMessage = EventId.newBuilder()
+                                              .setUuid(Identifiers.newUuid())
+                                              .build();
+
+        final EventContext eventContext = EventContext.newBuilder()
+                                                      .setEventId(eventIDMessage)
+                                                      .setProducerId(Messages.toAny(conferenceId))
+                                                      .setTimestamp(TimeUtil.getCurrentTime())
+                                                      .build();
+        return eventContext;
     }
 
     private static String generateAccessCode() {

@@ -33,19 +33,19 @@ import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
     private EventFactory() {
     }
 
-    static ConferenceCreated conferenceCreated(Conference conference) {
+    /* package */ static ConferenceCreated conferenceCreated(Conference conference) {
         return ConferenceCreated.newBuilder()
                                 .setConference(conference)
                                 .build();
     }
 
-    public static ConferenceUpdated conferenceUpdated(Conference updatedConference) {
+    /* package */  static ConferenceUpdated conferenceUpdated(Conference updatedConference) {
         return ConferenceUpdated.newBuilder()
                                 .setConference(updatedConference)
                                 .build();
     }
 
-    public static ConferencePublished conferencePublished(Conference publishedConference) {
+    /* package */  static ConferencePublished conferencePublished(Conference publishedConference) {
         return ConferencePublished.newBuilder()
                                   .setConferenceId(publishedConference.getId())
                                   .build();
