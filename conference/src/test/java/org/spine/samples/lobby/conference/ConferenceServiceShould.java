@@ -197,7 +197,6 @@ public class ConferenceServiceShould {
 
 
 
-
         final TestStreamObserver conferenceUpdatedObserver = TestStreamObserver.<Event>newBuilder()
                                                                                .setNextFunction(checkConferenceUpdated)
                 .setOnCompleteFunction(new Function<Void, Void>() {
