@@ -278,13 +278,13 @@ public class ConferenceServiceShould {
             }
         };
 
-        final TestStreamObserver conferencePublishedObserver = TestStreamObserver.<Event>newBuilder()
+        final TestStreamObserver publishedObserver = TestStreamObserver.<Event>newBuilder()
                                                                                  .setNextFunction(checkConferencePublished)
                                                                                  .setOnCompleteFunction(onCompleteUpdate)
                                                                                  .build();
 
         eventStore.read(EventStreamQuery.newBuilder()
-                                        .build(), conferencePublishedObserver);
+                                        .build(), publishedObserver);
     }
 
     @SuppressWarnings("unchecked")
@@ -302,7 +302,7 @@ public class ConferenceServiceShould {
         };
 
 
-        final Function<UnpublishConferenceResponse, Void> unpublishConferenceHandler = new Function<UnpublishConferenceResponse, Void>() {
+        final Function<UnpublishConferenceResponse, Void> unpublishHandler = new Function<UnpublishConferenceResponse, Void>() {
             @Override
             public Void apply(final UnpublishConferenceResponse response) {
                 final FindConferenceByIDRequest request = FindConferenceByIDRequest.newBuilder()
@@ -321,7 +321,7 @@ public class ConferenceServiceShould {
                                                                              .build();
 
         conferenceService.unPublish(request, TestStreamObserver.<UnpublishConferenceResponse>newBuilder()
-                                                               .setNextFunction(unpublishConferenceHandler)
+                                                               .setNextFunction(unpublishHandler)
                                                                .build());
 
         final EventStore eventStore = boundedContext.getEventBus()
@@ -346,13 +346,13 @@ public class ConferenceServiceShould {
             }
         };
 
-        final TestStreamObserver conferencePublishedObserver = TestStreamObserver.<Event>newBuilder()
+        final TestStreamObserver unpublishedObserver = TestStreamObserver.<Event>newBuilder()
                                                                                  .setNextFunction(checkConferencePublished)
                                                                                  .setOnCompleteFunction(onCompleteUpdate)
                                                                                  .build();
 
         eventStore.read(EventStreamQuery.newBuilder()
-                                        .build(), conferencePublishedObserver);
+                                        .build(), unpublishedObserver);
     }
 
 

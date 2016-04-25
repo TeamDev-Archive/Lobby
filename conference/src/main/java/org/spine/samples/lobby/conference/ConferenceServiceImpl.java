@@ -56,6 +56,7 @@ import static org.spine3.base.Events.createEvent;
 /**
  * @author andrii.loboda
  */
+@SuppressWarnings("OverlyCoupledClass")
 public class ConferenceServiceImpl implements ConferenceService {
 
 
@@ -162,7 +163,7 @@ public class ConferenceServiceImpl implements ConferenceService {
     public void unPublish(UnpublishConferenceRequest request, StreamObserver<UnpublishConferenceResponse> responseObserver) {
         final Conference conference = conferenceRepository.load(request.getId());
 
-        checkNotNull(conference, "No conference found with id: %s", conference.getId());
+        checkNotNull(conference, "No conference found with id: %s", request.getId());
         checkState(conference.getIsPublished(), "Conference is already unpublished with ID: %s", conference.getId());
 
         final Conference unpublishedConference = conference.toBuilder()
@@ -171,8 +172,8 @@ public class ConferenceServiceImpl implements ConferenceService {
 
         conferenceRepository.store(unpublishedConference);
 
-        final ConferenceUnpublished conferenceUnpublishedEvent = conferenceUnPublished(unpublishedConference);
-        postEvents(unpublishedConference, conferenceUnpublishedEvent);
+        final ConferenceUnpublished unpublishedEvent = conferenceUnPublished(unpublishedConference);
+        postEvents(unpublishedConference, unpublishedEvent);
 
         final UnpublishConferenceResponse response = UnpublishConferenceResponse.newBuilder()
                                                                                 .setId(unpublishedConference.getId())
