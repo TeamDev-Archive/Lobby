@@ -49,6 +49,7 @@ import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
 import org.spine3.server.BoundedContext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static org.spine.samples.lobby.conference.EventFactory.*;
 import static org.spine3.base.Events.createEvent;
 
@@ -137,27 +138,23 @@ public class ConferenceServiceImpl implements ConferenceService {
         final Conference conference = conferenceRepository.load(request.getId());
 
         checkNotNull(conference, "No conference found");
+        checkState(!conference.getIsPublished(), "Conference is already published");
 
-        if (!conference.getIsPublished()) {
-            final Conference publishedConference = conference.toBuilder()
-                                                             .setIsPublished(true)
-                                                             .build();
+        final Conference publishedConference = conference.toBuilder()
+                                                         .setIsPublished(true)
+                                                         .build();
 
-            conferenceRepository.store(publishedConference);
+        conferenceRepository.store(publishedConference);
 
-            final ConferencePublished conferencePublishedEvent = conferencePublished(publishedConference);
-            postEvents(publishedConference, conferencePublishedEvent);
+        final ConferencePublished conferencePublishedEvent = conferencePublished(publishedConference);
+        postEvents(publishedConference, conferencePublishedEvent);
 
-            final PublishConferenceResponse response = PublishConferenceResponse.newBuilder()
-                                                                                .setId(publishedConference.getId())
-                                                                                .build();
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
+        final PublishConferenceResponse response = PublishConferenceResponse.newBuilder()
+                                                                            .setId(publishedConference.getId())
+                                                                            .build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
 
-        } else {
-
-            //TODO:2016-04-19:andrii.loboda: handle if conference is already published
-        }
 
     }
 
@@ -165,28 +162,24 @@ public class ConferenceServiceImpl implements ConferenceService {
     public void unPublish(UnpublishConferenceRequest request, StreamObserver<UnpublishConferenceResponse> responseObserver) {
         final Conference conference = conferenceRepository.load(request.getId());
 
-        checkNotNull(conference, "No conference found");
+        checkNotNull(conference, "No conference found with id: %s", conference.getId());
+        checkState(conference.getIsPublished(), "Conference is already unpublished with ID: %s", conference.getId());
 
-        if (!conference.getIsPublished()) {
-            final Conference unpublishedConference = conference.toBuilder()
-                                                               .setIsPublished(true)
-                                                               .build();
+        final Conference unpublishedConference = conference.toBuilder()
+                                                           .setIsPublished(false)
+                                                           .build();
 
-            conferenceRepository.store(conference);
+        conferenceRepository.store(unpublishedConference);
 
-            final ConferenceUnpublished conferenceUnpublishedEvent = conferenceUnPublished(unpublishedConference);
-            postEvents(unpublishedConference, conferenceUnpublishedEvent);
+        final ConferenceUnpublished conferenceUnpublishedEvent = conferenceUnPublished(unpublishedConference);
+        postEvents(unpublishedConference, conferenceUnpublishedEvent);
 
-            final UnpublishConferenceResponse response = UnpublishConferenceResponse.newBuilder()
-                                                                                    .setId(unpublishedConference.getId())
-                                                                                    .build();
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
+        final UnpublishConferenceResponse response = UnpublishConferenceResponse.newBuilder()
+                                                                                .setId(unpublishedConference.getId())
+                                                                                .build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
 
-        } else {
-
-            //TODO:2016-04-19:andrii.loboda: handle if conference is already unpublished
-        }
     }
 
 

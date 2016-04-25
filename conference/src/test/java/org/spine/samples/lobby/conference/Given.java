@@ -96,6 +96,7 @@ public class Given {
         final Conference conference = Conference.newBuilder()
                                                 .setId(PUBLISHED_CONFERENCE_ID)
                                                 .setName("Test Published conference #2")
+                                                .setIsPublished(true)
                                                 .build();
         CONFERENCE_REPOSITORY.store(conference);
     }
