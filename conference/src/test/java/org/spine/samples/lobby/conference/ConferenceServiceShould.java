@@ -33,10 +33,17 @@ import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
 import org.spine3.samples.lobby.conference.EditableConferenceInfo;
+import org.spine3.samples.lobby.conference.FindConferenceByIDRequest;
 import org.spine3.samples.lobby.conference.FindConferenceRequest;
+import org.spine3.samples.lobby.conference.PublishConferenceRequest;
+import org.spine3.samples.lobby.conference.PublishConferenceResponse;
+import org.spine3.samples.lobby.conference.UnpublishConferenceRequest;
+import org.spine3.samples.lobby.conference.UnpublishConferenceResponse;
 import org.spine3.samples.lobby.conference.UpdateConferenceResponse;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferencePublished;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUnpublished;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.event.EventStore;
@@ -145,7 +152,7 @@ public class ConferenceServiceShould {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void update_conference_info_and_publish_ConferenceUpdated_event() {
+    public void update_conference_info_and_generate_ConferenceUpdated_event() {
         final ConferenceInfo conferenceInfo = given.conferenceInfo();
         final String expectedConferenceName = "updated conference";
         final List<Class> accumulatedMessages = new LinkedList<>();
@@ -210,6 +217,142 @@ public class ConferenceServiceShould {
 
         eventStore.read(EventStreamQuery.newBuilder()
                                         .build(), conferenceUpdatedObserver);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void publish_conference_and_generate_ConferencePublished_event() {
+        final Conference conference = given.newConference();
+        final List<Class> accumulatedMessages = new LinkedList<>();
+
+        final Function<Conference, Void> checkIsPublished = new Function<Conference, Void>() {
+            @Override
+            public Void apply(Conference publishedConference) {
+                assertTrue("Conference should be published.", publishedConference.getIsPublished());
+                return NO_RESULT;
+            }
+        };
+
+
+        final Function<PublishConferenceResponse, Void> publishConferenceHandler = new Function<PublishConferenceResponse, Void>() {
+            @Override
+            public Void apply(final PublishConferenceResponse response) {
+                final FindConferenceByIDRequest request = FindConferenceByIDRequest.newBuilder()
+                                                                                   .setId(response.getId())
+                                                                                   .build();
+                conferenceService.findConferenceByID(request, TestStreamObserver.<Conference>newBuilder()
+                                                                                .setNextFunction(checkIsPublished)
+                                                                                .build());
+
+
+                return NO_RESULT;
+            }
+        };
+        final PublishConferenceRequest request = PublishConferenceRequest.newBuilder()
+                                                                         .setId(conference.getId())
+                                                                         .build();
+
+        conferenceService.publish(request, TestStreamObserver.<PublishConferenceResponse>newBuilder()
+                                                             .setNextFunction(publishConferenceHandler)
+                                                             .build());
+
+        final EventStore eventStore = boundedContext.getEventBus()
+                                                    .getEventStore();
+
+        final Function<Event, Void> checkConferencePublished = new Function<Event, Void>() {
+            @SuppressWarnings("ReturnOfNull")
+            @Override
+            public Void apply(Event event) {
+                accumulatedMessages.add(Messages.fromAny(event.getMessage())
+                                                .getClass());
+                return NO_RESULT;
+            }
+        };
+
+
+        final Function<Void, Void> onCompleteUpdate = new Function<Void, Void>() {
+            @Override
+            public Void apply(Void input) {
+                assertTrue(accumulatedMessages.contains(ConferencePublished.class));
+                return NO_RESULT;
+            }
+        };
+
+        final TestStreamObserver conferencePublishedObserver = TestStreamObserver.<Event>newBuilder()
+                                                                                 .setNextFunction(checkConferencePublished)
+                                                                                 .setOnCompleteFunction(onCompleteUpdate)
+                                                                                 .build();
+
+        eventStore.read(EventStreamQuery.newBuilder()
+                                        .build(), conferencePublishedObserver);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void unpublish_conference_and_generate_ConferenceUnpublished_event() {
+        final Conference conference = given.newPublishedConference();
+        final List<Class> accumulatedMessages = new LinkedList<>();
+
+        final Function<Conference, Void> checkIsUnpublished = new Function<Conference, Void>() {
+            @Override
+            public Void apply(Conference publishedConference) {
+                assertTrue("Conference should be unpublished.", !publishedConference.getIsPublished());
+                return NO_RESULT;
+            }
+        };
+
+
+        final Function<UnpublishConferenceResponse, Void> unpublishConferenceHandler = new Function<UnpublishConferenceResponse, Void>() {
+            @Override
+            public Void apply(final UnpublishConferenceResponse response) {
+                final FindConferenceByIDRequest request = FindConferenceByIDRequest.newBuilder()
+                                                                                   .setId(response.getId())
+                                                                                   .build();
+                conferenceService.findConferenceByID(request, TestStreamObserver.<Conference>newBuilder()
+                                                                                .setNextFunction(checkIsUnpublished)
+                                                                                .build());
+
+
+                return NO_RESULT;
+            }
+        };
+        final UnpublishConferenceRequest request = UnpublishConferenceRequest.newBuilder()
+                                                                             .setId(conference.getId())
+                                                                             .build();
+
+        conferenceService.unPublish(request, TestStreamObserver.<UnpublishConferenceResponse>newBuilder()
+                                                               .setNextFunction(unpublishConferenceHandler)
+                                                               .build());
+
+        final EventStore eventStore = boundedContext.getEventBus()
+                                                    .getEventStore();
+
+        final Function<Event, Void> checkConferencePublished = new Function<Event, Void>() {
+            @SuppressWarnings("ReturnOfNull")
+            @Override
+            public Void apply(Event event) {
+                accumulatedMessages.add(Messages.fromAny(event.getMessage())
+                                                .getClass());
+                return NO_RESULT;
+            }
+        };
+
+
+        final Function<Void, Void> onCompleteUpdate = new Function<Void, Void>() {
+            @Override
+            public Void apply(Void input) {
+                assertTrue(accumulatedMessages.contains(ConferenceUnpublished.class));
+                return NO_RESULT;
+            }
+        };
+
+        final TestStreamObserver conferencePublishedObserver = TestStreamObserver.<Event>newBuilder()
+                                                                                 .setNextFunction(checkConferencePublished)
+                                                                                 .setOnCompleteFunction(onCompleteUpdate)
+                                                                                 .build();
+
+        eventStore.read(EventStreamQuery.newBuilder()
+                                        .build(), conferencePublishedObserver);
     }
 
 

@@ -34,8 +34,10 @@ import "spine/time/time.proto";
 service ConferenceService {
     rpc createConference(ConferenceInfo) returns (CreateConferenceResponse){}
     rpc findConference(FindConferenceRequest) returns (spine.samples.lobby.conference.contracts.Conference){}
+    rpc findConferenceByID(FindConferenceByIDRequest) returns (spine.samples.lobby.conference.contracts.Conference){}
     rpc updateConference(EditableConferenceInfo) returns (UpdateConferenceResponse){}
     rpc publish(PublishConferenceRequest) returns (PublishConferenceResponse){}
+    rpc unPublish(UnpublishConferenceRequest) returns (UnpublishConferenceResponse){}
 }
 
 message ConferenceInfo {
@@ -126,6 +128,10 @@ message FindConferenceRequest {
     string accessCode = 2;
 }
 
+message FindConferenceByIDRequest {
+    spine.samples.lobby.common.ConferenceId id = 1;
+}
+
 message PublishConferenceResponse {
     spine.samples.lobby.common.ConferenceId id = 1;
 }
@@ -134,3 +140,10 @@ message PublishConferenceRequest {
     spine.samples.lobby.common.ConferenceId id = 1;
 }
 
+message UnpublishConferenceRequest {
+    spine.samples.lobby.common.ConferenceId id = 1;
+}
+
+message UnpublishConferenceResponse {
+    spine.samples.lobby.common.ConferenceId id = 1;
+}

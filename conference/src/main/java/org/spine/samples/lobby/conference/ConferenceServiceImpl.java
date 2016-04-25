@@ -26,7 +26,6 @@ import io.grpc.stub.StreamObserver;
 import org.spine3.base.Event;
 import org.spine3.base.EventContext;
 import org.spine3.base.EventId;
-import org.spine3.base.Events;
 import org.spine3.base.Identifiers;
 import org.spine3.protobuf.Messages;
 import org.spine3.samples.lobby.common.ConferenceId;
@@ -35,20 +34,22 @@ import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc.ConferenceService;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
 import org.spine3.samples.lobby.conference.EditableConferenceInfo;
+import org.spine3.samples.lobby.conference.FindConferenceByIDRequest;
 import org.spine3.samples.lobby.conference.FindConferenceRequest;
 import org.spine3.samples.lobby.conference.PublishConferenceRequest;
 import org.spine3.samples.lobby.conference.PublishConferenceResponse;
+import org.spine3.samples.lobby.conference.UnpublishConferenceRequest;
+import org.spine3.samples.lobby.conference.UnpublishConferenceResponse;
 import org.spine3.samples.lobby.conference.UpdateConferenceResponse;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferencePublished;
+import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUnpublished;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
 import org.spine3.server.BoundedContext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.spine.samples.lobby.conference.EventFactory.conferenceCreated;
-import static org.spine.samples.lobby.conference.EventFactory.conferencePublished;
-import static org.spine.samples.lobby.conference.EventFactory.conferenceUpdated;
+import static org.spine.samples.lobby.conference.EventFactory.*;
 import static org.spine3.base.Events.createEvent;
 
 /**
@@ -98,6 +99,15 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
     @Override
+    public void findConferenceByID(FindConferenceByIDRequest request, StreamObserver<Conference> responseObserver) {
+        final Conference conference = conferenceRepository.load(request.getId());
+
+        responseObserver.onNext(conference);
+        responseObserver.onCompleted();
+    }
+
+
+    @Override
     public void updateConference(EditableConferenceInfo request, StreamObserver<UpdateConferenceResponse> responseObserver) {
         final Conference existingConference = conferenceRepository.load(request.getId());
 
@@ -130,8 +140,10 @@ public class ConferenceServiceImpl implements ConferenceService {
 
         if (!conference.getIsPublished()) {
             final Conference publishedConference = conference.toBuilder()
-                                                                      .setIsPublished(true)
-                                                                      .build();
+                                                             .setIsPublished(true)
+                                                             .build();
+
+            conferenceRepository.store(publishedConference);
 
             final ConferencePublished conferencePublishedEvent = conferencePublished(publishedConference);
             postEvents(publishedConference, conferencePublishedEvent);
@@ -147,6 +159,34 @@ public class ConferenceServiceImpl implements ConferenceService {
             //TODO:2016-04-19:andrii.loboda: handle if conference is already published
         }
 
+    }
+
+    @Override
+    public void unPublish(UnpublishConferenceRequest request, StreamObserver<UnpublishConferenceResponse> responseObserver) {
+        final Conference conference = conferenceRepository.load(request.getId());
+
+        checkNotNull(conference, "No conference found");
+
+        if (!conference.getIsPublished()) {
+            final Conference unpublishedConference = conference.toBuilder()
+                                                               .setIsPublished(true)
+                                                               .build();
+
+            conferenceRepository.store(conference);
+
+            final ConferenceUnpublished conferenceUnpublishedEvent = conferenceUnPublished(unpublishedConference);
+            postEvents(unpublishedConference, conferenceUnpublishedEvent);
+
+            final UnpublishConferenceResponse response = UnpublishConferenceResponse.newBuilder()
+                                                                                    .setId(unpublishedConference.getId())
+                                                                                    .build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } else {
+
+            //TODO:2016-04-19:andrii.loboda: handle if conference is already unpublished
+        }
     }
 
 

@@ -21,11 +21,14 @@
 package org.spine.samples.lobby.conference;
 
 import org.spine3.base.EmailAddress;
+import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
+import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.server.BoundedContext;
 
+import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
 import static org.spine3.samples.lobby.common.util.testdata.TestDataFactory.newBoundedContext;
 
 /**
@@ -35,18 +38,22 @@ public class Given {
 
     /* package */  static final BoundedContext BOUNDED_CONTEXT = newBoundedContext();
     private static final ConferenceRepository CONFERENCE_REPOSITORY = new ConferenceRepository();
+    private static final ConferenceId CONFERENCE_ID = newConferenceId();
+    private static final ConferenceId PUBLISHED_CONFERENCE_ID = newConferenceId();
 
 
     /* package */ Given() {
+        createSampleData();
 //        BOUNDED_CONTEXT.getEventBus().register(new StubCommandHandler());
     }
 
 
-    /* package */  static ConferenceServiceGrpc.ConferenceService getConferenceService() {
+    /* package */
+    static ConferenceServiceGrpc.ConferenceService getConferenceService() {
         return new TestConferenceService(BOUNDED_CONTEXT, CONFERENCE_REPOSITORY);
     }
 
-    /* package */  ConferenceInfo conferenceInfo() {
+    /* package */ ConferenceInfo conferenceInfo() {
         final EmailAddress email = EmailAddress.newBuilder()
                                                .setValue("andrii.serebriyan@gmail.com")
                                                .build();
@@ -61,6 +68,36 @@ public class Given {
 
     /* package */  void dropData() {
         CONFERENCE_REPOSITORY.deleteAll();
+    }
+
+    /* package */ Conference newConference() {
+        return CONFERENCE_REPOSITORY.load(CONFERENCE_ID);
+    }
+
+    /* package */ Conference newPublishedConference() {
+        return CONFERENCE_REPOSITORY.load(PUBLISHED_CONFERENCE_ID);
+    }
+
+
+    private static void createSampleData() {
+        createUnpublishedConference();
+        createPublishedConference();
+    }
+
+    private static void createUnpublishedConference() {
+        final Conference conference = Conference.newBuilder()
+                                                .setId(CONFERENCE_ID)
+                                                .setName("Test conference #1")
+                                                .build();
+        CONFERENCE_REPOSITORY.store(conference);
+    }
+
+    private static void createPublishedConference() {
+        final Conference conference = Conference.newBuilder()
+                                                .setId(PUBLISHED_CONFERENCE_ID)
+                                                .setName("Test Published conference #2")
+                                                .build();
+        CONFERENCE_REPOSITORY.store(conference);
     }
 
 
