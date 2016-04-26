@@ -23,6 +23,7 @@ package org.spine.samples.lobby.conference;
 import org.spine3.base.EmailAddress;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.PersonalInfo;
+import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
 import org.spine3.samples.lobby.conference.contracts.Conference;
@@ -40,6 +41,7 @@ public class Given {
     private static final ConferenceRepository CONFERENCE_REPOSITORY = new ConferenceRepository();
     private static final ConferenceId CONFERENCE_ID = newConferenceId();
     private static final ConferenceId PUBLISHED_CONFERENCE_ID = newConferenceId();
+    public static final String TEST_EMAIL_ADDRESS = "test@mail.com";
 
 
     /* package */ Given() {
@@ -85,9 +87,22 @@ public class Given {
     }
 
     private static void createUnpublishedConference() {
+
+        final EmailAddress email = EmailAddress.newBuilder()
+                                               .setValue(TEST_EMAIL_ADDRESS)
+                                               .build();
+
+        final PersonalInfo owner = PersonalInfo.newBuilder()
+                                               .setEmail(email)
+                                               .build();
+
+        final String accessCode = RandomPasswordGenerator.generate(6);
+
         final Conference conference = Conference.newBuilder()
                                                 .setId(CONFERENCE_ID)
                                                 .setName("Test conference #1")
+                                                .setOwner(owner)
+                                                .setAccessCode(accessCode)
                                                 .build();
         CONFERENCE_REPOSITORY.store(conference);
     }
