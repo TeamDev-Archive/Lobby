@@ -18,7 +18,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine.samples.lobby.conference;
+package org.spine.samples.lobby.conference.impl;
 
 import org.spine3.base.EmailAddress;
 import org.spine3.samples.lobby.common.ConferenceId;

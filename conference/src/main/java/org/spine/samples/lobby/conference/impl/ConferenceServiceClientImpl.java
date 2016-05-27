@@ -18,7 +18,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine.samples.lobby.conference;
+package org.spine.samples.lobby.conference.impl;
 
 import com.google.protobuf.Message;
 import com.google.protobuf.util.TimeUtil;
@@ -31,7 +31,7 @@ import org.spine3.protobuf.Messages;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
-import org.spine3.samples.lobby.conference.ConferenceServiceGrpc.ConferenceService;
+import org.spine3.samples.lobby.conference.ConferenceServiceClientGrpc.ConferenceServiceClient;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
 import org.spine3.samples.lobby.conference.CreateSeatResponse;
 import org.spine3.samples.lobby.conference.EditableConferenceInfo;
@@ -51,21 +51,21 @@ import org.spine3.server.BoundedContext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import static org.spine.samples.lobby.conference.EventFactory.*;
+import static org.spine.samples.lobby.conference.impl.EventFactory.*;
 import static org.spine3.base.Events.createEvent;
 
 /**
  * @author andrii.loboda
  */
 @SuppressWarnings("OverlyCoupledClass")
-public class ConferenceServiceImpl implements ConferenceService {
+public class ConferenceServiceClientImpl implements ConferenceServiceClient {
 
 
     private final BoundedContext boundedContext;
     private final ConferenceRepository conferenceRepository;
 
 
-    public ConferenceServiceImpl(BoundedContext boundedContext, ConferenceRepository conferenceRepository) {
+    public ConferenceServiceClientImpl(BoundedContext boundedContext, ConferenceRepository conferenceRepository) {
         this.boundedContext = boundedContext;
         this.conferenceRepository = conferenceRepository;
     }

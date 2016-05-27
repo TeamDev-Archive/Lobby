@@ -20,11 +20,14 @@
 
 package org.spine.samples.lobby.conference;
 
+import org.spine.samples.lobby.conference.impl.ConferenceRepository;
+import org.spine.samples.lobby.conference.impl.ConferenceServiceClientImpl;
 import org.spine3.base.EmailAddress;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
+import org.spine3.samples.lobby.conference.ConferenceServiceClientGrpc;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.server.BoundedContext;
@@ -51,7 +54,7 @@ public class Given {
 
 
     /* package */
-    static ConferenceServiceGrpc.ConferenceService getConferenceService() {
+    static ConferenceServiceClientGrpc.ConferenceServiceClient getConferenceService() {
         return new TestConferenceService(BOUNDED_CONTEXT, CONFERENCE_REPOSITORY);
     }
 
@@ -117,7 +120,7 @@ public class Given {
     }
 
 
-    private static class TestConferenceService extends ConferenceServiceImpl {
+    private static class TestConferenceService extends ConferenceServiceClientImpl {
 
         private TestConferenceService(BoundedContext boundedContext, ConferenceRepository conferenceRepository) {
             super(boundedContext, conferenceRepository);

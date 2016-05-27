@@ -29,7 +29,7 @@ import org.spine3.base.EmailAddress;
 import org.spine3.base.Event;
 import org.spine3.protobuf.Messages;
 import org.spine3.samples.lobby.common.ConferenceId;
-import org.spine3.samples.lobby.conference.ConferenceServiceGrpc;
+import org.spine3.samples.lobby.conference.ConferenceServiceClientGrpc.ConferenceServiceClient;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
 import org.spine3.samples.lobby.conference.EditableConferenceInfo;
 import org.spine3.samples.lobby.conference.FindConferenceByIDRequest;
@@ -61,7 +61,7 @@ import static org.junit.Assert.assertTrue;
 public class ConferenceServiceShould {
 
     private static final BoundedContext boundedContext = Given.BOUNDED_CONTEXT;
-    private static final ConferenceServiceGrpc.ConferenceService conferenceService = Given.getConferenceService();
+    private static final ConferenceServiceClient conferenceService = Given.getConferenceService();
     private static final Void NO_RESULT = null;
 
     private Given given;

@@ -32,7 +32,7 @@ import "spine/time/time.proto";
 import "spine/money/money.proto";
 
 
-service ConferenceService {
+service ConferenceServiceClient {
     rpc createConference(ConferenceInfo) returns (CreateConferenceResponse){}
     rpc findConference(FindConferenceRequest) returns (spine.samples.lobby.conference.contracts.Conference){}
     rpc findConferenceByID(FindConferenceByIDRequest) returns (spine.samples.lobby.conference.contracts.Conference){}
