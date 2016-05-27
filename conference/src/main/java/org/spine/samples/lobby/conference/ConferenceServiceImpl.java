@@ -33,6 +33,7 @@ import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.ConferenceServiceGrpc.ConferenceService;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
+import org.spine3.samples.lobby.conference.CreateSeatResponse;
 import org.spine3.samples.lobby.conference.EditableConferenceInfo;
 import org.spine3.samples.lobby.conference.FindConferenceByIDRequest;
 import org.spine3.samples.lobby.conference.FindConferenceRequest;
@@ -183,6 +184,10 @@ public class ConferenceServiceImpl implements ConferenceService {
 
     }
 
+    @Override
+    public void createSeat(ConferenceId request, StreamObserver<CreateSeatResponse> responseObserver) {
+        //TODO:2016-05-27:andrii.loboda: implement
+    }
 
     private void postEvents(Conference conference, Message... messages) {
 
