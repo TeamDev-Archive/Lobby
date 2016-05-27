@@ -20,8 +20,31 @@
 
 package org.spine.samples.lobby.conference;
 
+import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.conference.ConferenceInfo;
+import org.spine3.samples.lobby.conference.CreateConferenceResponse;
+import org.spine3.samples.lobby.conference.EditableConferenceInfo;
+import org.spine3.samples.lobby.conference.FindConferenceRequest;
+import org.spine3.samples.lobby.conference.PublishConferenceRequest;
+import org.spine3.samples.lobby.conference.PublishConferenceResponse;
+import org.spine3.samples.lobby.conference.UnpublishConferenceRequest;
+import org.spine3.samples.lobby.conference.UnpublishConferenceResponse;
+import org.spine3.samples.lobby.conference.UpdateConferenceResponse;
+import org.spine3.samples.lobby.conference.contracts.Conference;
+
 /**
  * @author andrii.loboda
  */
 public interface ConferenceService {
+    CreateConferenceResponse createConference(ConferenceInfo conference);
+
+    Conference findConference(FindConferenceRequest request);
+
+    UpdateConferenceResponse updateConference(EditableConferenceInfo conference);
+
+    PublishConferenceResponse publish(PublishConferenceRequest request);
+
+    Conference findConferenceByID(ConferenceId conferenceId);
+
+    UnpublishConferenceResponse unPublish(UnpublishConferenceRequest request);
 }

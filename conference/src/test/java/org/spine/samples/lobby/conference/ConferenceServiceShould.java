@@ -29,15 +29,10 @@ import org.spine3.base.EmailAddress;
 import org.spine3.base.Event;
 import org.spine3.protobuf.Messages;
 import org.spine3.samples.lobby.common.ConferenceId;
-import org.spine3.samples.lobby.conference.ConferenceServiceClientGrpc.ConferenceServiceClient;
-import org.spine3.samples.lobby.conference.CreateConferenceResponse;
 import org.spine3.samples.lobby.conference.EditableConferenceInfo;
-import org.spine3.samples.lobby.conference.FindConferenceByIDRequest;
 import org.spine3.samples.lobby.conference.FindConferenceRequest;
 import org.spine3.samples.lobby.conference.PublishConferenceRequest;
-import org.spine3.samples.lobby.conference.PublishConferenceResponse;
 import org.spine3.samples.lobby.conference.UnpublishConferenceRequest;
-import org.spine3.samples.lobby.conference.UnpublishConferenceResponse;
 import org.spine3.samples.lobby.conference.UpdateConferenceResponse;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
@@ -61,7 +56,7 @@ import static org.junit.Assert.assertTrue;
 public class ConferenceServiceShould {
 
     private static final BoundedContext boundedContext = Given.BOUNDED_CONTEXT;
-    private static final ConferenceServiceClient conferenceService = Given.getConferenceService();
+    private static final ConferenceService conferenceService = Given.getConferenceService();
     private static final Void NO_RESULT = null;
 
     private Given given;
@@ -81,8 +76,7 @@ public class ConferenceServiceShould {
     @Test
     public void create_conference_and_generate_ConferenceCreated_event() {
 
-        conferenceService.createConference(given.conferenceInfo(), TestStreamObserver.<CreateConferenceResponse>newBuilder()
-                                                                                     .build());
+        conferenceService.createConference(given.conferenceInfo());
 
         final EventStore eventStore = boundedContext.getEventBus()
                                                     .getEventStore();
@@ -108,11 +102,14 @@ public class ConferenceServiceShould {
                                                                    .setEmailAddress(email)
                                                                    .build();
 
-        final Function<Conference, Void> findConferenceCheck = createFindConferenceCheck(conference);
+        final Conference conferenceFound = conferenceService.findConference(request);
 
-        conferenceService.findConference(request, TestStreamObserver.<Conference>newBuilder()
-                                                                    .setNextFunction(findConferenceCheck)
-                                                                    .build());
+        Assert.assertEquals(conferenceFound.getAccessCode(), conference.getAccessCode());
+        Assert.assertEquals(conferenceFound.getOwner()
+                                           .getEmail(), conference.getOwner()
+                                                                  .getEmail());
+        Assert.assertEquals(conferenceFound.getId(), conference.getId());
+
     }
 
 
@@ -129,11 +126,9 @@ public class ConferenceServiceShould {
                                                                    .setName(expectedConferenceName)
                                                                    .build();
 
-        final Function<UpdateConferenceResponse, Void> updatedCheck = createUpdatedCheck(id);
+        final UpdateConferenceResponse response = conferenceService.updateConference(build);
 
-        conferenceService.updateConference(build, TestStreamObserver.<UpdateConferenceResponse>newBuilder()
-                                                                    .setNextFunction(updatedCheck)
-                                                                    .build());
+        Assert.assertEquals(response.getId(), id);
 
 
         final EventStore eventStore = boundedContext.getEventBus()
@@ -151,14 +146,17 @@ public class ConferenceServiceShould {
     public void publish_conference_and_generate_ConferencePublished_event() {
         final Conference conference = given.newConference();
 
-        final Function<PublishConferenceResponse, Void> publishedCheck = createPublishedCheck();
-        final PublishConferenceRequest request = PublishConferenceRequest.newBuilder()
-                                                                         .setId(conference.getId())
-                                                                         .build();
+        final ConferenceId conferenceId = conference.getId();
+        final PublishConferenceRequest publishConferenceRequest = PublishConferenceRequest.newBuilder()
+                                                                                          .setId(conferenceId)
+                                                                                          .build();
 
-        conferenceService.publish(request, TestStreamObserver.<PublishConferenceResponse>newBuilder()
-                                                             .setNextFunction(publishedCheck)
-                                                             .build());
+        conferenceService.publish(publishConferenceRequest);
+
+        final Conference conferenceById = conferenceService.findConferenceByID(conferenceId);
+
+        assertTrue("Conference should be published.", conferenceById.getIsPublished());
+
 
         final EventStore eventStore = boundedContext.getEventBus()
                                                     .getEventStore();
@@ -175,15 +173,15 @@ public class ConferenceServiceShould {
     public void unpublish_conference_and_generate_ConferenceUnpublished_event() {
         final Conference conference = given.newPublishedConference();
 
-        final Function<UnpublishConferenceResponse, Void> unpublishedCheck = createUnpublishedCheck();
+        final ConferenceId conferenceId = conference.getId();
+        final UnpublishConferenceRequest unpublishRequest = UnpublishConferenceRequest.newBuilder()
+                                                                                      .setId(conferenceId)
+                                                                                      .build();
 
-        final UnpublishConferenceRequest request = UnpublishConferenceRequest.newBuilder()
-                                                                             .setId(conference.getId())
-                                                                             .build();
+        conferenceService.unPublish(unpublishRequest);
 
-        conferenceService.unPublish(request, TestStreamObserver.<UnpublishConferenceResponse>newBuilder()
-                                                               .setNextFunction(unpublishedCheck)
-                                                               .build());
+        final Conference conferenceByID = conferenceService.findConferenceByID(conferenceId);
+        assertTrue("Conference should be unpublished.", !conferenceByID.getIsPublished());
 
         final EventStore eventStore = boundedContext.getEventBus()
                                                     .getEventStore();
@@ -193,37 +191,6 @@ public class ConferenceServiceShould {
         eventStore.read(EventStreamQuery.newBuilder()
                                         .build(), unpublishedObserver);
     }
-
-
-    @SuppressWarnings("unchecked")
-    private static Function<UnpublishConferenceResponse, Void> createUnpublishedCheck() {
-        return new Function<UnpublishConferenceResponse, Void>() {
-            @Override
-            public Void apply(final UnpublishConferenceResponse response) {
-                final Function<Conference, Void> unpublishedCheck = createUnpublishedCheck();
-                final FindConferenceByIDRequest request = FindConferenceByIDRequest.newBuilder()
-                                                                                   .setId(response.getId())
-                                                                                   .build();
-                conferenceService.findConferenceByID(request, TestStreamObserver.<Conference>newBuilder()
-                                                                                .setNextFunction(unpublishedCheck)
-                                                                                .build());
-
-
-                return NO_RESULT;
-            }
-
-            private Function<Conference, Void> createUnpublishedCheck() {
-                return new Function<Conference, Void>() {
-                    @Override
-                    public Void apply(Conference publishedConference) {
-                        assertTrue("Conference should be unpublished.", !publishedConference.getIsPublished());
-                        return NO_RESULT;
-                    }
-                };
-            }
-        };
-    }
-
 
     private static TestStreamObserver createUnpublishedObserver() {
         final List<Class> messages = new LinkedList<>();
@@ -295,62 +262,6 @@ public class ConferenceServiceShould {
                                  .build();
     }
 
-    private static Function<Conference, Void> createFindConferenceCheck(final Conference conference) {
-        return new Function<Conference, Void>() {
-            @Override
-            public Void apply(Conference input) {
-
-                Assert.assertEquals(input.getAccessCode(), conference.getAccessCode());
-                Assert.assertEquals(input.getOwner()
-                                         .getEmail(), conference.getOwner()
-                                                                .getEmail());
-                Assert.assertEquals(input.getId(), conference.getId());
-
-                return NO_RESULT;
-            }
-        };
-    }
-
-    private static Function<UpdateConferenceResponse, Void> createUpdatedCheck(final ConferenceId id) {
-        return new Function<UpdateConferenceResponse, Void>() {
-            @Override
-            public Void apply(UpdateConferenceResponse input) {
-                Assert.assertEquals(input.getId(), id);
-                return NO_RESULT;
-            }
-        };
-    }
-
-
-    @SuppressWarnings("unchecked")
-    private static Function<PublishConferenceResponse, Void> createPublishedCheck() {
-        return new Function<PublishConferenceResponse, Void>() {
-            @Override
-            public Void apply(final PublishConferenceResponse response) {
-                final FindConferenceByIDRequest request = FindConferenceByIDRequest.newBuilder()
-                                                                                   .setId(response.getId())
-                                                                                   .build();
-                final Function<Conference, Void> conferencePublishedCheck = createConferencePublishedCheck();
-
-                conferenceService.findConferenceByID(request, TestStreamObserver.<Conference>newBuilder()
-                                                                                .setNextFunction(conferencePublishedCheck)
-                                                                                .build());
-
-
-                return NO_RESULT;
-            }
-
-            private Function<Conference, Void> createConferencePublishedCheck() {
-                return new Function<Conference, Void>() {
-                    @Override
-                    public Void apply(Conference publishedConference) {
-                        assertTrue("Conference should be published.", publishedConference.getIsPublished());
-                        return NO_RESULT;
-                    }
-                };
-            }
-        };
-    }
 
     private static TestStreamObserver createPublishedObserver() {
         final List<Class> messages = new LinkedList<>();
