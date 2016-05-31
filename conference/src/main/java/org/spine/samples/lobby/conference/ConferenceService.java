@@ -22,6 +22,7 @@ package org.spine.samples.lobby.conference;
 
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.SeatType;
+import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
 import org.spine3.samples.lobby.conference.EditableConferenceInfo;
@@ -54,4 +55,6 @@ public interface ConferenceService {
     void createSeat(ConferenceId conferenceId, SeatType seatType);
 
     Set<SeatType> findSeatTypes(ConferenceId conferenceId);
+
+    SeatType findSeatType(SeatTypeId seatTypeId);
 }

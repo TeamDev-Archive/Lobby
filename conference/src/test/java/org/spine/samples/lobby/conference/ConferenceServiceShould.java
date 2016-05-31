@@ -226,7 +226,6 @@ public class ConferenceServiceShould {
         //TODO:2016-05-31:andrii.loboda: it is impossible to identify whether events has been published.
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void find_seat_types_of_conference() {
         final Conference conference = given.newConference();
@@ -238,6 +237,17 @@ public class ConferenceServiceShould {
         assertEquals(seatTypes.size(), 1);
         final SeatType persistedSeatType = seatTypes.iterator()
                                                     .next();
+        assertSeatType(conference.getId(), seatType, persistedSeatType);
+    }
+
+    @Test
+    public void find_seat_type() {
+        final Conference conference = given.newConference();
+        final SeatType seatType = given.newSeatType(conference.getId());
+
+        conferenceService.createSeat(conference.getId(), seatType);
+
+        final SeatType persistedSeatType = conferenceService.findSeatType(seatType.getId());
         assertSeatType(conference.getId(), seatType, persistedSeatType);
     }
 

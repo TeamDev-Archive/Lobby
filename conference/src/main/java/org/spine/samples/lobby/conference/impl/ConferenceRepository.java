@@ -20,11 +20,17 @@
 
 package org.spine.samples.lobby.conference.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import org.spine3.base.EmailAddress;
 import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.common.SeatType;
+import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
@@ -63,6 +69,24 @@ public class ConferenceRepository {
 
     public void deleteAll() {
         store.clear();
+    }
+
+    @Nullable
+    public Conference load(final SeatTypeId seatTypeId) {
+        for (Conference conference : store.values()) {
+            final List<SeatType> seatTypeList = conference.getSeatTypeList();
+            final Optional<SeatType> seatTypeOptional = Iterables.tryFind(seatTypeList, new Predicate<SeatType>() {
+                @Override
+                public boolean apply(SeatType input) {
+                    return input.getId()
+                                .equals(seatTypeId);
+                }
+            });
+            if (seatTypeOptional.isPresent()) {
+                return conference;
+            }
+        }
+        return null;
     }
 }
 

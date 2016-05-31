@@ -20,6 +20,8 @@
 
 package org.spine.samples.lobby.conference.impl;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.protobuf.Message;
 import com.google.protobuf.util.TimeUtil;
 import org.spine.samples.lobby.conference.ConferenceService;
@@ -30,6 +32,7 @@ import org.spine3.base.Identifiers;
 import org.spine3.protobuf.Messages;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.SeatType;
+import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
@@ -82,9 +85,9 @@ public class ConferenceServiceImpl implements ConferenceService {
         postEvents(conference, conferenceCreatedEvent);
 
         final CreateConferenceResponse response = CreateConferenceResponse.newBuilder()
-                                                                       .setId(conferenceToPersist.getId())
-                                                                       .setAccessCode(accessCode)
-                                                                       .build();
+                                                                          .setId(conferenceToPersist.getId())
+                                                                          .setAccessCode(accessCode)
+                                                                          .build();
         return response;
     }
 
@@ -170,8 +173,8 @@ public class ConferenceServiceImpl implements ConferenceService {
         checkNotNull(conference, "There is no conference with id: %s", conferenceId);
 
         final Conference conferenceWithSeats = conference.toBuilder()
-                                           .addSeatType(seatType)
-                                           .build();
+                                                         .addSeatType(seatType)
+                                                         .build();
         conferenceRepository.store(conferenceWithSeats);
 
         if (conferenceWithSeats.getIsPublished()) {
@@ -185,6 +188,20 @@ public class ConferenceServiceImpl implements ConferenceService {
         final Conference conference = conferenceRepository.load(conferenceId);
         checkNotNull(conference, "There is no conference with id: %s", conferenceId);
         return newHashSet(conference.getSeatTypeList());
+    }
+
+    @Override
+    public SeatType findSeatType(final SeatTypeId seatTypeId) {
+        final Conference conference = conferenceRepository.load(seatTypeId);
+        checkNotNull(conference, "There is no conference which contains seatType with ID: %s", seatTypeId);
+        final SeatType type = Iterables.find(conference.getSeatTypeList(), new Predicate<SeatType>() {
+            @Override
+            public boolean apply(SeatType input) {
+                return input.getId()
+                            .equals(seatTypeId);
+            }
+        });
+        return type;
     }
 
     private static Conference updateFromConferenceInfo(Conference target, EditableConferenceInfo info) {
