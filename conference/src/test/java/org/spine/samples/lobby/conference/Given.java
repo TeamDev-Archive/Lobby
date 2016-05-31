@@ -23,8 +23,10 @@ package org.spine.samples.lobby.conference;
 import org.spine.samples.lobby.conference.impl.ConferenceRepository;
 import org.spine.samples.lobby.conference.impl.ConferenceServiceImpl;
 import org.spine3.base.EmailAddress;
+import org.spine3.money.Money;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.PersonalInfo;
+import org.spine3.samples.lobby.common.SeatType;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.contracts.Conference;
@@ -75,6 +77,22 @@ public class Given {
 
     /* package */ Conference newConference() {
         return CONFERENCE_REPOSITORY.load(CONFERENCE_ID);
+    }
+
+    /* package*/ SeatType newSeatType(ConferenceId conferenceId){
+        final Money price = Money.newBuilder()
+                                 .setCurrencyValue(1000)
+                                 .build();
+        final int totalQuantity = 3;
+        final String seatTypeName = "For Rich people";
+        final SeatType seatType = SeatType.newBuilder()
+                                          .setConferenceId(conferenceId)
+                                          .setName(seatTypeName)
+                                          .setPrice(price)
+                                          .setQuantityTotal(totalQuantity)
+                                          .build();
+
+        return seatType;
     }
 
     /* package */ Conference newPublishedConference() {

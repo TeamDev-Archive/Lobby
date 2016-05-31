@@ -29,6 +29,7 @@ import org.spine3.base.EventId;
 import org.spine3.base.Identifiers;
 import org.spine3.protobuf.Messages;
 import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.common.SeatType;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
 import org.spine3.samples.lobby.conference.CreateConferenceResponse;
@@ -44,10 +45,14 @@ import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferencePublished;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUnpublished;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
+import org.spine3.samples.sample.lobby.conference.contracts.SeatTypeCreated;
 import org.spine3.server.BoundedContext;
+
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Sets.newHashSet;
 import static org.spine.samples.lobby.conference.impl.EventFactory.*;
 import static org.spine3.base.Events.createEvent;
 
@@ -157,6 +162,29 @@ public class ConferenceServiceImpl implements ConferenceService {
                                                                                 .build();
 
         return response;
+    }
+
+    @Override
+    public void createSeat(ConferenceId conferenceId, SeatType seatType) {
+        final Conference conference = conferenceRepository.load(conferenceId);
+        checkNotNull(conference, "There is no conference with id: %s", conferenceId);
+
+        final Conference conferenceWithSeats = conference.toBuilder()
+                                           .addSeatType(seatType)
+                                           .build();
+        conferenceRepository.store(conferenceWithSeats);
+
+        if (conferenceWithSeats.getIsPublished()) {
+            final SeatTypeCreated seatTypeCreated = seatTypeCreated(seatType);
+            postEvents(conferenceWithSeats, seatTypeCreated);
+        }
+    }
+
+    @Override
+    public Set<SeatType> findSeatTypes(ConferenceId conferenceId) {
+        final Conference conference = conferenceRepository.load(conferenceId);
+        checkNotNull(conference, "There is no conference with id: %s", conferenceId);
+        return newHashSet(conference.getSeatTypeList());
     }
 
     private static Conference updateFromConferenceInfo(Conference target, EditableConferenceInfo info) {

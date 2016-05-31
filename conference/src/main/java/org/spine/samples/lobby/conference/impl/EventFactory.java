@@ -20,11 +20,13 @@
 
 package org.spine.samples.lobby.conference.impl;
 
+import org.spine3.samples.lobby.common.SeatType;
 import org.spine3.samples.lobby.conference.contracts.Conference;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferencePublished;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUnpublished;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
+import org.spine3.samples.sample.lobby.conference.contracts.SeatTypeCreated;
 
 /**
  * @author andrii.loboda
@@ -61,6 +63,14 @@ import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
         return ConferenceUnpublished.newBuilder()
                                     .setConferenceId(conference.getId())
                                     .build();
+
+    }
+
+    /* package */
+    static SeatTypeCreated seatTypeCreated(SeatType seatType) {
+        return SeatTypeCreated.newBuilder()
+                              .setSeatType(seatType)
+                              .build();
 
     }
 

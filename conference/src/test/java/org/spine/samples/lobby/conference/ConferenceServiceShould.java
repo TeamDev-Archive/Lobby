@@ -29,6 +29,7 @@ import org.spine3.base.EmailAddress;
 import org.spine3.base.Event;
 import org.spine3.protobuf.Messages;
 import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.common.SeatType;
 import org.spine3.samples.lobby.conference.EditableConferenceInfo;
 import org.spine3.samples.lobby.conference.FindConferenceRequest;
 import org.spine3.samples.lobby.conference.PublishConferenceRequest;
@@ -39,12 +40,14 @@ import org.spine3.samples.sample.lobby.conference.contracts.ConferenceCreated;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferencePublished;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUnpublished;
 import org.spine3.samples.sample.lobby.conference.contracts.ConferenceUpdated;
+import org.spine3.samples.sample.lobby.conference.contracts.SeatTypeCreated;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.event.EventStore;
 import org.spine3.server.event.EventStreamQuery;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -192,6 +195,61 @@ public class ConferenceServiceShould {
                                         .build(), unpublishedObserver);
     }
 
+    @Test
+    public void create_seat() {
+        final Conference conference = given.newConference();
+
+        final SeatType seatType = given.newSeatType(conference.getId());
+        conferenceService.createSeat(conference.getId(), seatType);
+
+        final Conference conferenceWithSeats = conferenceService.findConferenceByID(conference.getId());
+        assertEquals(conferenceWithSeats.getSeatTypeCount(), 1);
+        final SeatType singleSeatType = conferenceWithSeats.getSeatType(0);
+        assertSeatType(conference.getId(), seatType, singleSeatType);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void create_seat_and_generate_SeatCreated_event_if_conference_published() {
+        final Conference conference = given.newPublishedConference();
+        final SeatType seatType = given.newSeatType(conference.getId());
+
+        conferenceService.createSeat(conference.getId(), seatType);
+
+
+        final EventStore eventStore = boundedContext.getEventBus()
+                                                    .getEventStore();
+        final TestStreamObserver seatTypeCreatedObserver = createSeatTypeCreatedObserver();
+        eventStore.read(EventStreamQuery.newBuilder()
+                                        .build(), seatTypeCreatedObserver);
+        //TODO:2016-05-31:andrii.loboda: it is impossible to identify whether events has been published.
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void find_seat_types_of_conference() {
+        final Conference conference = given.newConference();
+        final SeatType seatType = given.newSeatType(conference.getId());
+
+        conferenceService.createSeat(conference.getId(), seatType);
+
+        final Set<SeatType> seatTypes = conferenceService.findSeatTypes(conference.getId());
+        assertEquals(seatTypes.size(), 1);
+        final SeatType persistedSeatType = seatTypes.iterator()
+                                                    .next();
+        assertSeatType(conference.getId(), seatType, persistedSeatType);
+    }
+
+
+    private static void assertSeatType(ConferenceId conferenceId, SeatType expectedSeatType, SeatType actualSeatType) {
+        assertEquals(actualSeatType.getId(), expectedSeatType.getId());
+        assertEquals(actualSeatType.getConferenceId(), conferenceId);
+        assertEquals(actualSeatType.getQuantityTotal(), expectedSeatType.getQuantityTotal());
+        assertEquals(actualSeatType.getPrice(), expectedSeatType.getPrice());
+        assertEquals(actualSeatType.getName(), expectedSeatType.getName());
+    }
+
     private static TestStreamObserver createUnpublishedObserver() {
         final List<Class> messages = new LinkedList<>();
         final Function<Event, Void> checkConferencePublished = new Function<Event, Void>() {
@@ -232,6 +290,34 @@ public class ConferenceServiceShould {
         };
         return TestStreamObserver.<Event>newBuilder()
                                  .setNextFunction(checkConferenceCreated)
+                                 .build();
+    }
+
+    private static TestStreamObserver createSeatTypeCreatedObserver() {
+        final List<Class> messages = new LinkedList<>();
+
+        final Function<Event, Void> checkSeatTypeCreated = new Function<Event, Void>() {
+            @SuppressWarnings("ReturnOfNull")
+            @Override
+            public Void apply(Event event) {
+                messages.add(Messages.fromAny(event.getMessage())
+                                     .getClass());
+                return NO_RESULT;
+            }
+        };
+
+
+        final Function<Void, Void> onCompleteUpdate = new Function<Void, Void>() {
+            @Override
+            public Void apply(Void input) {
+                assertTrue(messages.contains(ConferenceCreated.class));
+                assertTrue(messages.contains(SeatTypeCreated.class));
+                return NO_RESULT;
+            }
+        };
+        return TestStreamObserver.<Event>newBuilder()
+                                 .setNextFunction(checkSeatTypeCreated)
+                                 .setOnCompleteFunction(onCompleteUpdate)
                                  .build();
     }
 
