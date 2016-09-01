@@ -43,9 +43,9 @@ import org.spine3.samples.lobby.registration.contracts.OrderTotalsCalculated;
 import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.util.Seats;
-import org.spine3.server.command.Assign;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
+import org.spine3.server.command.Assign;
 import org.spine3.server.entity.Entity;
 
 import javax.annotation.Nullable;
@@ -143,8 +143,8 @@ public class OrderAggregate extends Aggregate<OrderId, Order, Order.Builder> {
         checkNotConfirmed(getState(), command);
         validateCommand(command);
         final OrderExpired result = OrderExpired.newBuilder()
-                .setOrderId(command.getOrderId())
-                .build();
+                                                .setOrderId(command.getOrderId())
+                                                .build();
         return result;
     }
 
@@ -154,9 +154,9 @@ public class OrderAggregate extends Aggregate<OrderId, Order, Order.Builder> {
         checkNotConfirmed(state, command);
         validateCommand(command);
         final OrderConfirmed result = OrderConfirmed.newBuilder()
-                .setOrderId(command.getOrderId())
-                .addAllSeat(state.getSeatList())
-                .build();
+                                                    .setOrderId(command.getOrderId())
+                                                    .addAllSeat(state.getSeatList())
+                                                    .build();
         return result;
     }
 
@@ -164,9 +164,9 @@ public class OrderAggregate extends Aggregate<OrderId, Order, Order.Builder> {
     public OrderRegistrantAssigned handle(AssignRegistrantDetails command, CommandContext context) {
         validateCommand(command);
         final OrderRegistrantAssigned result = OrderRegistrantAssigned.newBuilder()
-                .setOrderId(command.getOrderId())
-                .setPersonalInfo(command.getRegistrant())
-                .build();
+                                                                      .setOrderId(command.getOrderId())
+                                                                      .setPersonalInfo(command.getRegistrant())
+                                                                      .build();
         return result;
     }
 
@@ -268,8 +268,8 @@ public class OrderAggregate extends Aggregate<OrderId, Order, Order.Builder> {
 
         private static OrderTotalsCalculated orderTotalsCalculated(OrderId orderId, OrderTotal total) {
             final OrderTotalsCalculated.Builder result = OrderTotalsCalculated.newBuilder()
-                    .setOrderId(orderId)
-                    .addAllOrderLine(total.getOrderLineList());
+                                                                              .setOrderId(orderId)
+                                                                              .addAllOrderLine(total.getOrderLineList());
 
             final Money totalPrice = total.getTotalPrice();
             if (totalPrice.getAmount() > 0) {
@@ -283,37 +283,39 @@ public class OrderAggregate extends Aggregate<OrderId, Order, Order.Builder> {
         private static OrderPlaced orderPlaced(RegisterToConference command) {
             final Timestamp expirationTime = add(getCurrentTime(), RESERVATION_EXPIRATION_PERIOD);
             final String code = RandomPasswordGenerator.generate(ACCESS_CODE_LENGTH);
-            final OrderAccessCode accessCode = OrderAccessCode.newBuilder().setValue(code).build();
+            final OrderAccessCode accessCode = OrderAccessCode.newBuilder()
+                                                              .setValue(code)
+                                                              .build();
 
             final OrderPlaced.Builder result = OrderPlaced.newBuilder()
-                    .setOrderId(command.getOrderId())
-                    .setConferenceId(command.getConferenceId())
-                    .addAllSeat(command.getSeatList())
-                    .setReservationAutoExpiration(expirationTime)
-                    .setAccessCode(accessCode);
+                                                          .setOrderId(command.getOrderId())
+                                                          .setConferenceId(command.getConferenceId())
+                                                          .addAllSeat(command.getSeatList())
+                                                          .setReservationAutoExpiration(expirationTime)
+                                                          .setAccessCode(accessCode);
             return result.build();
         }
 
         private static OrderUpdated orderUpdated(RegisterToConference command) {
             final OrderUpdated.Builder result = OrderUpdated.newBuilder()
-                    .setOrderId(command.getOrderId())
-                    .addAllSeat(command.getSeatList());
+                                                            .setOrderId(command.getOrderId())
+                                                            .addAllSeat(command.getSeatList());
             return result.build();
         }
 
         private static OrderPartiallyReserved orderPartiallyReserved(MarkSeatsAsReserved command) {
             final OrderPartiallyReserved.Builder result = OrderPartiallyReserved.newBuilder()
-                    .setOrderId(command.getOrderId())
-                    .setReservationExpiration(command.getReservationExpiration())
-                    .addAllSeat(command.getSeatList());
+                                                                                .setOrderId(command.getOrderId())
+                                                                                .setReservationExpiration(command.getReservationExpiration())
+                                                                                .addAllSeat(command.getSeatList());
             return result.build();
         }
 
         private static OrderReservationCompleted orderReservationCompleted(MarkSeatsAsReserved command) {
             final OrderReservationCompleted.Builder result = OrderReservationCompleted.newBuilder()
-                    .setOrderId(command.getOrderId())
-                    .setReservationExpiration(command.getReservationExpiration())
-                    .addAllSeat(command.getSeatList());
+                                                                                      .setOrderId(command.getOrderId())
+                                                                                      .setReservationExpiration(command.getReservationExpiration())
+                                                                                      .addAllSeat(command.getSeatList());
             return result.build();
         }
     }

@@ -29,8 +29,8 @@ import javax.annotation.Nonnull;
 /**
  * The repository for order aggregates.
  *
- * @see OrderAggregate
  * @author Alexander Litus
+ * @see OrderAggregate
  */
 public class OrderRepository extends AggregateRepository<OrderId, OrderAggregate> {
 
@@ -39,7 +39,7 @@ public class OrderRepository extends AggregateRepository<OrderId, OrderAggregate
     /**
      * Creates a new repository instance.
      *
-     * @param boundedContext the bounded context to which this repository belongs
+     * @param boundedContext      the bounded context to which this repository belongs
      * @param orderPricingService the pricing service to inject to order aggregates
      */
     public OrderRepository(BoundedContext boundedContext, OrderPricingService orderPricingService) {

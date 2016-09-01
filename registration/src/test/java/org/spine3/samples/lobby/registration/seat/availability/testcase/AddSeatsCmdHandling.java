@@ -38,9 +38,9 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 public class AddSeatsCmdHandling extends TestCase {
 
     private static final AddSeats ADD_SEATS = AddSeats.newBuilder()
-            .setQuantity(newSeatQuantity(5))
-            .setConferenceId(newConferenceId())
-            .build();
+                                                      .setQuantity(newSeatQuantity(5))
+                                                      .setConferenceId(newConferenceId())
+                                                      .build();
 
     public AddSeats givenCommand() {
         return ADD_SEATS;
@@ -53,9 +53,10 @@ public class AddSeatsCmdHandling extends TestCase {
     @Override
     public SeatsAvailabilityAggregate givenAggregate() {
         final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
-        final SeatsAvailability state = aggregate.getState().toBuilder()
-                .addAvailableSeat(newSeatQuantity(20))
-                .build();
+        final SeatsAvailability state = aggregate.getState()
+                                                 .toBuilder()
+                                                 .addAvailableSeat(newSeatQuantity(20))
+                                                 .build();
         aggregate.incrementStateForTest(state);
         return aggregate;
     }

@@ -26,8 +26,8 @@ option java_outer_classname = "CommonContractsProto";
 option java_multiple_files = true;
 
 import "spine/money/money.proto";
-import "spine/base/person.proto";
-import "spine/base/email.proto";
+import "spine/people/person_name.proto";
+import "spine/net/email_address.proto";
 
 // The ID of the order.
 message OrderId {
@@ -81,10 +81,10 @@ message SeatType {
 // The info about a person.
 message PersonalInfo {
     // The person's name.
-    spine.base.PersonName name = 1;
+    spine.people.PersonName name = 1;
 
     // The person's email.
-    spine.base.EmailAddress email = 2;
+    spine.net.EmailAddress email = 2;
 }
 
 // The part of the URL used to access the conference.

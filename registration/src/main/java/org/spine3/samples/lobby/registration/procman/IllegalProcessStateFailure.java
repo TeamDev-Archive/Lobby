@@ -22,7 +22,7 @@ package org.spine3.samples.lobby.registration.procman;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.Message;
-import org.spine3.server.failure.FailureThrowable;
+import org.spine3.base.FailureThrowable;
 
 /**
  * A business failure which is thrown if a registration process is in inappropriate state for the requested operation.
@@ -35,8 +35,8 @@ public class IllegalProcessStateFailure extends FailureThrowable {
      * Creates a new failure instance.
      *
      * @param processManagerId an ID of the current process manager
-     * @param processState a current state of the process
-     * @param messageHandled a message which is handled but cannot be processed
+     * @param processState     a current state of the process
+     * @param messageHandled   a message which is handled but cannot be processed
      */
     public IllegalProcessStateFailure(ProcessManagerId processManagerId,
                                       RegistrationProcess.State processState,

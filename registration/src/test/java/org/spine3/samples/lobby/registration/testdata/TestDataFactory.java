@@ -21,29 +21,28 @@
 package org.spine3.samples.lobby.registration.testdata;
 
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.protobuf.Any;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
 import org.spine3.base.CommandContext;
 import org.spine3.base.CommandId;
 import org.spine3.base.Commands;
-import org.spine3.base.EmailAddress;
 import org.spine3.base.Event;
 import org.spine3.base.EventContext;
 import org.spine3.base.EventId;
 import org.spine3.base.Events;
-import org.spine3.base.PersonName;
+import org.spine3.net.EmailAddress;
+import org.spine3.people.PersonName;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.command.CommandBus;
 import org.spine3.server.command.CommandStore;
-import org.spine3.server.command.ExecutorCommandScheduler;
 import org.spine3.server.event.EventBus;
 import org.spine3.server.event.EventStore;
 import org.spine3.server.storage.StorageFactory;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
-import static org.spine3.protobuf.Messages.toAny;
 
 /**
  * The utility class which is used for creating objects needed in tests.
@@ -63,15 +62,17 @@ public class TestDataFactory {
     public static BoundedContext newBoundedContext() {
         final InMemoryStorageFactory storageFactory = InMemoryStorageFactory.getInstance();
         final EventStore eventStore = EventStore.newBuilder()
-                .setStreamExecutor(MoreExecutors.directExecutor())
-                .setStorage(storageFactory.createEventStorage())
-                .build();
+                                                .setStreamExecutor(MoreExecutors.directExecutor())
+                                                .setStorage(storageFactory.createEventStorage())
+                                                .build();
         final CommandBus commandBus = newCommandBus(storageFactory);
         final BoundedContext.Builder result = BoundedContext.newBuilder()
-                .setName("Orders & Registrations tests")
-                .setStorageFactory(storageFactory)
-                .setCommandBus(commandBus)
-                .setEventBus(EventBus.newInstance(eventStore));
+                                                            .setName("Orders & Registrations tests")
+                                                            .setStorageFactory(storageFactory)
+                                                            .setCommandBus(commandBus)
+                                                            .setEventBus(EventBus.newBuilder()
+                                                                                 .setEventStore(eventStore)
+                                                                                 .build());
         return result.build();
     }
 
@@ -85,20 +86,21 @@ public class TestDataFactory {
 
     private static CommandBus newCommandBus(StorageFactory storageFactory) {
         final CommandStore store = new CommandStore(storageFactory.createCommandStorage());
-        final CommandBus.Builder builder = CommandBus.newBuilder();
-        builder.setCommandStore(store);
-        // TODO:2016-04-08:alexander.litus: change to App Engine-compatible scheduler
-        builder.setScheduler(new ExecutorCommandScheduler());
-        return builder.build();
+        return CommandBus.newInstance(store);
     }
 
     /**
      * Creates a new {@link PersonalInfo} instance with the given {@code givenName}, {@code familyName} and {@code email}.
      */
     public static PersonalInfo newPersonalInfo(String givenName, String familyName, String email) {
-        final PersonName.Builder name = PersonName.newBuilder().setGivenName(givenName).setFamilyName(familyName);
-        final EmailAddress.Builder emailAddress = EmailAddress.newBuilder().setValue(email);
-        final PersonalInfo.Builder result = PersonalInfo.newBuilder().setName(name).setEmail(emailAddress);
+        final PersonName.Builder name = PersonName.newBuilder()
+                                                  .setGivenName(givenName)
+                                                  .setFamilyName(familyName);
+        final EmailAddress.Builder emailAddress = EmailAddress.newBuilder()
+                                                              .setValue(email);
+        final PersonalInfo.Builder result = PersonalInfo.newBuilder()
+                                                        .setName(name)
+                                                        .setEmail(emailAddress);
         return result.build();
     }
 
@@ -108,16 +110,18 @@ public class TestDataFactory {
     public static Event newEvent(Message event) {
         final CommandId commandId = Commands.generateId();
         final EventId eventId = Events.generateId();
-        final CommandContext commandContext = CommandContext.newBuilder().setCommandId(commandId).build();
+        final CommandContext commandContext = CommandContext.newBuilder()
+                                                            .setCommandId(commandId)
+                                                            .build();
         final Timestamp currentTime = getCurrentTime();
         final EventContext eventContext = EventContext.newBuilder()
-                .setCommandContext(commandContext)
-                .setEventId(eventId)
-                .setTimestamp(currentTime)
-                .build();
+                                                      .setCommandContext(commandContext)
+                                                      .setEventId(eventId)
+                                                      .setTimestamp(currentTime)
+                                                      .build();
         final Event.Builder result = Event.newBuilder()
-                .setContext(eventContext)
-                .setMessage(toAny(event));
+                                          .setContext(eventContext)
+                                          .setMessage(Any.pack(event));
         return result.build();
     }
 }

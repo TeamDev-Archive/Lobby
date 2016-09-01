@@ -26,8 +26,8 @@ import org.spine3.server.aggregate.AggregateRepository;
 /**
  * The repository for SeatsAvailability aggregates.
  *
- * @see SeatsAvailabilityAggregate
  * @author Alexander Litus
+ * @see SeatsAvailabilityAggregate
  */
 public class SeatsAvailabilityRepository extends AggregateRepository<SeatsAvailabilityId, SeatsAvailabilityAggregate> {
 

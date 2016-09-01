@@ -72,7 +72,8 @@ public class OrderPricingServiceImpl implements OrderPricingService {
     @SuppressWarnings("TypeMayBeWeakened")
     private static void checkOrderLine(SeatOrderLine orderLine, ConferenceId conferenceId, SeatQuantity seat) {
         if (orderLine.equals(SeatOrderLine.getDefaultInstance())) {
-            throw new IllegalArgumentException("Unknown seat with type ID: " + seat.getSeatTypeId().getUuid() +
+            throw new IllegalArgumentException("Unknown seat with type ID: " + seat.getSeatTypeId()
+                                                                                   .getUuid() +
                     " for conference with ID: " + conferenceId.getUuid());
         }
     }
@@ -80,17 +81,20 @@ public class OrderPricingServiceImpl implements OrderPricingService {
     @SuppressWarnings("TypeMayBeWeakened")
     private static SeatOrderLine buildOrderLine(SeatQuantity seat, Iterable<SeatType> seatTypes) {
         for (SeatType seatType : seatTypes) {
-            if (seat.getSeatTypeId().equals(seatType.getId())) {
+            if (seat.getSeatTypeId()
+                    .equals(seatType.getId())) {
                 final Money unitPrice = seatType.getPrice();
                 final int quantity = seat.getQuantity();
                 final long totalAmount = unitPrice.getAmount() * quantity;
-                final Money totalPrice = Money.newBuilder().setAmount(totalAmount).build();
+                final Money totalPrice = Money.newBuilder()
+                                              .setAmount(totalAmount)
+                                              .build();
                 final SeatOrderLine orderLine = SeatOrderLine.newBuilder()
-                        .setQuantity(quantity)
-                        .setSeatTypeId(seat.getSeatTypeId())
-                        .setUnitPrice(unitPrice)
-                        .setLineTotal(totalPrice)
-                        .build();
+                                                             .setQuantity(quantity)
+                                                             .setSeatTypeId(seat.getSeatTypeId())
+                                                             .setUnitPrice(unitPrice)
+                                                             .setLineTotal(totalPrice)
+                                                             .build();
                 return orderLine;
             }
         }
@@ -99,7 +103,8 @@ public class OrderPricingServiceImpl implements OrderPricingService {
 
     private List<SeatType> getSeatTypes(ConferenceId conferenceId) {
         final ConferenceProjection conference = conferenceRepository.load(conferenceId);
-        final List<SeatType> seatTypes = conference.getState().getSeatTypeList();
+        final List<SeatType> seatTypes = conference.getState()
+                                                   .getSeatTypeList();
         return seatTypes;
     }
 }

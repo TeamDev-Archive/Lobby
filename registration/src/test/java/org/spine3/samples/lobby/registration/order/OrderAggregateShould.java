@@ -164,7 +164,8 @@ public class OrderAggregateShould {
 
         final OrderConfirmed event = aggregate.handle(cmd, Given.Command.context());
 
-        final List<SeatQuantity> seats = aggregate.getState().getSeatList();
+        final List<SeatQuantity> seats = aggregate.getState()
+                                                  .getSeatList();
         Assert.eventIsValid(event, cmd, seats);
     }
 
@@ -219,7 +220,8 @@ public class OrderAggregateShould {
 
         aggregate.applyForTest(event, Given.Command.context());
 
-        assertEquals(event.getSeatList(), aggregate.getState().getSeatList());
+        assertEquals(event.getSeatList(), aggregate.getState()
+                                                   .getSeatList());
     }
 
     @Test
@@ -229,7 +231,8 @@ public class OrderAggregateShould {
 
         aggregate.applyForTest(event, Given.Command.context());
 
-        assertEquals(event.getSeatList(), aggregate.getState().getSeatList());
+        assertEquals(event.getSeatList(), aggregate.getState()
+                                                   .getSeatList());
     }
 
     @Test
@@ -239,7 +242,8 @@ public class OrderAggregateShould {
 
         aggregate.applyForTest(event, Given.Command.context());
 
-        assertEquals(event.getSeatList(), aggregate.getState().getSeatList());
+        assertEquals(event.getSeatList(), aggregate.getState()
+                                                   .getSeatList());
     }
 
     @Test
@@ -249,7 +253,8 @@ public class OrderAggregateShould {
 
         aggregate.applyForTest(event, Given.Command.context());
 
-        assertEquals(true, aggregate.getState().getIsConfirmed());
+        assertEquals(true, aggregate.getState()
+                                    .getIsConfirmed());
     }
 
     @Test
@@ -259,7 +264,8 @@ public class OrderAggregateShould {
 
         aggregate.applyForTest(event, Given.Command.context());
 
-        assertEquals(event.getTotal(), aggregate.getState().getPrice());
+        assertEquals(event.getTotal(), aggregate.getState()
+                                                .getPrice());
     }
 
     @Test
@@ -269,7 +275,8 @@ public class OrderAggregateShould {
 
         aggregate.applyForTest(event, Given.Command.context());
 
-        assertTrue(aggregate.getState().getIsExpired());
+        assertTrue(aggregate.getState()
+                            .getIsExpired());
     }
 
     @Test
@@ -279,7 +286,8 @@ public class OrderAggregateShould {
 
         aggregate.applyForTest(event, Given.Command.context());
 
-        assertEquals(event.getPersonalInfo(), aggregate.getState().getRegistrant());
+        assertEquals(event.getPersonalInfo(), aggregate.getState()
+                                                       .getRegistrant());
     }
 
     private static class Assert {

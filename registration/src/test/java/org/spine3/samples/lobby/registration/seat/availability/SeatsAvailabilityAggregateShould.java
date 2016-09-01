@@ -299,13 +299,15 @@ public class SeatsAvailabilityAggregateShould {
         final SeatsReservedEventApplying testCase = new SeatsReservedEventApplying();
         final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final SeatsReserved event = testCase.givenEvent();
-        final String reservationId = event.getReservationId().getUuid();
+        final String reservationId = event.getReservationId()
+                                          .getUuid();
 
         aggregate.applyForTest(event, CMD_CONTEXT);
 
         final SeatsAvailability state = aggregate.getState();
         assertEquals(event.getAvailableSeatUpdatedList(), state.getAvailableSeatList());
-        final SeatQuantities reservedSeats = state.getPendingReservations().get(reservationId);
+        final SeatQuantities reservedSeats = state.getPendingReservations()
+                                                  .get(reservationId);
         assertEquals(event.getReservedSeatUpdatedList(), reservedSeats.getItemList());
     }
 
@@ -317,7 +319,8 @@ public class SeatsAvailabilityAggregateShould {
 
         aggregate.applyForTest(event, CMD_CONTEXT);
 
-        final Map<String, SeatQuantities> pendingReservations = aggregate.getState().getPendingReservations();
+        final Map<String, SeatQuantities> pendingReservations = aggregate.getState()
+                                                                         .getPendingReservations();
         assertEquals(0, pendingReservations.size());
     }
 
@@ -360,7 +363,8 @@ public class SeatsAvailabilityAggregateShould {
 
         aggregate.applyForTest(event, CMD_CONTEXT);
 
-        final List<SeatQuantity> availableSeatsUpdated = aggregate.getState().getAvailableSeatList();
+        final List<SeatQuantity> availableSeatsUpdated = aggregate.getState()
+                                                                  .getAvailableSeatList();
         final SeatQuantity primarySeat = testCase.getPrimarySeat();
         final SeatQuantity addedQuantity = event.getQuantity();
         final int expectedNewQuantity = primarySeat.getQuantity() + addedQuantity.getQuantity();
@@ -372,8 +376,11 @@ public class SeatsAvailabilityAggregateShould {
     public void apply_RemovedAvailableSeats_event_when_removing_less_seats_than_remaining() {
         final RemovedAvailableSeatsEventApplying testCase =
                 new RemovedAvailableSeatsEventApplying.RemovingLessSeatsThanRemaining();
-        final int removedQuantity = testCase.givenEvent().getQuantity().getQuantity();
-        final int expectedNewQuantity = testCase.getPrimarySeat().getQuantity() - removedQuantity;
+        final int removedQuantity = testCase.givenEvent()
+                                            .getQuantity()
+                                            .getQuantity();
+        final int expectedNewQuantity = testCase.getPrimarySeat()
+                                                .getQuantity() - removedQuantity;
 
         applyRemovedAvailableSeatsEventTest(testCase, expectedNewQuantity);
     }
@@ -393,7 +400,8 @@ public class SeatsAvailabilityAggregateShould {
 
         aggregate.applyForTest(event, CMD_CONTEXT);
 
-        final List<SeatQuantity> availableSeatsUpdated = aggregate.getState().getAvailableSeatList();
+        final List<SeatQuantity> availableSeatsUpdated = aggregate.getState()
+                                                                  .getAvailableSeatList();
         final SeatQuantity primaryQuantity = testCase.getPrimarySeat();
         final SeatQuantity expectedResult = newSeatQuantity(primaryQuantity.getSeatTypeId(), expectedNewQuantity);
         assertTrue(availableSeatsUpdated.contains(expectedResult));

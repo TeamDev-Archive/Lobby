@@ -33,10 +33,11 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 public class SeatsReservedEventApplying extends ExistAvailableSeatsAndPendingReservations {
 
     private static final SeatsReserved SEATS_RESERVED = SeatsReserved.newBuilder()
-            .setConferenceId(newConferenceId())
-            .setReservationId(getReservationId())
-            .addReservedSeatUpdated(newSeatQuantity(256))
-            .addAvailableSeatUpdated(newSeatQuantity(24)).build();
+                                                                     .setConferenceId(newConferenceId())
+                                                                     .setReservationId(getReservationId())
+                                                                     .addReservedSeatUpdated(newSeatQuantity(256))
+                                                                     .addAvailableSeatUpdated(newSeatQuantity(24))
+                                                                     .build();
 
     static {
         assertNotEquals(getAvailableSeats(), SEATS_RESERVED.getAvailableSeatUpdatedList());

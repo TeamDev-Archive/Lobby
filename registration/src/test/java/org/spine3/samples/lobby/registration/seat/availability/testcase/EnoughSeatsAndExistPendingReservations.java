@@ -47,15 +47,17 @@ public class EnoughSeatsAndExistPendingReservations extends MakeSeatReservationC
                     .put(
                             RESERVATION_ID.getUuid(),
                             newSeatQuantities(newSeatQuantity(MAIN_SEAT_TYPE_ID, MAIN_SEATS_PENDING_COUNT))
-                    ).build();
+                    )
+                    .build();
 
     @Override
     public SeatsAvailabilityAggregate givenAggregate() {
         final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
-        final SeatsAvailability state = aggregate.getState().toBuilder()
-                .addAllAvailableSeat(getAvailableSeats())
-                .putAllPendingReservations(PENDING_RESERVATIONS)
-                .build();
+        final SeatsAvailability state = aggregate.getState()
+                                                 .toBuilder()
+                                                 .addAllAvailableSeat(getAvailableSeats())
+                                                 .putAllPendingReservations(PENDING_RESERVATIONS)
+                                                 .build();
         aggregate.incrementStateForTest(state);
         return aggregate;
     }

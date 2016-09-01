@@ -98,7 +98,8 @@ public class ConferenceProjectionShould {
 
         projection.on(event, CONTEXT);
 
-        assertTrue(projection.getState().getIsPublished());
+        assertTrue(projection.getState()
+                             .getIsPublished());
     }
 
     @Test
@@ -107,7 +108,8 @@ public class ConferenceProjectionShould {
 
         projection.on(event, CONTEXT);
 
-        assertFalse(projection.getState().getIsPublished());
+        assertFalse(projection.getState()
+                              .getIsPublished());
     }
 
     @Test
@@ -178,7 +180,8 @@ public class ConferenceProjectionShould {
 
     private void assertSeatTypesConsistOf(SeatType... expectedSeatTypes) {
         final ImmutableList<SeatType> expectedTypes = ImmutableList.copyOf(expectedSeatTypes);
-        final List<SeatType> actualTypes = projection.getState().getSeatTypeList();
+        final List<SeatType> actualTypes = projection.getState()
+                                                     .getSeatTypeList();
         assertEquals(expectedTypes.size(), actualTypes.size());
         assertTrue(actualTypes.containsAll(expectedTypes));
     }

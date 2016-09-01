@@ -1,6 +1,6 @@
 project.ext {
-    SPINE_VERSION = '0.3-SNAPSHOT'
-    PROTOBUF_VERSION = '3.0.0-beta-1'
+    SPINE_VERSION = '0.5.7-SNAPSHOT'
+    PROTOBUF_VERSION = '3.0.0'
     PROTOBUF_DEPENDENCY = "com.google.protobuf:protoc:${project.PROTOBUF_VERSION}"
     MAVEN_REPOSITORY_URL = 'http://maven.teamdev.com/repository/spine'
     MAVEN_SNAPSHOTS_REPOSITORY_URL = 'http://maven.teamdev.com/repository/spine-snapshots'
@@ -42,6 +42,9 @@ subprojects {
         maven {
             url = project.MAVEN_SNAPSHOTS_REPOSITORY_URL
         }
+        maven {
+            url = project.MAVEN_REPOSITORY_URL
+        }
     }
 
     buildscript {
@@ -66,8 +69,8 @@ subprojects {
         compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
 
         // SLF4J
-        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.12'
-        compile group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.12'
+        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
+        compile group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.21'
 
         // Protobuf
         compile group: 'com.google.protobuf', name: 'protobuf-java', version: project.PROTOBUF_VERSION

@@ -35,7 +35,7 @@ public interface OrderPricingService {
      * Calculates the price of order seats.
      *
      * @param conferenceId the ID of the conference to which the {@code seats} are related
-     * @param seats the seats to calculate the price for
+     * @param seats        the seats to calculate the price for
      * @return the total price of the seats
      */
     OrderTotal calculateTotalOrderPrice(ConferenceId conferenceId, Iterable<SeatQuantity> seats);

@@ -23,8 +23,8 @@ package org.spine3.samples.lobby.registration.seat.assignment;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Message;
 import org.spine3.base.CommandContext;
-import org.spine3.base.EmailAddress;
-import org.spine3.base.PersonName;
+import org.spine3.net.EmailAddress;
+import org.spine3.people.PersonName;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatAssigned;
@@ -117,7 +117,8 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
         state.setId(event.getAssignmentsId());
         final Map<Integer, SeatAssignment> assignments = state.getMutableAssignments();
         for (SeatAssignment newAssignment : event.getAssignmentList()) {
-            final int position = newAssignment.getPosition().getValue();
+            final int position = newAssignment.getPosition()
+                                              .getValue();
             assignments.put(position, newAssignment);
         }
     }
@@ -125,19 +126,23 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
     @Apply
     private void apply(SeatAssigned event) {
         final SeatAssignment assignment = event.getAssignment();
-        final int position = assignment.getPosition().getValue();
+        final int position = assignment.getPosition()
+                                       .getValue();
         final SeatAssignments.Builder state = getBuilder();
-        state.getMutableAssignments().put(position, assignment);
+        state.getMutableAssignments()
+             .put(position, assignment);
     }
 
     @Apply
     private void apply(SeatUnassigned event) {
         final Map<Integer, SeatAssignment> assignments = getBuilder().getMutableAssignments();
-        final int position = event.getPosition().getValue();
+        final int position = event.getPosition()
+                                  .getValue();
         final SeatAssignment assignmentPrimary = assignments.get(position);
         final SeatAssignment assignmentNew = SeatAssignment.newBuilder()
-                .setSeatTypeId(assignmentPrimary.getSeatTypeId())
-                .setPosition(assignmentPrimary.getPosition()).build();
+                                                           .setSeatTypeId(assignmentPrimary.getSeatTypeId())
+                                                           .setPosition(assignmentPrimary.getPosition())
+                                                           .build();
         assignments.put(position, assignmentNew);
     }
 
@@ -145,16 +150,18 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
     private void apply(SeatAssignmentUpdated event) {
         final SeatPosition seatPosition = event.getPosition();
         final SeatAssignment assignmentPrimary = getAssignment(seatPosition);
-        final PersonName newName = event.getAttendee().getName();
+        final PersonName newName = event.getAttendee()
+                                        .getName();
         final PersonalInfo attendeeUpdated = assignmentPrimary.getAttendee()
-                .toBuilder()
-                .setName(newName)
-                .build();
+                                                              .toBuilder()
+                                                              .setName(newName)
+                                                              .build();
         final SeatAssignment assignmentUpdated = assignmentPrimary.toBuilder()
-                .setAttendee(attendeeUpdated)
-                .build();
+                                                                  .setAttendee(attendeeUpdated)
+                                                                  .build();
         final SeatAssignments.Builder state = getBuilder();
-        state.getMutableAssignments().put(seatPosition.getValue(), assignmentUpdated);
+        state.getMutableAssignments()
+             .put(seatPosition.getValue(), assignmentUpdated);
     }
 
     private SeatAssignment getAssignment(SeatPosition seatPosition) {
@@ -182,9 +189,9 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
             addAssignment(assignments, seatQuantity);
         }
         final SeatAssignmentsCreated.Builder builder = SeatAssignmentsCreated.newBuilder()
-                .setAssignmentsId(newSeatAssignmentsId())
-                .setOrderId(cmd.getOrderId())
-                .addAllAssignment(assignments);
+                                                                             .setAssignmentsId(newSeatAssignmentsId())
+                                                                             .setOrderId(cmd.getOrderId())
+                                                                             .addAllAssignment(assignments);
         return builder.build();
     }
 
@@ -192,41 +199,43 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
         final SeatTypeId seatTypeId = seatQuantity.getSeatTypeId();
         for (int i = 0; i < seatQuantity.getQuantity(); i++) {
             final SeatAssignment assignment = SeatAssignment.newBuilder()
-                    .setSeatTypeId(seatTypeId)
-                    .setPosition(newSeatPosition(i))
-                    .build();
+                                                            .setSeatTypeId(seatTypeId)
+                                                            .setPosition(newSeatPosition(i))
+                                                            .build();
             assignments.add(assignment);
         }
     }
 
     private static SeatPosition newSeatPosition(int position) {
-        return SeatPosition.newBuilder().setValue(position).build();
+        return SeatPosition.newBuilder()
+                           .setValue(position)
+                           .build();
     }
 
     private SeatAssigned newSeatAssignedEvent(AssignSeat cmd, SeatTypeId seatTypeId) {
         final SeatAssignment assignment = SeatAssignment.newBuilder()
-                .setSeatTypeId(seatTypeId)
-                .setPosition(cmd.getPosition())
-                .setAttendee(cmd.getAttendee())
-                .build();
+                                                        .setSeatTypeId(seatTypeId)
+                                                        .setPosition(cmd.getPosition())
+                                                        .setAttendee(cmd.getAttendee())
+                                                        .build();
         final SeatAssigned.Builder builder = SeatAssigned.newBuilder()
-                .setAssignmentsId(getId())
-                .setAssignment(assignment);
+                                                         .setAssignmentsId(getId())
+                                                         .setAssignment(assignment);
         return builder.build();
     }
 
     private SeatAssignmentUpdated newSeatAssignmentUpdatedEvent(AssignSeat cmd) {
         final SeatAssignmentUpdated.Builder builder = SeatAssignmentUpdated.newBuilder()
-                .setAssignmentsId(getId())
-                .setPosition(cmd.getPosition())
-                .setAttendee(cmd.getAttendee());
+                                                                           .setAssignmentsId(getId())
+                                                                           .setPosition(cmd.getPosition())
+                                                                           .setAttendee(cmd.getAttendee());
         return builder.build();
     }
 
     public SeatUnassigned newSeatUnassignedEvent(SeatPosition position) {
         final SeatUnassigned.Builder builder = SeatUnassigned.newBuilder()
-                .setAssignmentsId(getId())
-                .setPosition(position);
+                                                             .setAssignmentsId(getId())
+                                                             .setPosition(position);
         return builder.build();
     }
 
@@ -247,7 +256,8 @@ public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatA
             checkMessageField(cmd.hasSeatAssignmentsId(), SEAT_ASSIGNMENTS_ID, cmd);
             checkMessageField(cmd.hasAttendee(), ATTENDEE, cmd);
             final PersonalInfo attendee = cmd.getAttendee();
-            final boolean hasValidEmail = attendee.hasEmail() && !isNullOrEmpty(attendee.getEmail().getValue());
+            final boolean hasValidEmail = attendee.hasEmail() && !isNullOrEmpty(attendee.getEmail()
+                                                                                        .getValue());
             checkMessageField(hasValidEmail, ATTENDEE_EMAIL, attendee);
             checkMessageField(cmd.hasPosition(), SEAT_POSITION, cmd);
         }

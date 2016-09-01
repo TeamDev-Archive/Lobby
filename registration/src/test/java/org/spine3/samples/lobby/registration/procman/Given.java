@@ -43,10 +43,10 @@ import org.spine3.samples.lobby.registration.seat.availability.CancelSeatReserva
 import org.spine3.samples.lobby.registration.seat.availability.CommitSeatReservation;
 import org.spine3.samples.lobby.registration.seat.availability.MakeSeatReservation;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsReserved;
-import org.spine3.server.command.Assign;
 import org.spine3.server.BoundedContext;
-import org.spine3.server.command.CommandHandler;
+import org.spine3.server.command.Assign;
 import org.spine3.server.command.CommandBus;
+import org.spine3.server.command.CommandHandler;
 import org.spine3.server.event.EventBus;
 import org.spine3.server.procman.CommandRouted;
 
@@ -57,7 +57,6 @@ import static com.google.protobuf.util.TimeUtil.add;
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static org.spine3.base.Identifiers.newUuid;
 import static org.spine3.protobuf.Durations.ofMinutes;
-import static org.spine3.protobuf.Messages.fromAny;
 import static org.spine3.samples.lobby.common.util.IdFactory.newConferenceId;
 import static org.spine3.samples.lobby.common.util.IdFactory.newOrderId;
 import static org.spine3.samples.lobby.registration.testdata.TestDataFactory.newBoundedContext;
@@ -74,7 +73,9 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     private static final ProcessManagerId ID = newProcessManagerId();
     /* package */ static final OrderId ORDER_ID = newOrderId();
     /* package */ static final ConferenceId CONFERENCE_ID = newConferenceId();
-    /* package */ static final ReservationId RESERVATION_ID = ReservationId.newBuilder().setUuid(ORDER_ID.getUuid()).build();
+    /* package */ static final ReservationId RESERVATION_ID = ReservationId.newBuilder()
+                                                                           .setUuid(ORDER_ID.getUuid())
+                                                                           .build();
 
     private final TestProcessManager processManager;
     private final BoundedContext boundedContext = newBoundedContext();
@@ -82,14 +83,18 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     /* package */ Given() {
         processManager = new TestProcessManager(ID);
         processManager.setCommandSender(processManager.new MockCommandSender());
-        boundedContext.getCommandBus().register(new StubCommandHandler(newUuid(), boundedContext.getEventBus()));
+        boundedContext.getCommandBus()
+                      .register(new StubCommandHandler(newUuid(), boundedContext.getEventBus()));
     }
 
     /**
      * Creates a new process manager ID with the generated UUID.
      */
-    /* package */ static ProcessManagerId newProcessManagerId() {
-        return ProcessManagerId.newBuilder().setUuid(newUuid()).build();
+    /* package */
+    static ProcessManagerId newProcessManagerId() {
+        return ProcessManagerId.newBuilder()
+                               .setUuid(newUuid())
+                               .build();
     }
 
     /* package */ TestProcessManager processManager(RegistrationProcess.State processState) {
@@ -114,16 +119,17 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
     private RegistrationProcess buildState(RegistrationProcess.State processState, boolean isCompleted) {
         final RegistrationProcess.Builder builder = processManager.getState()
-                .toBuilder()
-                .setOrderId(ORDER_ID)
-                .setConferenceId(CONFERENCE_ID)
-                .setReservationAutoExpiration(minutesAhead(15))
-                .setProcessState(processState)
-                .setIsCompleted(isCompleted);
+                                                                  .toBuilder()
+                                                                  .setOrderId(ORDER_ID)
+                                                                  .setConferenceId(CONFERENCE_ID)
+                                                                  .setReservationAutoExpiration(minutesAhead(15))
+                                                                  .setProcessState(processState)
+                                                                  .setIsCompleted(isCompleted);
         return builder.build();
     }
 
-    /* package */ static Timestamp reservationExpirationTimeBeforeNow() {
+    /* package */
+    static Timestamp reservationExpirationTimeBeforeNow() {
         final Timestamp result = Timestamps.secondsAgo(30);
         return result;
     }
@@ -168,7 +174,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
             @Override
             protected void post(org.spine3.base.Command cmd) {
-                final Message msg = fromAny(cmd.getMessage());
+                final Message msg = cmd.getMessage();
                 commandsSent.add(msg);
                 super.post(cmd);
             }
@@ -184,47 +190,54 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
         private static final List<SeatQuantity> SEATS = ImmutableList.of(newSeatQuantity(5), newSeatQuantity(10));
 
-        private Event() {}
+        private Event() {
+        }
 
-        /* package */ static OrderPlaced orderPlaced() {
+        /* package */
+        static OrderPlaced orderPlaced() {
             final Timestamp afterNow = minutesAhead(15);
             return orderPlaced(afterNow);
         }
 
-        /* package */ static OrderPlaced orderPlaced(Timestamp reservationExpiration) {
+        /* package */
+        static OrderPlaced orderPlaced(Timestamp reservationExpiration) {
             final OrderPlaced.Builder builder = OrderPlaced.newBuilder()
-                    .setOrderId(ORDER_ID)
-                    .setConferenceId(CONFERENCE_ID)
-                    .addAllSeat(SEATS)
-                    .setReservationAutoExpiration(reservationExpiration);
+                                                           .setOrderId(ORDER_ID)
+                                                           .setConferenceId(CONFERENCE_ID)
+                                                           .addAllSeat(SEATS)
+                                                           .setReservationAutoExpiration(reservationExpiration);
             return builder.build();
         }
 
-        /* package */ static OrderUpdated orderUpdated() {
+        /* package */
+        static OrderUpdated orderUpdated() {
             final OrderUpdated.Builder builder = OrderUpdated.newBuilder()
-                    .setOrderId(ORDER_ID)
-                    .addAllSeat(SEATS);
+                                                             .setOrderId(ORDER_ID)
+                                                             .addAllSeat(SEATS);
             return builder.build();
         }
 
-        /* package */ static SeatsReserved seatsReserved() {
+        /* package */
+        static SeatsReserved seatsReserved() {
             final SeatsReserved.Builder builder = SeatsReserved.newBuilder()
-                    .setReservationId(RESERVATION_ID)
-                    .setConferenceId(CONFERENCE_ID)
-                    .addAllReservedSeatUpdated(SEATS);
+                                                               .setReservationId(RESERVATION_ID)
+                                                               .setConferenceId(CONFERENCE_ID)
+                                                               .addAllReservedSeatUpdated(SEATS);
             return builder.build();
         }
 
-        /* package */ static PaymentCompleted paymentCompleted() {
+        /* package */
+        static PaymentCompleted paymentCompleted() {
             final PaymentCompleted.Builder builder = PaymentCompleted.newBuilder()
-                    .setOrderId(ORDER_ID);
+                                                                     .setOrderId(ORDER_ID);
             return builder.build();
         }
 
-        /* package */ static OrderConfirmed orderConfirmed() {
+        /* package */
+        static OrderConfirmed orderConfirmed() {
             final OrderConfirmed.Builder builder = OrderConfirmed.newBuilder()
-                    .setOrderId(ORDER_ID)
-                    .addAllSeat(SEATS);
+                                                                 .setOrderId(ORDER_ID)
+                                                                 .addAllSeat(SEATS);
             return builder.build();
         }
     }
@@ -236,11 +249,13 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
         /* package */ static final CommandContext CONTEXT = CommandContext.getDefaultInstance();
 
-        private Command() {}
+        private Command() {
+        }
 
-        /* package */ static ExpireRegistrationProcess expireRegistrationProcess() {
+        /* package */
+        static ExpireRegistrationProcess expireRegistrationProcess() {
             final ExpireRegistrationProcess.Builder builder = ExpireRegistrationProcess.newBuilder()
-                    .setProcessManagerId(ID);
+                                                                                       .setProcessManagerId(ID);
             return builder.build();
         }
     }

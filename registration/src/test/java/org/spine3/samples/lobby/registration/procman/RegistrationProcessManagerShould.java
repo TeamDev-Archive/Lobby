@@ -64,7 +64,8 @@ public class RegistrationProcessManagerShould {
 
     @After
     public void tearDown() throws Exception {
-        processManager.getCommandBus().close();
+        processManager.getCommandBus()
+                      .close();
     }
 
     @Test
@@ -81,7 +82,9 @@ public class RegistrationProcessManagerShould {
 
         final MakeSeatReservation reserveSeats = (MakeSeatReservation) commandsSent.get(0);
         assertEquals(event.getConferenceId(), reserveSeats.getConferenceId());
-        assertEquals(event.getOrderId().getUuid(), reserveSeats.getReservationId().getUuid());
+        assertEquals(event.getOrderId()
+                          .getUuid(), reserveSeats.getReservationId()
+                                                  .getUuid());
         assertEquals(event.getSeatList(), reserveSeats.getSeatList());
 
         final ExpireRegistrationProcess expireProcess = (ExpireRegistrationProcess) commandsSent.get(1);
@@ -132,8 +135,11 @@ public class RegistrationProcessManagerShould {
         processManager.on(event, Given.Event.CONTEXT);
 
         final MakeSeatReservation cmd = assertCommandSent(MakeSeatReservation.class);
-        assertEquals(processManager.getState().getConferenceId(), cmd.getConferenceId());
-        assertEquals(event.getOrderId().getUuid(), cmd.getReservationId().getUuid());
+        assertEquals(processManager.getState()
+                                   .getConferenceId(), cmd.getConferenceId());
+        assertEquals(event.getOrderId()
+                          .getUuid(), cmd.getReservationId()
+                                         .getUuid());
         assertEquals(event.getSeatList(), cmd.getSeatList());
     }
 
@@ -144,7 +150,7 @@ public class RegistrationProcessManagerShould {
 
         processManager.on(event, Given.Event.CONTEXT);
     }
-    
+
     @Test
     public void handle_SeatsReserved_event_then_update_state_and_mark_seats_as_reserved()
             throws IllegalProcessStateFailure {
@@ -213,7 +219,9 @@ public class RegistrationProcessManagerShould {
 
         assertProcessIsCompleted();
         final CommitSeatReservation cmd = assertCommandSent(CommitSeatReservation.class);
-        assertEquals(event.getOrderId().getUuid(), cmd.getReservationId().getUuid());
+        assertEquals(event.getOrderId()
+                          .getUuid(), cmd.getReservationId()
+                                         .getUuid());
     }
 
     @Test(expected = IllegalProcessStateFailure.class)
@@ -283,11 +291,12 @@ public class RegistrationProcessManagerShould {
         assertEquals(event.getReservationAutoExpiration(), actual.getReservationAutoExpiration());
     }
 
-    private static<M extends Message> M findCommandMessage(Class<M> cmdMessageClass, Iterable<Command> commands) {
+    private static <M extends Message> M findCommandMessage(Class<M> cmdMessageClass, Iterable<Command> commands) {
         for (Command command : commands) {
             final Any any = command.getMessage();
             final M message = Messages.fromAny(any);
-            if (message.getClass().equals(cmdMessageClass)) {
+            if (message.getClass()
+                       .equals(cmdMessageClass)) {
                 return message;
             }
         }
