@@ -23,6 +23,7 @@ package org.spine3.samples.lobby.registration.seat.availability;
 import org.spine3.base.CommandContext;
 import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
+import org.spine3.samples.lobby.common.util.aggregate.LobbyAggregate;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.util.Seats;
 import org.spine3.server.aggregate.Aggregate;
@@ -44,7 +45,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
  * @author Alexander Litus
  */
 @SuppressWarnings({"TypeMayBeWeakened"/** "OrBuilder" parameters are not applicable*/, "OverlyCoupledClass"})
-public class SeatsAvailabilityAggregate extends Aggregate<SeatsAvailabilityId, SeatsAvailability, SeatsAvailability.Builder> {
+public class SeatsAvailabilityAggregate extends LobbyAggregate<SeatsAvailabilityId, SeatsAvailability, SeatsAvailability.Builder> {
 
     /**
      * Creates a new instance.

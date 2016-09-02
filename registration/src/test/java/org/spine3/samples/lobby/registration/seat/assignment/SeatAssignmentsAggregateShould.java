@@ -30,6 +30,7 @@ import org.spine3.samples.lobby.registration.contracts.SeatAssignment;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsCreated;
 import org.spine3.samples.lobby.registration.contracts.SeatUnassigned;
+import org.spine3.samples.lobby.registration.util.ImportCommandUtil;
 import org.spine3.samples.lobby.registration.util.Seats;
 
 import java.util.Collection;
@@ -155,7 +156,7 @@ public class SeatAssignmentsAggregateShould {
         final SeatAssignmentsCreated event = Given.Event.seatAssignmentsCreated();
         final List<SeatAssignment> expectedAssignments = event.getAssignmentList();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        ImportCommandUtil.apply(aggregate, event, Given.Command.context());
 
         final SeatAssignments state = aggregate.getState();
         assertEquals(event.getAssignmentsId(), state.getId());
@@ -173,7 +174,7 @@ public class SeatAssignmentsAggregateShould {
         final int position = expected.getPosition()
                                      .getValue();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        ImportCommandUtil.apply(aggregate, event, Given.Command.context());
 
         final SeatAssignment actual = aggregate.getState()
                                                .getAssignments()
@@ -188,7 +189,7 @@ public class SeatAssignmentsAggregateShould {
         final int position = event.getPosition()
                                   .getValue();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        ImportCommandUtil.apply(aggregate, event, Given.Command.context());
 
         final Map<Integer, SeatAssignment> assignments = aggregate.getState()
                                                                   .getAssignments();
@@ -204,7 +205,7 @@ public class SeatAssignmentsAggregateShould {
         final int position = event.getPosition()
                                   .getValue();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        ImportCommandUtil.apply(aggregate, event, Given.Command.context());
 
         final Map<Integer, SeatAssignment> assignments = aggregate.getState()
                                                                   .getAssignments();

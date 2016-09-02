@@ -37,6 +37,7 @@ import org.spine3.samples.lobby.registration.seat.availability.testcase.SeatsRes
 import org.spine3.samples.lobby.registration.seat.availability.testcase.SeatsReservationCommittedEventApplying;
 import org.spine3.samples.lobby.registration.seat.availability.testcase.SeatsReservedEventApplying;
 import org.spine3.samples.lobby.registration.seat.availability.testcase.TestCase;
+import org.spine3.samples.lobby.registration.util.ImportCommandUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -302,7 +303,7 @@ public class SeatsAvailabilityAggregateShould {
         final String reservationId = event.getReservationId()
                                           .getUuid();
 
-        aggregate.applyForTest(event, CMD_CONTEXT);
+        ImportCommandUtil.apply(aggregate, event, CMD_CONTEXT);
 
         final SeatsAvailability state = aggregate.getState();
         assertEquals(event.getAvailableSeatUpdatedList(), state.getAvailableSeatList());
@@ -317,7 +318,7 @@ public class SeatsAvailabilityAggregateShould {
         final SeatsReservationCommitted event = testCase.givenEvent();
         final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
 
-        aggregate.applyForTest(event, CMD_CONTEXT);
+        ImportCommandUtil.apply(aggregate, event, CMD_CONTEXT);
 
         final Map<String, SeatQuantities> pendingReservations = aggregate.getState()
                                                                          .getPendingReservations();
@@ -330,7 +331,7 @@ public class SeatsAvailabilityAggregateShould {
         final SeatsReservationCancelled event = testCase.givenEvent();
         final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
 
-        aggregate.applyForTest(event, CMD_CONTEXT);
+        ImportCommandUtil.apply(aggregate, event, CMD_CONTEXT);
 
         final SeatsAvailability state = aggregate.getState();
         final Map<String, SeatQuantities> pendingReservations = state.getPendingReservations();
@@ -347,7 +348,7 @@ public class SeatsAvailabilityAggregateShould {
         final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final AddedAvailableSeats event = testCase.givenEvent();
 
-        aggregate.applyForTest(event, CMD_CONTEXT);
+        ImportCommandUtil.apply(aggregate, event, CMD_CONTEXT);
 
         final SeatsAvailability state = aggregate.getState();
         final SeatQuantity addedQuantity = event.getQuantity();
@@ -361,7 +362,7 @@ public class SeatsAvailabilityAggregateShould {
         final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final AddedAvailableSeats event = testCase.givenEvent();
 
-        aggregate.applyForTest(event, CMD_CONTEXT);
+        ImportCommandUtil.apply(aggregate, event, CMD_CONTEXT);
 
         final List<SeatQuantity> availableSeatsUpdated = aggregate.getState()
                                                                   .getAvailableSeatList();
@@ -398,7 +399,7 @@ public class SeatsAvailabilityAggregateShould {
         final SeatsAvailabilityAggregate aggregate = testCase.givenAggregate();
         final RemovedAvailableSeats event = testCase.givenEvent();
 
-        aggregate.applyForTest(event, CMD_CONTEXT);
+        ImportCommandUtil.apply(aggregate, event, CMD_CONTEXT);
 
         final List<SeatQuantity> availableSeatsUpdated = aggregate.getState()
                                                                   .getAvailableSeatList();

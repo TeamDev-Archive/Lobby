@@ -65,7 +65,7 @@ public class RemoveSeatsCmdHandling extends TestCase {
                                                  .toBuilder()
                                                  .addAvailableSeat(AVAILABLE_QUANTITY)
                                                  .build();
-        aggregate.incrementStateForTest(state);
+        aggregate.incrementAggregateState(state);
         return aggregate;
     }
 

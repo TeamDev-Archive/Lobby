@@ -57,7 +57,7 @@ public class AddSeatsCmdHandling extends TestCase {
                                                  .toBuilder()
                                                  .addAvailableSeat(newSeatQuantity(20))
                                                  .build();
-        aggregate.incrementStateForTest(state);
+        aggregate.incrementAggregateState(state);
         return aggregate;
     }
 

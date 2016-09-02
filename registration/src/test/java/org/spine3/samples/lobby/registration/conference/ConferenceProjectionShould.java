@@ -22,6 +22,7 @@ package org.spine3.samples.lobby.registration.conference;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+import com.google.protobuf.Message;
 import com.google.protobuf.StringValue;
 import org.junit.After;
 import org.junit.Before;

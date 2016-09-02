@@ -79,7 +79,7 @@ public abstract class CancelSeatReservationCmdHandling extends TestCase {
                                                      .toBuilder()
                                                      .putAllPendingReservations(PENDING_RESERVATIONS)
                                                      .build();
-            aggregate.incrementStateForTest(state);
+            aggregate.incrementAggregateState(state);
             return aggregate;
         }
 

@@ -72,7 +72,7 @@ public abstract class CommitSeatReservationCmdHandling extends TestCase {
                                                      .toBuilder()
                                                      .putAllPendingReservations(PENDING_RESERVATIONS)
                                                      .build();
-            aggregate.incrementStateForTest(state);
+            aggregate.incrementAggregateState(state);
             return aggregate;
         }
     }

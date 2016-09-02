@@ -61,7 +61,7 @@ public class ExistAvailableSeatsAndPendingReservations extends TestCase {
                                                  .addAllAvailableSeat(AVAILABLE_SEATS)
                                                  .putAllPendingReservations(PENDING_RESERVATIONS)
                                                  .build();
-        aggregate.incrementStateForTest(state);
+        aggregate.incrementAggregateState(state);
         return aggregate;
     }
 

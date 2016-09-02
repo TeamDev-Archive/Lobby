@@ -31,6 +31,7 @@ import org.spine3.protobuf.Durations;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
+import org.spine3.samples.lobby.common.util.aggregate.LobbyAggregate;
 import org.spine3.samples.lobby.registration.contracts.OrderAccessCode;
 import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
 import org.spine3.samples.lobby.registration.contracts.OrderExpired;
@@ -63,7 +64,7 @@ import static org.spine3.samples.lobby.registration.order.OrderValidator.*;
  * @author Alexander Litus
  */
 @SuppressWarnings({"TypeMayBeWeakened", "OverlyCoupledClass"})
-public class OrderAggregate extends Aggregate<OrderId, Order, Order.Builder> {
+public class OrderAggregate extends LobbyAggregate<OrderId, Order, Order.Builder> {
 
     /**
      * The period in minutes after which the reservation expires.

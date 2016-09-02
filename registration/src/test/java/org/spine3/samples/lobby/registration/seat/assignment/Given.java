@@ -100,7 +100,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
                                                .toBuilder()
                                                .putAllAssignments(Assignments.MAP_WITH_ATTENDEES)
                                                .build();
-        aggregate.incrementStateForTest(state);
+        aggregate.incrementAggregateState(state);
         return aggregate;
     }
 
@@ -109,7 +109,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
                                                .toBuilder()
                                                .putAllAssignments(Assignments.MAP_WITHOUT_ATTENDEES)
                                                .build();
-        aggregate.incrementStateForTest(state);
+        aggregate.incrementAggregateState(state);
         return aggregate;
     }
 

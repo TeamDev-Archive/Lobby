@@ -73,15 +73,14 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
     /* package */ OrderAggregate confirmedOrder() {
         final Order state = orderState(SEATS, true);
-        aggregate.handle(ConfirmOrder.getDefaultInstance(), CommandContext.getDefaultInstance())
+        aggregate.handle(ConfirmOrder.getDefaultInstance(), CommandContext.getDefaultInstance());
         //aggregate.incrementStateForTest(state);
         return aggregate;
     }
 
     /* package */ OrderAggregate placedOrder() {
         final Order state = orderState(SEATS);
-        aggregate.handle()
-        //aggregate.incrementStateForTest(state);
+        aggregate.incrementAggregateState(state);
         return aggregate;
     }
 
@@ -100,7 +99,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         seat.setQuantity(seat.getQuantity() + 5);
         requestedSeats.set(partlyReservedSeatIndex, seat.build());
         final Order state = orderState(requestedSeats);
-        aggregate.incrementStateForTest(state);
+        aggregate.incrementAggregateState(state);
         return aggregate;
     }
 

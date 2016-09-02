@@ -27,6 +27,7 @@ import org.spine3.net.EmailAddress;
 import org.spine3.people.PersonName;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.samples.lobby.common.SeatTypeId;
+import org.spine3.samples.lobby.common.util.aggregate.LobbyAggregate;
 import org.spine3.samples.lobby.registration.contracts.SeatAssigned;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignment;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentUpdated;
@@ -55,7 +56,7 @@ import static org.spine3.samples.lobby.registration.util.ValidationUtils.checkMe
  * @author Alexander Litus
  */
 @SuppressWarnings("OverlyCoupledClass")
-public class SeatAssignmentsAggregate extends Aggregate<SeatAssignmentsId, SeatAssignments, SeatAssignments.Builder> {
+public class SeatAssignmentsAggregate extends LobbyAggregate<SeatAssignmentsId, SeatAssignments, SeatAssignments.Builder> {
 
     /**
      * Creates a new instance.

@@ -21,6 +21,7 @@
 package org.spine3.samples.lobby.registration.procman;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
 import org.junit.After;
@@ -235,7 +236,7 @@ public class RegistrationProcessManagerShould {
 
     @Test
     public void handle_ExpireRegistrationProcess_command_then_update_state_and_send_commands_if_process_not_completed()
-            throws IllegalProcessStateFailure {
+            throws IllegalProcessStateFailure, InvalidProtocolBufferException {
         processManager = given.processManager(PAYMENT_RECEIVED, /*isCompleted=*/false);
         final ExpireRegistrationProcess expireProcessCmd = Given.Command.expireRegistrationProcess();
 
@@ -291,10 +292,10 @@ public class RegistrationProcessManagerShould {
         assertEquals(event.getReservationAutoExpiration(), actual.getReservationAutoExpiration());
     }
 
-    private static <M extends Message> M findCommandMessage(Class<M> cmdMessageClass, Iterable<Command> commands) {
+    private static <M extends Message> M findCommandMessage(Class<M> cmdMessageClass, Iterable<Command> commands) throws InvalidProtocolBufferException {
         for (Command command : commands) {
             final Any any = command.getMessage();
-            final M message = Messages.fromAny(any);
+            final M message = any.unpack(cmdMessageClass);
             if (message.getClass()
                        .equals(cmdMessageClass)) {
                 return message;
