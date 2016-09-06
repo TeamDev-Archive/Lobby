@@ -1,6 +1,7 @@
 project.ext {
     SPINE_VERSION = '0.5.7-SNAPSHOT'
     PROTOBUF_VERSION = '3.0.0'
+    SPINE_PROTO_PLUGIN_VERSION = '1.4.10'
     PROTOBUF_DEPENDENCY = "com.google.protobuf:protoc:${project.PROTOBUF_VERSION}"
     MAVEN_REPOSITORY_URL = 'http://maven.teamdev.com/repository/spine'
     MAVEN_SNAPSHOTS_REPOSITORY_URL = 'http://maven.teamdev.com/repository/spine-snapshots'
