@@ -26,6 +26,7 @@ option java_package="org.spine3.samples.lobby.registration.contracts";
 option java_outer_classname = "RegistrationContractsProto";
 option java_multiple_files = true;
 
+import "spine/annotations.proto";
 import "spine/samples/lobby/common/common.proto";
 import "spine/money/money.proto";
 

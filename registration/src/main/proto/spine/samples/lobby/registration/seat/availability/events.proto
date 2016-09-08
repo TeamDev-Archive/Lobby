@@ -26,6 +26,7 @@ option java_package="org.spine3.samples.lobby.registration.seat.availability";
 option java_outer_classname = "SeatsAvailabilityEventsProto";
 option java_multiple_files = true;
 
+import "spine/annotations.proto";
 import "spine/samples/lobby/common/common.proto";
 import "spine/samples/lobby/registration/contracts/registration.proto";
 

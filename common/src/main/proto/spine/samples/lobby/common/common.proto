@@ -26,6 +26,7 @@ option java_package="org.spine3.samples.lobby.common";
 option java_outer_classname = "CommonContractsProto";
 option java_multiple_files = true;
 
+import "spine/annotations.proto";
 import "spine/money/money.proto";
 import "spine/people/person_name.proto";
 import "spine/net/email_address.proto";

@@ -26,6 +26,7 @@ option java_multiple_files = false;
 // Do not specify java_outer_classname option as we're not generating multiple Java classes for failures.
 option java_generate_equals_and_hash = true;
 
+import "spine/annotations.proto";
 import "spine/samples/lobby/registration/procman/procman.proto";
 import "spine/base/command.proto";
 import "spine/base/event.proto";

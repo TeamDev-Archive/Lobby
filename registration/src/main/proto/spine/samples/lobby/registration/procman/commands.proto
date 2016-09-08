@@ -26,6 +26,7 @@ option java_package="org.spine3.samples.lobby.registration.procman";
 option java_outer_classname = "ProcessManagerCommandsProto";
 option java_multiple_files = true;
 
+import "spine/annotations.proto";
 import "spine/samples/lobby/registration/procman/procman.proto";
 
 // The request to stop a registration process.
