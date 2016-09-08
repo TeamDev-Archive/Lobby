@@ -21,6 +21,7 @@ syntax = "proto3";
 
 package spine.test.aggregate.event;
 
+option (type_url_prefix) = "type.lobby.spine3.org";
 option (type_url_prefix) = "type.spine3.org";
 option java_package="org.spine3.samples.lobby.common";
 option java_outer_classname = "AggregateEventsProto";

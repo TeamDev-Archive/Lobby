@@ -21,6 +21,7 @@ syntax = "proto3";
 
 package spine.samples.lobby.registration.seat.assignment;
 
+option (type_url_prefix) = "type.lobby.spine3.org";
 option java_package="org.spine3.samples.lobby.registration.seat.assignment";
 option java_outer_classname = "SeatAssignmentsProto";
 option java_multiple_files = true;
