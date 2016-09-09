@@ -20,15 +20,18 @@
 
 package org.spine3.samples.lobby.registration.order;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Duration;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
 import org.spine3.base.CommandContext;
+import org.spine3.base.Event;
 import org.spine3.money.Money;
 import org.spine3.protobuf.Durations;
 import org.spine3.samples.lobby.common.ConferenceId;
+import org.spine3.samples.lobby.common.ImportEvents;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.common.util.aggregate.LobbyAggregate;
@@ -44,7 +47,6 @@ import org.spine3.samples.lobby.registration.contracts.OrderTotalsCalculated;
 import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.util.Seats;
-import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
 import org.spine3.server.command.Assign;
 import org.spine3.server.entity.Entity;
@@ -169,6 +171,13 @@ public class OrderAggregate extends LobbyAggregate<OrderId, Order, Order.Builder
                                                                       .setPersonalInfo(command.getRegistrant())
                                                                       .build();
         return result;
+    }
+
+    @VisibleForTesting
+    @Assign
+    @Override
+    public List<Event> handle(ImportEvents command, CommandContext ctx) {
+        return super.handle(command, ctx);
     }
 
     /* Event Appliers */

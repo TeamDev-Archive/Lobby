@@ -19,44 +19,32 @@
 //
 syntax = "proto3";
 
-package spine.test.aggregate;
+package spine.test.aggregate.command;
 
-option (type_url_prefix) = "type.lobby.spine3.org";
 option (type_url_prefix) = "type.spine3.org";
 option java_package="org.spine3.samples.lobby.common";
+option java_outer_classname = "AggregateCommandsProto";
 option java_multiple_files = true;
 
 import "spine/annotations.proto";
+import "spine/test/aggregate/project.proto";
+import "spine/base/event.proto";
 
-message ProjectId {
-    string id = 1;
-}
-
-message Project {
-
-    ProjectId id = 1;
-
+message CreateProject {
+    ProjectId project_id = 1;
     string name = 2;
-
-    repeated Task task = 3;
-
-    enum Status {
-        UNDEFINED = 0;
-        CREATED = 1;
-        STARTED = 2;
-        DONE = 3;
-        CANCELLED = 4;
-    }
-
-    Status status = 4;
 }
 
-message TaskId {
-    int32 id = 1;
+message AddTask {
+    ProjectId project_id = 1;
+    Task task = 2;
 }
 
-message Task {
-    TaskId task_id = 1;
-    string title = 2;
-    string description = 3;
+message StartProject {
+    ProjectId project_id = 1;
+}
+
+message ImportEvents {
+    ProjectId project_id = 1;
+    repeated spine.base.Event event = 2;
 }

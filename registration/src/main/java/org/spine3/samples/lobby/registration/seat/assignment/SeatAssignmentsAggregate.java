@@ -20,11 +20,14 @@
 
 package org.spine3.samples.lobby.registration.seat.assignment;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Message;
 import org.spine3.base.CommandContext;
+import org.spine3.base.Event;
 import org.spine3.net.EmailAddress;
 import org.spine3.people.PersonName;
+import org.spine3.samples.lobby.common.ImportEvents;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.common.util.aggregate.LobbyAggregate;
@@ -37,7 +40,6 @@ import org.spine3.samples.lobby.registration.contracts.SeatPosition;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.contracts.SeatUnassigned;
 import org.spine3.samples.lobby.registration.util.ValidationUtils;
-import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.aggregate.Apply;
 import org.spine3.server.command.Assign;
 
@@ -108,6 +110,13 @@ public class SeatAssignmentsAggregate extends LobbyAggregate<SeatAssignmentsId, 
         } else {
             throw new CannotUnassignNotAssignedSeat(getId(), primaryAssignment.getSeatTypeId(), cmd.getPosition());
         }
+    }
+
+    @VisibleForTesting
+    @Assign
+    @Override
+    public List<Event> handle(ImportEvents command, CommandContext ctx) {
+        return super.handle(command, ctx);
     }
 
     /* Event Appliers */

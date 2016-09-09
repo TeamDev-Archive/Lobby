@@ -21,14 +21,13 @@
 package org.spine3.samples.lobby.common.util.aggregate;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.protobuf.Any;
-import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.Message;
-import jdk.nashorn.internal.objects.NativeJavaImporter;
-import org.spine3.base.Command;
 import org.spine3.base.CommandContext;
 import org.spine3.base.Event;
+import org.spine3.samples.lobby.common.ImportEvents;
 import org.spine3.server.aggregate.Aggregate;
+
+import java.util.List;
 
 /**
  * @author Dmytro Dashenkov
@@ -51,4 +50,7 @@ public abstract class LobbyAggregate<I, S extends Message, B extends Message.Bui
         incrementState(newState);
     }
 
+    public List<Event> handle(ImportEvents command, CommandContext ctx) {
+        return command.getEventList();
+    }
 }
