@@ -21,6 +21,7 @@
 package org.spine3.samples.lobby.registration.order;
 
 import com.google.common.collect.ImmutableList;
+import com.google.protobuf.Timestamp;
 import com.google.protobuf.util.TimeUtil;
 import org.spine3.base.CommandContext;
 import org.spine3.money.Money;
@@ -73,8 +74,9 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
     /* package */ OrderAggregate confirmedOrder() {
         final Order state = orderState(SEATS, true);
-        aggregate.handle(ConfirmOrder.getDefaultInstance(), CommandContext.getDefaultInstance());
-        //aggregate.incrementStateForTest(state);
+        final ConfirmOrder command = ConfirmOrder.newBuilder().setOrderId(ORDER_ID).build();
+        aggregate.handle(command, CommandContext.getDefaultInstance());
+        aggregate.incrementAggregateState(state);
         return aggregate;
     }
 
@@ -85,9 +87,14 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     }
 
     /* package */ OrderAggregate completelyReservedOrder(Iterable<SeatQuantity> reservedSeats) {
+        final List<SeatQuantity> requestedSeats = newArrayList(reservedSeats);
         final Order state = orderState(reservedSeats);
-        aggregate.handle(MarkSeatsAsReserved.getDefaultInstance(), CommandContext.getDefaultInstance());
-        //aggregate.incrementStateForTest(state);
+        aggregate.handle(MarkSeatsAsReserved.newBuilder()
+                                            .setOrderId(ORDER_ID)
+                                            .setReservationExpiration(Timestamp.getDefaultInstance())
+                                            .addAllSeat(requestedSeats)
+                                            .build(), CommandContext.getDefaultInstance());
+        aggregate.incrementAggregateState(state);
         return aggregate;
     }
 
