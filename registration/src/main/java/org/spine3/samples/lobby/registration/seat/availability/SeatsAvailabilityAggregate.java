@@ -20,13 +20,12 @@
 
 package org.spine3.samples.lobby.registration.seat.availability;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.spine3.base.CommandContext;
 import org.spine3.base.Event;
 import org.spine3.samples.lobby.common.ImportEvents;
 import org.spine3.samples.lobby.common.ReservationId;
 import org.spine3.samples.lobby.common.SeatTypeId;
-import org.spine3.samples.lobby.common.util.aggregate.LobbyAggregate;
+import org.spine3.samples.lobby.common.util.aggregate.AbstractLobbyAggregate;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.util.Seats;
 import org.spine3.server.aggregate.Apply;
@@ -47,7 +46,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
  * @author Alexander Litus
  */
 @SuppressWarnings({"TypeMayBeWeakened"/** "OrBuilder" parameters are not applicable*/, "OverlyCoupledClass"})
-public class SeatsAvailabilityAggregate extends LobbyAggregate<SeatsAvailabilityId, SeatsAvailability, SeatsAvailability.Builder> {
+public class SeatsAvailabilityAggregate extends AbstractLobbyAggregate<SeatsAvailabilityId, SeatsAvailability, SeatsAvailability.Builder> {
 
     /**
      * Creates a new instance.
@@ -122,10 +121,10 @@ public class SeatsAvailabilityAggregate extends LobbyAggregate<SeatsAvailability
         return event.build();
     }
 
-    @VisibleForTesting
     @Assign
     @Override
     public List<Event> handle(ImportEvents command, CommandContext ctx) {
+        // Used to handle ImportEvents command for testing.
         return super.handle(command, ctx);
     }
 

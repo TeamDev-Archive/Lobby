@@ -25,14 +25,22 @@ import com.google.protobuf.Message;
 import org.spine3.protobuf.AnyPacker;
 
 /**
+ * Util class for extracting {@link Message} instance form {@link Any} wrapper.
+ *
  * @author Dmytro Dashenkov
  */
 @SuppressWarnings("UtilityClass")
-public class AnyExtracterUtil {
+public class MessagePacker {
 
-    private AnyExtracterUtil() {
+    private MessagePacker() {
     }
 
+    /**
+     * Extracts typed {@link Message} from {@link Any} if needed.
+     *
+     * @param any Message to extract from.
+     * @return Extracted {@link Message} if it was wrapped or the param itself otherwise.
+     */
     public static Message unpackAny(Message any) {
         final Message unpacked;
         if (any instanceof Any) {

@@ -25,18 +25,27 @@ import org.spine3.base.CommandContext;
 import org.spine3.base.EventContext;
 import org.spine3.base.Events;
 import org.spine3.samples.lobby.common.ImportEvents;
-import org.spine3.samples.lobby.common.util.aggregate.LobbyAggregate;
+import org.spine3.samples.lobby.common.util.aggregate.AbstractLobbyAggregate;
 
 /**
+ * Helper class for dispatching {@code ImportEvents} command.
+ *
  * @author Dmytro Dashenkov
  */
 @SuppressWarnings("UtilityClass")
-public class ImportCommandUtil {
+public class EventImporter {
 
-    private ImportCommandUtil() {
+    private EventImporter() {
     }
 
-    public static void apply(LobbyAggregate<?, ?, ?> aggregate, Message event, CommandContext context) {
+    /**
+     * Apply {@code ImportEvents} command to given aggregate.
+     *
+     * @param aggregate Handler aggregate.
+     * @param event Event to be imported.
+     * @param context Command context for {@code ImportEvents} command.
+     */
+    public static void apply(AbstractLobbyAggregate<?, ?, ?> aggregate, Message event, CommandContext context) {
         final ImportEvents importCmd = ImportEvents.newBuilder()
                                                    .addEvent(Events.createEvent(event, EventContext.getDefaultInstance()))
                                                    .build();

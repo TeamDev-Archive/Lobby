@@ -30,10 +30,14 @@ import org.spine3.server.aggregate.Aggregate;
 import java.util.List;
 
 /**
+ * Abstract type of aggregate used in the project.
+ * Provides some tools for testing needs.
+ *
+ * @see Aggregate
  * @author Dmytro Dashenkov
  */
 @SuppressWarnings("AbstractClassWithoutAbstractMethods")
-public abstract class LobbyAggregate<I, S extends Message, B extends Message.Builder> extends Aggregate<I, S, B> {
+public abstract class AbstractLobbyAggregate<I, S extends Message, B extends Message.Builder> extends Aggregate<I, S, B> {
 
     /**
      * Creates a new aggregate instance.
@@ -41,15 +45,25 @@ public abstract class LobbyAggregate<I, S extends Message, B extends Message.Bui
      * @param id the ID for the new aggregate
      * @throws IllegalArgumentException if the ID is not of one of the supported types
      */
-    protected LobbyAggregate(I id) {
+    protected AbstractLobbyAggregate(I id) {
         super(id);
     }
 
+    /**
+     * Changes the state of the aggregate.
+     * Should be used for testing purposes only.
+     *
+     * @param newState New state to move to.
+     */
     @VisibleForTesting
     public void incrementAggregateState(S newState) {
         incrementState(newState);
     }
 
+    /**
+     * Provides basic logic for handling {@code ImportEvents} command.
+     * If no special logic is required, should be overridden "as is" with {@link org.spine3.server.command.Assign} notation.
+     */
     public List<Event> handle(ImportEvents command, CommandContext ctx) {
         return command.getEventList();
     }

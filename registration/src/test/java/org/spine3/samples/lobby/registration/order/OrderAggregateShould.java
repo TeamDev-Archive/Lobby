@@ -32,7 +32,7 @@ import org.spine3.samples.lobby.registration.contracts.OrderReservationCompleted
 import org.spine3.samples.lobby.registration.contracts.OrderTotalsCalculated;
 import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
-import org.spine3.samples.lobby.registration.util.ImportCommandUtil;
+import org.spine3.samples.lobby.registration.util.EventImporter;
 
 import java.util.List;
 
@@ -206,7 +206,7 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.newOrder();
         final OrderPlaced event = Given.Event.orderPlaced();
 
-        ImportCommandUtil.apply(aggregate, event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
         final Order state = aggregate.getState();
         assertEquals(event.getOrderId(), state.getId());
@@ -219,7 +219,7 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderUpdated event = Given.Event.orderUpdated();
 
-        ImportCommandUtil.apply(aggregate, event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
         assertEquals(event.getSeatList(), aggregate.getState()
                                                    .getSeatList());
@@ -230,7 +230,7 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderPartiallyReserved event = Given.Event.orderPartiallyReserved();
 
-        ImportCommandUtil.apply(aggregate, event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
         assertEquals(event.getSeatList(), aggregate.getState()
                                                    .getSeatList());
@@ -241,7 +241,7 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderReservationCompleted event = Given.Event.orderReservationCompleted();
 
-        ImportCommandUtil.apply(aggregate, event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
         assertEquals(event.getSeatList(), aggregate.getState()
                                                    .getSeatList());
@@ -252,7 +252,7 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderConfirmed event = Given.Event.orderConfirmed();
 
-        ImportCommandUtil.apply(aggregate, event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
         assertEquals(true, aggregate.getState()
                                     .getIsConfirmed());
@@ -263,7 +263,7 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderTotalsCalculated event = Given.Event.orderTotalsCalculated();
 
-        ImportCommandUtil.apply(aggregate, event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
         assertEquals(event.getTotal(), aggregate.getState()
                                                 .getPrice());
@@ -274,7 +274,7 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderExpired event = Given.Event.orderExpired();
 
-        ImportCommandUtil.apply(aggregate, event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
         assertTrue(aggregate.getState()
                             .getIsExpired());
@@ -285,7 +285,7 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderRegistrantAssigned event = Given.Event.orderRegistrantAssigned();
 
-        ImportCommandUtil.apply(aggregate, event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
         assertEquals(event.getPersonalInfo(), aggregate.getState()
                                                        .getRegistrant());

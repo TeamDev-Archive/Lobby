@@ -41,7 +41,7 @@ import org.spine3.samples.lobby.registration.seat.availability.CancelSeatReserva
 import org.spine3.samples.lobby.registration.seat.availability.CommitSeatReservation;
 import org.spine3.samples.lobby.registration.seat.availability.MakeSeatReservation;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsReserved;
-import org.spine3.samples.lobby.registration.util.AnyExtracterUtil;
+import org.spine3.samples.lobby.registration.util.MessagePacker;
 import org.spine3.server.procman.CommandRouted;
 
 import java.util.List;
@@ -82,7 +82,7 @@ public class RegistrationProcessManagerShould {
         final List<Message> commandsSent = processManager.getCommandsSent();
         assertEquals(2, commandsSent.size());
 
-        final Message command = AnyExtracterUtil.unpackAny(commandsSent.get(0));
+        final Message command = MessagePacker.unpackAny(commandsSent.get(0));
         final MakeSeatReservation reserveSeats = (MakeSeatReservation) command;
         assertEquals(event.getConferenceId(), reserveSeats.getConferenceId());
         assertEquals(event.getOrderId()
@@ -91,7 +91,7 @@ public class RegistrationProcessManagerShould {
         assertEquals(event.getSeatList(), reserveSeats.getSeatList());
 
         final ExpireRegistrationProcess expireProcess =
-                (ExpireRegistrationProcess) AnyExtracterUtil.unpackAny(commandsSent.get(1));
+                (ExpireRegistrationProcess) MessagePacker.unpackAny(commandsSent.get(1));
         assertEquals(processManager.getId(), expireProcess.getProcessManagerId());
     }
 
@@ -305,7 +305,7 @@ public class RegistrationProcessManagerShould {
             final Any any = command.getMessage();
 
             @SuppressWarnings("unchecked")
-            final M message = (M) AnyExtracterUtil.unpackAny(any);
+            final M message = (M) MessagePacker.unpackAny(any);
 
             if (message.getClass()
                        .equals(cmdMessageClass)) {

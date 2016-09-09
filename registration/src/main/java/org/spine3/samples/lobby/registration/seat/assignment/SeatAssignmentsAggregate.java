@@ -20,7 +20,6 @@
 
 package org.spine3.samples.lobby.registration.seat.assignment;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Message;
 import org.spine3.base.CommandContext;
@@ -30,7 +29,7 @@ import org.spine3.people.PersonName;
 import org.spine3.samples.lobby.common.ImportEvents;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.samples.lobby.common.SeatTypeId;
-import org.spine3.samples.lobby.common.util.aggregate.LobbyAggregate;
+import org.spine3.samples.lobby.common.util.aggregate.AbstractLobbyAggregate;
 import org.spine3.samples.lobby.registration.contracts.SeatAssigned;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignment;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentUpdated;
@@ -58,7 +57,7 @@ import static org.spine3.samples.lobby.registration.util.ValidationUtils.checkMe
  * @author Alexander Litus
  */
 @SuppressWarnings("OverlyCoupledClass")
-public class SeatAssignmentsAggregate extends LobbyAggregate<SeatAssignmentsId, SeatAssignments, SeatAssignments.Builder> {
+public class SeatAssignmentsAggregate extends AbstractLobbyAggregate<SeatAssignmentsId, SeatAssignments, SeatAssignments.Builder> {
 
     /**
      * Creates a new instance.
@@ -112,10 +111,10 @@ public class SeatAssignmentsAggregate extends LobbyAggregate<SeatAssignmentsId, 
         }
     }
 
-    @VisibleForTesting
     @Assign
     @Override
     public List<Event> handle(ImportEvents command, CommandContext ctx) {
+        // Used to handle ImportEvents command for testing.
         return super.handle(command, ctx);
     }
 

@@ -20,7 +20,6 @@
 
 package org.spine3.samples.lobby.registration.order;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Duration;
@@ -34,7 +33,7 @@ import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.ImportEvents;
 import org.spine3.samples.lobby.common.OrderId;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
-import org.spine3.samples.lobby.common.util.aggregate.LobbyAggregate;
+import org.spine3.samples.lobby.common.util.aggregate.AbstractLobbyAggregate;
 import org.spine3.samples.lobby.registration.contracts.OrderAccessCode;
 import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
 import org.spine3.samples.lobby.registration.contracts.OrderExpired;
@@ -66,7 +65,7 @@ import static org.spine3.samples.lobby.registration.order.OrderValidator.*;
  * @author Alexander Litus
  */
 @SuppressWarnings({"TypeMayBeWeakened", "OverlyCoupledClass"})
-public class OrderAggregate extends LobbyAggregate<OrderId, Order, Order.Builder> {
+public class OrderAggregate extends AbstractLobbyAggregate<OrderId, Order, Order.Builder> {
 
     /**
      * The period in minutes after which the reservation expires.
@@ -173,10 +172,11 @@ public class OrderAggregate extends LobbyAggregate<OrderId, Order, Order.Builder
         return result;
     }
 
-    @VisibleForTesting
+
     @Assign
     @Override
     public List<Event> handle(ImportEvents command, CommandContext ctx) {
+        // Used to handle ImportEvents command for testing.
         return super.handle(command, ctx);
     }
 
