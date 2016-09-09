@@ -166,28 +166,23 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
         private Command() {
         }
 
-        /* package */
-        static CommandContext context() {
+        /* package */ static CommandContext context() {
             return CMD_CONTEXT;
         }
 
-        /* package */
-        static CreateSeatAssignments createSeatAssignments() {
+        /* package */ static CreateSeatAssignments createSeatAssignments() {
             return CREATE_SEAT_ASSIGNMENTS;
         }
 
-        /* package */
-        static AssignSeat assignSeatToNewAttendee() {
+        /* package */ static AssignSeat assignSeatToNewAttendee() {
             return ASSIGN_SEAT_TO_NEW_ATTENDEE;
         }
 
-        /* package */
-        static AssignSeat assignSeatToUpdatedAttendee() {
+        /* package */ static AssignSeat assignSeatToUpdatedAttendee() {
             return ASSIGN_SEAT_TO_UPDATED_ATTENDEE;
         }
 
-        /* package */
-        static UnassignSeat unassignSeat() {
+        /* package */ static UnassignSeat unassignSeat() {
             return UNASSIGN_SEAT;
         }
     }
@@ -228,23 +223,19 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
         private Event() {
         }
 
-        /* package */
-        static SeatAssignmentsCreated seatAssignmentsCreated() {
+        /* package */ static SeatAssignmentsCreated seatAssignmentsCreated() {
             return SEAT_ASSIGNMENTS_CREATED;
         }
 
-        /* package */
-        static SeatAssigned seatAssigned() {
+        /* package */ static SeatAssigned seatAssigned() {
             return SEAT_ASSIGNED;
         }
 
-        /* package */
-        static SeatUnassigned seatUnassigned() {
+        /* package */ static SeatUnassigned seatUnassigned() {
             return SEAT_UNASSIGNED;
         }
 
-        /* package */
-        static SeatAssignmentUpdated seatAssignmentUpdated() {
+        /* package */ static SeatAssignmentUpdated seatAssignmentUpdated() {
             return SEAT_ASSIGNMENT_UPDATED;
         }
     }

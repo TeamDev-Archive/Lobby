@@ -90,8 +90,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     /**
      * Creates a new process manager ID with the generated UUID.
      */
-    /* package */
-    static ProcessManagerId newProcessManagerId() {
+    /* package */ static ProcessManagerId newProcessManagerId() {
         return ProcessManagerId.newBuilder()
                                .setUuid(newUuid())
                                .build();
@@ -128,8 +127,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         return builder.build();
     }
 
-    /* package */
-    static Timestamp reservationExpirationTimeBeforeNow() {
+    /* package */ static Timestamp reservationExpirationTimeBeforeNow() {
         final Timestamp result = Timestamps.secondsAgo(30);
         return result;
     }
@@ -193,14 +191,12 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         private Event() {
         }
 
-        /* package */
-        static OrderPlaced orderPlaced() {
+        /* package */ static OrderPlaced orderPlaced() {
             final Timestamp afterNow = minutesAhead(15);
             return orderPlaced(afterNow);
         }
 
-        /* package */
-        static OrderPlaced orderPlaced(Timestamp reservationExpiration) {
+        /* package */ static OrderPlaced orderPlaced(Timestamp reservationExpiration) {
             final OrderPlaced.Builder builder = OrderPlaced.newBuilder()
                                                            .setOrderId(ORDER_ID)
                                                            .setConferenceId(CONFERENCE_ID)
@@ -209,16 +205,14 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
             return builder.build();
         }
 
-        /* package */
-        static OrderUpdated orderUpdated() {
+        /* package */ static OrderUpdated orderUpdated() {
             final OrderUpdated.Builder builder = OrderUpdated.newBuilder()
                                                              .setOrderId(ORDER_ID)
                                                              .addAllSeat(SEATS);
             return builder.build();
         }
 
-        /* package */
-        static SeatsReserved seatsReserved() {
+        /* package */ static SeatsReserved seatsReserved() {
             final SeatsReserved.Builder builder = SeatsReserved.newBuilder()
                                                                .setReservationId(RESERVATION_ID)
                                                                .setConferenceId(CONFERENCE_ID)
@@ -226,15 +220,13 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
             return builder.build();
         }
 
-        /* package */
-        static PaymentCompleted paymentCompleted() {
+        /* package */ static PaymentCompleted paymentCompleted() {
             final PaymentCompleted.Builder builder = PaymentCompleted.newBuilder()
                                                                      .setOrderId(ORDER_ID);
             return builder.build();
         }
 
-        /* package */
-        static OrderConfirmed orderConfirmed() {
+        /* package */ static OrderConfirmed orderConfirmed() {
             final OrderConfirmed.Builder builder = OrderConfirmed.newBuilder()
                                                                  .setOrderId(ORDER_ID)
                                                                  .addAllSeat(SEATS);
@@ -252,8 +244,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         private Command() {
         }
 
-        /* package */
-        static ExpireRegistrationProcess expireRegistrationProcess() {
+        /* package */ static ExpireRegistrationProcess expireRegistrationProcess() {
             final ExpireRegistrationProcess.Builder builder = ExpireRegistrationProcess.newBuilder()
                                                                                        .setProcessManagerId(ID);
             return builder.build();

@@ -320,17 +320,14 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             getCommandBus().post(cmd, new StreamObserver<Response>() {
                 @Override
                 public void onNext(Response value) {
-
                 }
 
                 @Override
                 public void onError(Throwable t) {
-
                 }
 
                 @Override
                 public void onCompleted() {
-
                 }
             });
         }

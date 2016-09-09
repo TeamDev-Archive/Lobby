@@ -43,53 +43,44 @@ import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
     private SeatsAvailabilityValidator() {
     }
 
-    /* package */
-    static void validateCommand(MakeSeatReservation cmd) {
+    /* package */ static void validateCommand(MakeSeatReservation cmd) {
         checkReservationId(cmd.hasReservationId(), cmd);
         checkConferenceId(cmd.hasConferenceId(), cmd);
         checkSeats(cmd.getSeatList(), cmd);
     }
 
-    /* package */
-    static void validateCommand(CommitSeatReservation cmd) {
+    /* package */ static void validateCommand(CommitSeatReservation cmd) {
         checkReservationId(cmd.hasReservationId(), cmd);
     }
 
-    /* package */
-    static void validateState(SeatsAvailability state, CommitSeatReservation cmd) {
+    /* package */ static void validateState(SeatsAvailability state, CommitSeatReservation cmd) {
         checkExistPendingReservationsWithId(cmd.getReservationId(), state);
     }
 
-    /* package */
-    static void validateCommand(CancelSeatReservation cmd) {
+    /* package */ static void validateCommand(CancelSeatReservation cmd) {
         checkReservationId(cmd.hasReservationId(), cmd);
         checkConferenceId(cmd.hasConferenceId(), cmd);
     }
 
-    /* package */
-    static void validateState(SeatsAvailability state, CancelSeatReservation cmd) {
+    /* package */ static void validateState(SeatsAvailability state, CancelSeatReservation cmd) {
         checkExistPendingReservationsWithId(cmd.getReservationId(), state);
     }
 
-    /* package */
-    static void validateCommand(AddSeats cmd) {
+    /* package */ static void validateCommand(AddSeats cmd) {
         checkSeatQuantity(cmd.hasQuantity(), cmd.getQuantity(), cmd);
     }
 
-    /* package */
-    static void validateCommand(RemoveSeats cmd) {
+    /* package */ static void validateCommand(RemoveSeats cmd) {
         checkSeatQuantity(cmd.hasQuantity(), cmd.getQuantity(), cmd);
     }
 
-    /* package */
-    static void checkSeatQuantity(boolean hasQuantity, SeatQuantity quantity, Message cmd) {
+    /* package */ static void checkSeatQuantity(boolean hasQuantity, SeatQuantity quantity, Message cmd) {
         checkMessageField(hasQuantity, "seat quantity", cmd);
         checkMessageField(quantity.hasSeatTypeId(), "seat type id", quantity);
         checkMessageField(quantity.getQuantity() > 0, "quantity", quantity);
     }
 
-    /* package */
-    static void validateState(SeatsAvailability state, RemoveSeats cmd) {
+    /* package */ static void validateState(SeatsAvailability state, RemoveSeats cmd) {
         final List<SeatQuantity> availableSeats = state.getAvailableSeatList();
         final SeatQuantity quantityToRemove = cmd.getQuantity();
         final SeatTypeId id = quantityToRemove.getSeatTypeId();

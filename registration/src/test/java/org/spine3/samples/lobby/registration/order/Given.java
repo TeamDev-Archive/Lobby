@@ -179,33 +179,27 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         private Command() {
         }
 
-        /* package */
-        static CommandContext context() {
+        /* package */ static CommandContext context() {
             return CMD_CONTEXT;
         }
 
-        /* package */
-        static RegisterToConference registerToConference() {
+        /* package */ static RegisterToConference registerToConference() {
             return REGISTER_TO_CONFERENCE;
         }
 
-        /* package */
-        static MarkSeatsAsReserved markSeatsAsReserved() {
+        /* package */ static MarkSeatsAsReserved markSeatsAsReserved() {
             return MARK_SEATS_AS_RESERVED;
         }
 
-        /* package */
-        static ConfirmOrder confirmOrder() {
+        /* package */ static ConfirmOrder confirmOrder() {
             return CONFIRM_ORDER;
         }
 
-        /* package */
-        static RejectOrder rejectOrder() {
+        /* package */ static RejectOrder rejectOrder() {
             return REJECT_ORDER;
         }
 
-        /* package */
-        static AssignRegistrantDetails assignRegistrantDetails() {
+        /* package */ static AssignRegistrantDetails assignRegistrantDetails() {
             return ASSIGN_REGISTRANT_DETAILS;
         }
     }
@@ -229,13 +223,11 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         private Event() {
         }
 
-        /* package */
-        static OrderPlaced orderPlaced() {
+        /* package */ static OrderPlaced orderPlaced() {
             return ORDER_PLACED;
         }
 
-        /* package */
-        static OrderUpdated orderUpdated() {
+        /* package */ static OrderUpdated orderUpdated() {
             final OrderUpdated.Builder result = OrderUpdated.newBuilder()
                                                             .setOrderId(ORDER_ID)
                                                             .addSeat(newSeatQuantity(16))
@@ -243,8 +235,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
             return result.build();
         }
 
-        /* package */
-        static OrderPartiallyReserved orderPartiallyReserved() {
+        /* package */ static OrderPartiallyReserved orderPartiallyReserved() {
             final OrderPartiallyReserved.Builder result = OrderPartiallyReserved.newBuilder()
                                                                                 .setOrderId(ORDER_ID)
                                                                                 .addSeat(newSeatQuantity(64))
@@ -252,8 +243,7 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
             return result.build();
         }
 
-        /* package */
-        static OrderReservationCompleted orderReservationCompleted() {
+        /* package */ static OrderReservationCompleted orderReservationCompleted() {
             final OrderReservationCompleted.Builder result = OrderReservationCompleted.newBuilder()
                                                                                       .setOrderId(ORDER_ID)
                                                                                       .addSeat(newSeatQuantity(256))
@@ -261,28 +251,24 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
             return result.build();
         }
 
-        /* package */
-        static OrderConfirmed orderConfirmed() {
+        /* package */ static OrderConfirmed orderConfirmed() {
             return ORDER_CONFIRMED;
         }
 
-        /* package */
-        static OrderTotalsCalculated orderTotalsCalculated() {
+        /* package */ static OrderTotalsCalculated orderTotalsCalculated() {
             final OrderTotalsCalculated.Builder builder = OrderTotalsCalculated.newBuilder()
                                                                                .setOrderId(ORDER_ID)
                                                                                .setTotal(newMoney(100, USD));
             return builder.build();
         }
 
-        /* package */
-        static OrderExpired orderExpired() {
+        /* package */ static OrderExpired orderExpired() {
             final OrderExpired.Builder builder = OrderExpired.newBuilder()
                                                              .setOrderId(ORDER_ID);
             return builder.build();
         }
 
-        /* package */
-        static OrderRegistrantAssigned orderRegistrantAssigned() {
+        /* package */ static OrderRegistrantAssigned orderRegistrantAssigned() {
             final OrderRegistrantAssigned.Builder builder = OrderRegistrantAssigned.newBuilder()
                                                                                    .setOrderId(ORDER_ID)
                                                                                    .setPersonalInfo(newPersonalInfo("Albert", "Einstein", "einstein@fu-berlin.de"));
