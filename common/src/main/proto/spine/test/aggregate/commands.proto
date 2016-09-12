@@ -21,30 +21,20 @@ syntax = "proto3";
 
 package spine.test.aggregate.command;
 
-option (type_url_prefix) = "type.spine3.org";
+option (type_url_prefix) = "type.lobby.spine3.org";
 option java_package="org.spine3.samples.lobby.common";
 option java_outer_classname = "AggregateCommandsProto";
 option java_multiple_files = true;
 
 import "spine/annotations.proto";
-import "spine/test/aggregate/project.proto";
 import "spine/base/event.proto";
 
-message CreateProject {
-    ProjectId project_id = 1;
-    string name = 2;
-}
-
-message AddTask {
-    ProjectId project_id = 1;
-    Task task = 2;
-}
-
-message StartProject {
-    ProjectId project_id = 1;
-}
-
+// A command performed to import (inject) events into the aggregate's processing flow.
+//
+// Basically used for testing purposes.
+//
 message ImportEvents {
-    ProjectId project_id = 1;
-    repeated spine.base.Event event = 2;
+
+    // Events to import.
+    repeated spine.base.Event event = 1;
 }

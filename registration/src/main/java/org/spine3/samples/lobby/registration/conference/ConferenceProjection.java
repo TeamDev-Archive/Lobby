@@ -172,19 +172,17 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                                          .build();
         final Command command = create(message, newCommandContext());
         commandBus.post(command, new StreamObserver<Response>() {
+            // Ignore result.
             @Override
             public void onNext(Response value) {
-
             }
 
             @Override
             public void onError(Throwable t) {
-
             }
 
             @Override
             public void onCompleted() {
-
             }
         });
     }
@@ -196,19 +194,17 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                                                .build();
         final Command command = create(message, newCommandContext());
         commandBus.post(command, new StreamObserver<Response>() {
+            // Ignore result.
             @Override
             public void onNext(Response value) {
-
             }
 
             @Override
             public void onError(Throwable t) {
-
             }
 
             @Override
             public void onCompleted() {
-
             }
         });
     }
