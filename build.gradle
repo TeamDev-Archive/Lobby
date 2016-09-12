@@ -5,6 +5,7 @@ project.ext {
     PROTOBUF_DEPENDENCY = "com.google.protobuf:protoc:${project.PROTOBUF_VERSION}"
     MAVEN_REPOSITORY_URL = 'http://maven.teamdev.com/repository/spine'
     MAVEN_SNAPSHOTS_REPOSITORY_URL = 'http://maven.teamdev.com/repository/spine-snapshots'
+    SLF4J_VERSION = '1.7.21'
 }
 
 buildscript {
@@ -70,8 +71,8 @@ subprojects {
         compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
 
         // SLF4J
-        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
-        compile group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.21'
+        compile group: 'org.slf4j', name: 'slf4j-api', version: SLF4J_VERSION
+        compile group: 'org.slf4j', name: 'slf4j-jdk14', version: project.SLF4J_VERSION
 
         // Protobuf
         compile group: 'com.google.protobuf', name: 'protobuf-java', version: project.PROTOBUF_VERSION
