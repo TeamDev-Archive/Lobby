@@ -172,7 +172,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                                          .build();
         final Command command = create(message, newCommandContext());
         commandBus.post(command, new StreamObserver<Response>() {
-            // Ignore result.
+            // TODO:12-09-16:dmytro.dashenkov: Handle completion or errors.
             @Override
             public void onNext(Response value) {
             }
@@ -193,8 +193,9 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                                                .setQuantity(newSeatQuantity(seatTypeId, quantity))
                                                .build();
         final Command command = create(message, newCommandContext());
+
+        // TODO:12-09-16:dmytro.dashenkov: Handle completion or errors.
         commandBus.post(command, new StreamObserver<Response>() {
-            // Ignore result.
             @Override
             public void onNext(Response value) {
             }

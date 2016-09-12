@@ -71,7 +71,7 @@ subprojects {
         compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
 
         // SLF4J
-        compile group: 'org.slf4j', name: 'slf4j-api', version: SLF4J_VERSION
+        compile group: 'org.slf4j', name: 'slf4j-api', version: project.SLF4J_VERSION
         compile group: 'org.slf4j', name: 'slf4j-jdk14', version: project.SLF4J_VERSION
 
         // Protobuf
