@@ -13,7 +13,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.7.4'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.0'
     }
 }
 
@@ -97,12 +97,16 @@ subprojects {
 
     sourceSets {
         main {
-            proto.srcDirs = ["${SRC_ROOT_DIR}/main/proto"]
+            proto {
+                srcDir "${SRC_ROOT_DIR}/main/proto"
+            }
             java.srcDirs = [GEN_MAIN_JAVA_DIR, "${SRC_ROOT_DIR}/main/java"]
             resources.srcDirs = ["${GEN_ROOT_DIR}/main/resources"]
         }
         test {
-            proto.srcDirs = ["${SRC_ROOT_DIR}/test/proto"]
+            proto {
+                srcDir "${SRC_ROOT_DIR}/test/proto"
+            }
             java.srcDirs = [GEN_TEST_JAVA_DIR, "${SRC_ROOT_DIR}/test/java"]
             resources.srcDirs = ["${GEN_ROOT_DIR}/test/resources"]
         }
