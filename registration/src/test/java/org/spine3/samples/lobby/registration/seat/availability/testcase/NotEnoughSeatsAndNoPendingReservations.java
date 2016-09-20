@@ -50,10 +50,11 @@ public class NotEnoughSeatsAndNoPendingReservations extends MakeSeatReservationC
     @Override
     public SeatsAvailabilityAggregate givenAggregate() {
         final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
-        final SeatsAvailability state = aggregate.getState().toBuilder()
-                .addAllAvailableSeat(AVAILABLE_SEATS)
-                .build();
-        aggregate.incrementStateForTest(state);
+        final SeatsAvailability state = aggregate.getState()
+                                                 .toBuilder()
+                                                 .addAllAvailableSeat(AVAILABLE_SEATS)
+                                                 .build();
+        aggregate.incrementAggregateState(state);
         return aggregate;
     }
 

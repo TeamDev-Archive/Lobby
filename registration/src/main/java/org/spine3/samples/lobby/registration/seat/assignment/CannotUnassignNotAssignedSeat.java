@@ -23,7 +23,7 @@ package org.spine3.samples.lobby.registration.seat.assignment;
 import org.spine3.samples.lobby.common.SeatTypeId;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsId;
 import org.spine3.samples.lobby.registration.contracts.SeatPosition;
-import org.spine3.server.failure.FailureThrowable;
+import org.spine3.base.FailureThrowable;
 
 /**
  * A business failure which is thrown on attempt to unassign a seat which is not assigned to anyone.

@@ -1,5 +1,5 @@
 //
-// Copyright 2015, TeamDev Ltd. All rights reserved.
+// Copyright 2016, TeamDev Ltd. All rights reserved.
 //
 // Redistribution and use in source and/or binary forms, with or without
 // modification, must retain the above copyright notice and the following
@@ -19,18 +19,22 @@
 //
 syntax = "proto3";
 
-package spine.samples.lobby.payment.contracts;
+package spine.test.aggregate.command;
 
 option (type_url_prefix) = "type.lobby.spine3.org";
-option java_package="org.spine3.samples.lobby.payment.contracts";
-option java_outer_classname = "PaymentContractsEventsProto";
+option java_package="org.spine3.samples.lobby.common";
+option java_outer_classname = "AggregateCommandsProto";
 option java_multiple_files = true;
 
 import "spine/annotations.proto";
-import "spine/samples/lobby/common/common.proto";
+import "spine/base/event.proto";
 
-// The event propagated when a payment for an order is completed.
-message PaymentCompleted {
-    // The ID of the order.
-    spine.samples.lobby.common.OrderId order_id = 1;
+// A command performed to import (inject) events into the processing flow of an aggregate.
+//
+// Basically used for testing purposes.
+//
+message ImportEvents {
+
+    // Events to import.
+    repeated spine.base.Event event = 1;
 }

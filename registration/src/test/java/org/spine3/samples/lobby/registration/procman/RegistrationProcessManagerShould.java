@@ -21,13 +21,14 @@
 package org.spine3.samples.lobby.registration.procman;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.spine3.base.Command;
-import org.spine3.protobuf.Messages;
+import org.spine3.protobuf.AnyPacker;
 import org.spine3.samples.lobby.payment.contracts.PaymentCompleted;
 import org.spine3.samples.lobby.registration.contracts.OrderConfirmed;
 import org.spine3.samples.lobby.registration.contracts.OrderPlaced;
@@ -40,6 +41,7 @@ import org.spine3.samples.lobby.registration.seat.availability.CancelSeatReserva
 import org.spine3.samples.lobby.registration.seat.availability.CommitSeatReservation;
 import org.spine3.samples.lobby.registration.seat.availability.MakeSeatReservation;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsReserved;
+import org.spine3.samples.lobby.registration.util.MessagePacker;
 import org.spine3.server.procman.CommandRouted;
 
 import java.util.List;
@@ -64,7 +66,8 @@ public class RegistrationProcessManagerShould {
 
     @After
     public void tearDown() throws Exception {
-        processManager.getCommandBus().close();
+        processManager.getCommandBus()
+                      .close();
     }
 
     @Test
@@ -79,12 +82,16 @@ public class RegistrationProcessManagerShould {
         final List<Message> commandsSent = processManager.getCommandsSent();
         assertEquals(2, commandsSent.size());
 
-        final MakeSeatReservation reserveSeats = (MakeSeatReservation) commandsSent.get(0);
+        final Message command = MessagePacker.unpackAny(commandsSent.get(0));
+        final MakeSeatReservation reserveSeats = (MakeSeatReservation) command;
         assertEquals(event.getConferenceId(), reserveSeats.getConferenceId());
-        assertEquals(event.getOrderId().getUuid(), reserveSeats.getReservationId().getUuid());
+        assertEquals(event.getOrderId()
+                          .getUuid(), reserveSeats.getReservationId()
+                                                  .getUuid());
         assertEquals(event.getSeatList(), reserveSeats.getSeatList());
 
-        final ExpireRegistrationProcess expireProcess = (ExpireRegistrationProcess) commandsSent.get(1);
+        final ExpireRegistrationProcess expireProcess =
+                (ExpireRegistrationProcess) MessagePacker.unpackAny(commandsSent.get(1));
         assertEquals(processManager.getId(), expireProcess.getProcessManagerId());
     }
 
@@ -132,8 +139,11 @@ public class RegistrationProcessManagerShould {
         processManager.on(event, Given.Event.CONTEXT);
 
         final MakeSeatReservation cmd = assertCommandSent(MakeSeatReservation.class);
-        assertEquals(processManager.getState().getConferenceId(), cmd.getConferenceId());
-        assertEquals(event.getOrderId().getUuid(), cmd.getReservationId().getUuid());
+        assertEquals(processManager.getState()
+                                   .getConferenceId(), cmd.getConferenceId());
+        assertEquals(event.getOrderId()
+                          .getUuid(), cmd.getReservationId()
+                                         .getUuid());
         assertEquals(event.getSeatList(), cmd.getSeatList());
     }
 
@@ -144,7 +154,7 @@ public class RegistrationProcessManagerShould {
 
         processManager.on(event, Given.Event.CONTEXT);
     }
-    
+
     @Test
     public void handle_SeatsReserved_event_then_update_state_and_mark_seats_as_reserved()
             throws IllegalProcessStateFailure {
@@ -213,7 +223,9 @@ public class RegistrationProcessManagerShould {
 
         assertProcessIsCompleted();
         final CommitSeatReservation cmd = assertCommandSent(CommitSeatReservation.class);
-        assertEquals(event.getOrderId().getUuid(), cmd.getReservationId().getUuid());
+        assertEquals(event.getOrderId()
+                          .getUuid(), cmd.getReservationId()
+                                         .getUuid());
     }
 
     @Test(expected = IllegalProcessStateFailure.class)
@@ -227,7 +239,7 @@ public class RegistrationProcessManagerShould {
 
     @Test
     public void handle_ExpireRegistrationProcess_command_then_update_state_and_send_commands_if_process_not_completed()
-            throws IllegalProcessStateFailure {
+            throws IllegalProcessStateFailure, InvalidProtocolBufferException {
         processManager = given.processManager(PAYMENT_RECEIVED, /*isCompleted=*/false);
         final ExpireRegistrationProcess expireProcessCmd = Given.Command.expireRegistrationProcess();
 
@@ -258,7 +270,12 @@ public class RegistrationProcessManagerShould {
         final List<Message> commandsSent = processManager.getCommandsSent();
         assertEquals(1, commandsSent.size());
 
-        final Message message = commandsSent.get(0);
+        Message message = commandsSent.get(0);
+
+        if (message instanceof Any) {
+            message = AnyPacker.unpack((Any) message);
+        }
+
         assertEquals(commandClass, message.getClass());
         @SuppressWarnings("unchecked")
         final M result = (M) message;
@@ -283,11 +300,15 @@ public class RegistrationProcessManagerShould {
         assertEquals(event.getReservationAutoExpiration(), actual.getReservationAutoExpiration());
     }
 
-    private static<M extends Message> M findCommandMessage(Class<M> cmdMessageClass, Iterable<Command> commands) {
+    private static <M extends Message> M findCommandMessage(Class<M> cmdMessageClass, Iterable<Command> commands) throws InvalidProtocolBufferException {
         for (Command command : commands) {
             final Any any = command.getMessage();
-            final M message = Messages.fromAny(any);
-            if (message.getClass().equals(cmdMessageClass)) {
+
+            @SuppressWarnings("unchecked")
+            final M message = (M) MessagePacker.unpackAny(any);
+
+            if (message.getClass()
+                       .equals(cmdMessageClass)) {
                 return message;
             }
         }

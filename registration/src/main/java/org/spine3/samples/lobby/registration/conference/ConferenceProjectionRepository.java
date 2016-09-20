@@ -31,8 +31,8 @@ import javax.annotation.Nonnull;
 /**
  * The repository which manages conference projections.
  *
- * @see ConferenceProjection
  * @author Alexander Litus
+ * @see ConferenceProjection
  */
 public class ConferenceProjectionRepository extends ProjectionRepository<ConferenceId, ConferenceProjection, Conference> {
 

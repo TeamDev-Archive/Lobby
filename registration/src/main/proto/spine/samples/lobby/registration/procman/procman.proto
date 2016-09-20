@@ -21,10 +21,12 @@ syntax = "proto3";
 
 package spine.samples.lobby.registration.procman;
 
+option (type_url_prefix) = "type.lobby.spine3.org";
 option java_package="org.spine3.samples.lobby.registration.procman";
 option java_outer_classname = "RegistrationProcessManagerProto";
 option java_multiple_files = true;
 
+import "spine/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "spine/samples/lobby/common/common.proto";
 import "spine/base/command.proto";

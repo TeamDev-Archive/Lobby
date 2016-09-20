@@ -41,7 +41,7 @@ public class ValidationUtils {
     /**
      * Ensures the truth of a {@code hasId} expression.
      *
-     * @param hasId a boolean expression stating that the {@code message} has an conference ID
+     * @param hasId   a boolean expression stating that the {@code message} has an conference ID
      * @param message a checked message
      * @throws IllegalArgumentException if {@code hasId} expression is false
      */
@@ -52,7 +52,7 @@ public class ValidationUtils {
     /**
      * Ensures that {@code seats} is not empty collection, each seat has an ID and a positive quantity value.
      *
-     * @param seats seats to check
+     * @param seats   seats to check
      * @param message a checked message which must have the {@code seats}
      * @throws IllegalArgumentException if {@code hasId} expression is false
      */
@@ -69,15 +69,16 @@ public class ValidationUtils {
     /**
      * Ensures the truth of a {@code hasField} expression.
      *
-     * @param hasField a boolean expression stating that the {@code target} message has a specific field
+     * @param hasField  a boolean expression stating that the {@code target} message has a specific field
      * @param fieldName a name of the field which the {@code target} message must have
-     * @param target a checked message
+     * @param target    a checked message
      * @throws IllegalArgumentException if {@code hasField} expression is false
      */
     public static void checkMessageField(boolean hasField, String fieldName, Message target) {
         if (!hasField) {
             final String message = format("The field '%s' must be defined in all messages of class: %s.",
-                    fieldName, target.getClass().getName());
+                    fieldName, target.getClass()
+                                     .getName());
             throw new IllegalArgumentException(message);
         }
     }
