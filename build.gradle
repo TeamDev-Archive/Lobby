@@ -1,5 +1,5 @@
 project.ext {
-    SPINE_VERSION = '0.5.7-SNAPSHOT'
+    SPINE_VERSION = '0.6.0'
     PROTOBUF_VERSION = '3.0.0'
     SPINE_PROTO_PLUGIN_VERSION = '1.4.10'
     PROTOBUF_DEPENDENCY = "com.google.protobuf:protoc:${project.PROTOBUF_VERSION}"
