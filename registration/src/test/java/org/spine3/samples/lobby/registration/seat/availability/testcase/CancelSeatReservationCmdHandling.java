@@ -27,8 +27,8 @@ import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
 import org.spine3.samples.lobby.registration.seat.availability.CancelSeatReservation;
 import org.spine3.samples.lobby.registration.seat.availability.SeatQuantities;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailability;
-import org.spine3.samples.lobby.registration.seat.availability.SeatsReservationCancelled;
 import org.spine3.samples.lobby.registration.seat.availability.SeatsAvailabilityAggregate;
+import org.spine3.samples.lobby.registration.seat.availability.SeatsReservationCancelled;
 
 import java.util.List;
 
@@ -47,9 +47,9 @@ public abstract class CancelSeatReservationCmdHandling extends TestCase {
     private static final ReservationId RESERVATION_ID = newReservationId();
 
     private static final CancelSeatReservation CANCEL_SEAT_RESERVATION = CancelSeatReservation.newBuilder()
-            .setReservationId(RESERVATION_ID)
-            .setConferenceId(newConferenceId())
-            .build();
+                                                                                              .setReservationId(RESERVATION_ID)
+                                                                                              .setConferenceId(newConferenceId())
+                                                                                              .build();
 
     public CancelSeatReservation givenCommand() {
         return CANCEL_SEAT_RESERVATION;
@@ -69,15 +69,17 @@ public abstract class CancelSeatReservationCmdHandling extends TestCase {
 
         private static final ImmutableMap<String, SeatQuantities> PENDING_RESERVATIONS =
                 ImmutableMap.<String, SeatQuantities>builder()
-                        .put(RESERVATION_ID.getUuid(), TMP_RESERVED_SEATS).build();
+                        .put(RESERVATION_ID.getUuid(), TMP_RESERVED_SEATS)
+                        .build();
 
         @Override
         public SeatsAvailabilityAggregate givenAggregate() {
             final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
-            final SeatsAvailability state = aggregate.getState().toBuilder()
-                    .putAllPendingReservations(PENDING_RESERVATIONS)
-                    .build();
-            aggregate.incrementStateForTest(state);
+            final SeatsAvailability state = aggregate.getState()
+                                                     .toBuilder()
+                                                     .putAllPendingReservations(PENDING_RESERVATIONS)
+                                                     .build();
+            aggregate.incrementAggregateState(state);
             return aggregate;
         }
 

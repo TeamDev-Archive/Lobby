@@ -37,10 +37,11 @@ public class EnoughSeatsAndNoPendingReservations extends MakeSeatReservationCmdH
     @Override
     public SeatsAvailabilityAggregate givenAggregate() {
         final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
-        final SeatsAvailability state = aggregate.getState().toBuilder()
-                .addAllAvailableSeat(getAvailableSeats())
-                .build();
-        aggregate.incrementStateForTest(state);
+        final SeatsAvailability state = aggregate.getState()
+                                                 .toBuilder()
+                                                 .addAllAvailableSeat(getAvailableSeats())
+                                                 .build();
+        aggregate.incrementAggregateState(state);
         return aggregate;
     }
 

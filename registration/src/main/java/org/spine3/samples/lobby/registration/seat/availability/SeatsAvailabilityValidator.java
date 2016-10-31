@@ -40,7 +40,8 @@ import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
 @SuppressWarnings({"TypeMayBeWeakened"/** "OrBuilder" parameters are not applicable*/, "UtilityClass"})
 /* package */ class SeatsAvailabilityValidator {
 
-    private SeatsAvailabilityValidator() {}
+    private SeatsAvailabilityValidator() {
+    }
 
     /* package */ static void validateCommand(MakeSeatReservation cmd) {
         checkReservationId(cmd.hasReservationId(), cmd);
@@ -96,11 +97,12 @@ import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
     /**
      * Ensures the truth of a {@code hasId} expression.
      *
-     * @param hasId a boolean expression stating that the {@code message} has an reservation ID
+     * @param hasId   a boolean expression stating that the {@code message} has an reservation ID
      * @param message a checked message
      * @throws IllegalArgumentException if {@code hasId} expression is false
      */
-    /* package */ static void checkReservationId(boolean hasId, Message message) {
+    /* package */
+    static void checkReservationId(boolean hasId, Message message) {
         checkMessageField(hasId, "reservation ID", message);
     }
 }

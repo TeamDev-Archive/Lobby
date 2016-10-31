@@ -30,15 +30,14 @@ import org.spine3.samples.lobby.registration.contracts.SeatAssignment;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatAssignmentsCreated;
 import org.spine3.samples.lobby.registration.contracts.SeatUnassigned;
+import org.spine3.samples.lobby.registration.util.EventImporter;
 import org.spine3.samples.lobby.registration.util.Seats;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Alexander Litus
@@ -157,11 +156,12 @@ public class SeatAssignmentsAggregateShould {
         final SeatAssignmentsCreated event = Given.Event.seatAssignmentsCreated();
         final List<SeatAssignment> expectedAssignments = event.getAssignmentList();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
         final SeatAssignments state = aggregate.getState();
         assertEquals(event.getAssignmentsId(), state.getId());
-        final Collection<SeatAssignment> actualAssignments = state.getAssignments().values();
+        final Collection<SeatAssignment> actualAssignments = state.getAssignments()
+                                                                  .values();
         assertEquals(expectedAssignments.size(), actualAssignments.size());
         assertTrue(expectedAssignments.containsAll(actualAssignments));
     }
@@ -171,11 +171,14 @@ public class SeatAssignmentsAggregateShould {
         final SeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
         final SeatAssigned event = Given.Event.seatAssigned();
         final SeatAssignment expected = event.getAssignment();
-        final int position = expected.getPosition().getValue();
+        final int position = expected.getPosition()
+                                     .getValue();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
-        final SeatAssignment actual = aggregate.getState().getAssignments().get(position);
+        final SeatAssignment actual = aggregate.getState()
+                                               .getAssignments()
+                                               .get(position);
         assertEquals(expected, actual);
     }
 
@@ -183,11 +186,13 @@ public class SeatAssignmentsAggregateShould {
     public void apply_SeatUnassigned_event_and_unassign_attendee() {
         final SeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
         final SeatUnassigned event = Given.Event.seatUnassigned();
-        final int position = event.getPosition().getValue();
+        final int position = event.getPosition()
+                                  .getValue();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
-        final Map<Integer, SeatAssignment> assignments = aggregate.getState().getAssignments();
+        final Map<Integer, SeatAssignment> assignments = aggregate.getState()
+                                                                  .getAssignments();
         final SeatAssignment assignment = assignments.get(position);
         assertFalse(assignment.hasAttendee());
     }
@@ -197,12 +202,15 @@ public class SeatAssignmentsAggregateShould {
         final SeatAssignmentsAggregate aggregate = given.seatAssignmentsWithAttendees();
         final SeatAssignmentUpdated event = Given.Event.seatAssignmentUpdated();
         final PersonalInfo expected = event.getAttendee();
-        final int position = event.getPosition().getValue();
+        final int position = event.getPosition()
+                                  .getValue();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
-        final Map<Integer, SeatAssignment> assignments = aggregate.getState().getAssignments();
-        final PersonalInfo actual = assignments.get(position).getAttendee();
+        final Map<Integer, SeatAssignment> assignments = aggregate.getState()
+                                                                  .getAssignments();
+        final PersonalInfo actual = assignments.get(position)
+                                               .getAttendee();
         assertEquals(expected, actual);
     }
 

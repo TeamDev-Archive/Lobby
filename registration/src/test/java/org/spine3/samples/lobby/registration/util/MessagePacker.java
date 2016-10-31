@@ -18,25 +18,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spine3.samples.lobby.registration.seat.availability;
+package org.spine3.samples.lobby.registration.util;
 
-import org.spine3.server.BoundedContext;
-import org.spine3.server.aggregate.AggregateRepository;
+import com.google.protobuf.Any;
+import com.google.protobuf.Message;
+import org.spine3.protobuf.AnyPacker;
 
 /**
- * The repository for SeatsAvailability aggregates.
+ * Util class for extracting {@link Message} instance form {@link Any} wrapper.
  *
- * @author Alexander Litus
- * @see SeatsAvailabilityAggregate
+ * @author Dmytro Dashenkov
  */
-public class SeatsAvailabilityRepository extends AggregateRepository<SeatsAvailabilityId, SeatsAvailabilityAggregate> {
+@SuppressWarnings("UtilityClass")
+public class MessagePacker {
+
+    private MessagePacker() {
+    }
 
     /**
-     * Creates a new repository instance.
+     * Extracts typed {@link Message} from {@link Any} if needed.
      *
-     * @param boundedContext the bounded context to which this repository belongs
+     * @param any Message to extract from.
+     * @return Extracted {@link Message} if it was wrapped or the param itself otherwise.
      */
-    public SeatsAvailabilityRepository(BoundedContext boundedContext) {
-        super(boundedContext);
+    public static Message unpackAny(Message any) {
+        final Message unpacked;
+        if (any instanceof Any) {
+            unpacked = AnyPacker.unpack((Any) any);
+        } else {
+            unpacked = any;
+        }
+
+        return unpacked;
     }
 }

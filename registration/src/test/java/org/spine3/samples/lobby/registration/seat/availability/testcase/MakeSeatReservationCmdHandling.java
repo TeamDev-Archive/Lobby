@@ -71,13 +71,14 @@ public abstract class MakeSeatReservationCmdHandling extends TestCase {
         public static final int WORKSHOP_SEAT_COUNT_REQUESTED = 7;
 
         public static final MakeSeatReservation MAKE_SEAT_RESERVATION = MakeSeatReservation.newBuilder()
-                .setConferenceId(CONFERENCE_ID)
-                .setReservationId(RESERVATION_ID)
-                .addSeat(newSeatQuantity(MAIN_SEAT_TYPE_ID, MAIN_SEAT_COUNT_REQUESTED))
-                .addSeat(newSeatQuantity(WORKSHOP_SEAT_TYPE_ID, WORKSHOP_SEAT_COUNT_REQUESTED))
-                .build();
+                                                                                           .setConferenceId(CONFERENCE_ID)
+                                                                                           .setReservationId(RESERVATION_ID)
+                                                                                           .addSeat(newSeatQuantity(MAIN_SEAT_TYPE_ID, MAIN_SEAT_COUNT_REQUESTED))
+                                                                                           .addSeat(newSeatQuantity(WORKSHOP_SEAT_TYPE_ID, WORKSHOP_SEAT_COUNT_REQUESTED))
+                                                                                           .build();
 
-        private Command() {}
+        private Command() {
+        }
     }
 
     public MakeSeatReservation givenCommand() {

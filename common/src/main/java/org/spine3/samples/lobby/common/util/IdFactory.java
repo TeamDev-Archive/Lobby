@@ -30,8 +30,8 @@ import org.spine3.samples.lobby.common.SeatTypeId;
 /**
  * The utility class containing convenience methods for identifiers creation.
  *
- * @see Message
  * @author Alexander Litus
+ * @see Message
  */
 @SuppressWarnings("UtilityClass")
 public class IdFactory {
@@ -44,7 +44,9 @@ public class IdFactory {
      */
     public static OrderId newOrderId() {
         final String id = Identifiers.newUuid();
-        return OrderId.newBuilder().setUuid(id).build();
+        return OrderId.newBuilder()
+                      .setUuid(id)
+                      .build();
     }
 
     /**
@@ -52,7 +54,9 @@ public class IdFactory {
      */
     public static ReservationId newReservationId() {
         final String id = Identifiers.newUuid();
-        return ReservationId.newBuilder().setUuid(id).build();
+        return ReservationId.newBuilder()
+                            .setUuid(id)
+                            .build();
     }
 
     /**
@@ -60,20 +64,26 @@ public class IdFactory {
      */
     public static ConferenceId newConferenceId() {
         final String id = Identifiers.newUuid();
-        return ConferenceId.newBuilder().setUuid(id).build();
+        return ConferenceId.newBuilder()
+                           .setUuid(id)
+                           .build();
     }
 
     /**
      * Creates a new {@code SeatTypeId} with a random UUID value.
      */
     public static SeatTypeId newSeatTypeId() {
-        return SeatTypeId.newBuilder().setUuid(Identifiers.newUuid()).build();
+        return SeatTypeId.newBuilder()
+                         .setUuid(Identifiers.newUuid())
+                         .build();
     }
 
     /**
      * Creates a new {@code SeatAssignmentsId} with the given UUID value.
      */
     public static SeatTypeId newSeatTypeId(String uuid) {
-        return SeatTypeId.newBuilder().setUuid(uuid).build();
+        return SeatTypeId.newBuilder()
+                         .setUuid(uuid)
+                         .build();
     }
 }
