@@ -43,9 +43,8 @@ import org.spine3.server.event.EventStore;
 import org.spine3.server.storage.StorageFactory;
 import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
-import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static org.spine3.base.Identifiers.newUuid;
-import static org.spine3.protobuf.Messages.toAny;
+import static org.spine3.protobuf.Timestamps.getCurrentTime;
 
 /**
  * The utility class which is used for creating objects needed in tests.
@@ -56,7 +55,8 @@ import static org.spine3.protobuf.Messages.toAny;
 @VisibleForTesting
 public class TestDataFactory {
 
-    private TestDataFactory() {}
+    private TestDataFactory() {
+    }
 
     /**
      * Creates a new {@link BoundedContext} instance with {@link InMemoryStorageFactory},
@@ -72,10 +72,12 @@ public class TestDataFactory {
         final CommandBus commandBus = newCommandBus(storageFactory);
         final String name = "BC-" + newUuid();
         final BoundedContext.Builder result = BoundedContext.newBuilder()
-                .setName(name)
-                .setStorageFactory(storageFactory)
-                .setCommandBus(commandBus)
-                .setEventBus(EventBus.newInstance(eventStore));
+                                                            .setName(name)
+                                                            .setStorageFactory(storageFactory)
+                                                            .setCommandBus(commandBus)
+                                                            .setEventBus(EventBus.newBuilder()
+                                                                                 .setEventStore(eventStore)
+                                                                                 .build());
         return result.build();
     }
 
