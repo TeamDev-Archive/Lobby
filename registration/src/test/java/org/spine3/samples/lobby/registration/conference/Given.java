@@ -20,7 +20,6 @@
 
 package org.spine3.samples.lobby.registration.conference;
 
-import com.google.protobuf.Descriptors;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.ConferenceSlug;
 import org.spine3.samples.lobby.common.SeatType;

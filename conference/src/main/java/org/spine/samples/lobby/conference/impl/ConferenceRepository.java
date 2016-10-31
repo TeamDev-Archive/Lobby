@@ -23,7 +23,7 @@ package org.spine.samples.lobby.conference.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import org.spine3.base.EmailAddress;
+import org.spine3.net.EmailAddress;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.SeatType;
 import org.spine3.samples.lobby.common.SeatTypeId;

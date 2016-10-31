@@ -22,8 +22,8 @@ package org.spine.samples.lobby.conference;
 
 import org.spine.samples.lobby.conference.impl.ConferenceRepository;
 import org.spine.samples.lobby.conference.impl.ConferenceServiceImpl;
-import org.spine3.base.EmailAddress;
 import org.spine3.money.Money;
+import org.spine3.net.EmailAddress;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.PersonalInfo;
 import org.spine3.samples.lobby.common.SeatType;

@@ -23,13 +23,13 @@ package org.spine.samples.lobby.conference.impl;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.protobuf.Message;
-import com.google.protobuf.util.TimeUtil;
 import org.spine.samples.lobby.conference.ConferenceService;
 import org.spine3.base.Event;
 import org.spine3.base.EventContext;
 import org.spine3.base.EventId;
 import org.spine3.base.Identifiers;
-import org.spine3.protobuf.Messages;
+import org.spine3.protobuf.AnyPacker;
+import org.spine3.protobuf.Timestamps;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.SeatType;
 import org.spine3.samples.lobby.common.SeatTypeId;
@@ -219,8 +219,8 @@ public class ConferenceServiceImpl implements ConferenceService {
 
         final EventContext eventContext = EventContext.newBuilder()
                                                       .setEventId(eventIDMessage)
-                                                      .setProducerId(Messages.toAny(conferenceId))
-                                                      .setTimestamp(TimeUtil.getCurrentTime())
+                                                      .setProducerId(AnyPacker.pack(conferenceId))
+                                                      .setTimestamp(Timestamps.getCurrentTime())
                                                       .build();
         return eventContext;
     }
