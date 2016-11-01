@@ -27,7 +27,7 @@ option java_outer_classname = "PaymentProto";
 option java_multiple_files = true;
 
 import "spine/annotations.proto";
-import "spine.samples.lobby.registration.contracts";
+import "spine/samples/lobby/registration/contracts/registration.proto";
 
 message ThirdPartyProcessorPayment {
 
@@ -35,7 +35,7 @@ message ThirdPartyProcessorPayment {
     PaymentId id = 1;
 
     // Total price and seat booking lines of the order
-    spine.samples.lobby.payment.OrderTotal price = 2;
+    spine.samples.lobby.registration.contracts.OrderTotal price = 2;
 }
 
 message PaymentId {
