@@ -22,11 +22,13 @@ package org.spine3.samples.lobby.payment;
 
 import com.google.protobuf.Message;
 import org.spine3.base.CommandContext;
+import org.spine3.base.EventContext;
 import org.spine3.base.Identifiers;
 import org.spine3.samples.lobby.common.util.aggregate.AbstractLobbyAggregate;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.command.Assign;
 import org.spine3.server.entity.Entity;
+import org.spine3.server.event.Subscribe;
 
 import java.util.Collections;
 import java.util.List;
@@ -62,5 +64,10 @@ public class ThirdPartyPaymentAggregate
                                                      .setId(id)
                                                      .build();
         return Collections.singletonList(resultEvent);
+    }
+
+    @Subscribe
+    public void on(PaymentInstantiated event, EventContext context) {
+        // TODO:01-11-16:dmytro.dashenkov: Implement.
     }
 }
