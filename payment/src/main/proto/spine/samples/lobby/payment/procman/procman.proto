@@ -1,0 +1,63 @@
+//
+// Copyright 2015, TeamDev Ltd. All rights reserved.
+//
+// Redistribution and use in source and/or binary forms, with or without
+// modification, must retain the above copyright notice and the following
+// disclaimer.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+syntax = "proto3";
+
+package spine.samples.lobby.payment.procman;
+
+option (type_url_prefix) = "type.lobby.spine3.org";
+option java_package="org.spine3.samples.lobby.payment.procman";
+option java_outer_classname = "PaymentProcManProto";
+option java_multiple_files = true;
+
+import "spine/annotations.proto";
+import "spine/samples/lobby/payment/payment.proto";
+import "spine/net/url.proto";
+
+// TODO:02-11-16:dmytro.dashenkov: Add docs for all proto definitions in "../".
+message PaymentProcessManagerId {
+
+    // UID value for the typed identifier
+    string value = 1;
+}
+
+message PaymentProcess {
+
+    // Process managed UID
+    PaymentProcessManagerId id = 1;
+
+    // State of the payment process
+    PaymentState state = 2;
+
+    // Payment aggregate ID
+    spine.samples.lobby.payment.PaymentId aggregateId = 3;
+
+    // Third-party payment engine host
+    spine.net.Url paymentEngine = 4;
+
+    enum PaymentState {
+        NOT_STARTED = 0;
+        INITIATED = 1;
+        INITIALIZED = 2;
+        SENT_TO_PAYMENT_ENGINE = 3;
+        SUCCEED = 4;
+        FAILED = 5;
+        CANCELED = 6;
+    }
+}

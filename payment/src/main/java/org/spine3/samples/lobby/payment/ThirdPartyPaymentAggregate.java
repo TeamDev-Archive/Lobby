@@ -24,7 +24,9 @@ import com.google.protobuf.Message;
 import org.spine3.base.CommandContext;
 import org.spine3.base.EventContext;
 import org.spine3.base.Identifiers;
+import org.spine3.money.Money;
 import org.spine3.samples.lobby.common.util.aggregate.AbstractLobbyAggregate;
+import org.spine3.samples.lobby.registration.contracts.OrderTotal;
 import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.command.Assign;
 import org.spine3.server.entity.Entity;
@@ -55,6 +57,9 @@ public class ThirdPartyPaymentAggregate
 
     @Assign
     public List<Message> handle(InstantiateThirdPartyProcessorPayment command, CommandContext context) {
+        final OrderTotal total = command.getTotal();
+        final Money orderCost = total.getTotalPrice();
+
         // TODO:01-11-16:dmytro.dashenkov: Implement.
 
         final PaymentId id = PaymentId.newBuilder()
