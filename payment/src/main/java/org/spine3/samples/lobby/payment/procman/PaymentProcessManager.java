@@ -21,9 +21,18 @@
 package org.spine3.samples.lobby.payment.procman;
 
 import org.spine3.base.CommandContext;
+import org.spine3.base.CommandId;
+import org.spine3.base.Identifiers;
+import org.spine3.protobuf.Timestamps;
+import org.spine3.samples.lobby.payment.InitializeThirdPartyProcessorPayment;
 import org.spine3.samples.lobby.payment.InstantiateThirdPartyProcessorPayment;
+import org.spine3.samples.lobby.payment.PaymentId;
 import org.spine3.samples.lobby.payment.SecondInstantiationAttempt;
+import org.spine3.samples.lobby.payment.ThirdPartyPaymentAggregate;
 import org.spine3.samples.lobby.payment.procman.PaymentProcess.PaymentState;
+import org.spine3.samples.lobby.payment.repository.PaymentRepository;
+import org.spine3.samples.lobby.registration.contracts.OrderTotal;
+import org.spine3.server.BoundedContext;
 import org.spine3.server.command.Assign;
 import org.spine3.server.procman.CommandRouted;
 import org.spine3.server.procman.ProcessManager;
@@ -35,6 +44,8 @@ import static org.spine3.samples.lobby.payment.procman.PaymentProcess.PaymentSta
  */
 public class PaymentProcessManager extends ProcessManager<PaymentProcessManagerId, PaymentProcess> {
 
+    private final BoundedContext boundedContext;
+
     /**
      * Creates a new instance.
      *
@@ -42,16 +53,32 @@ public class PaymentProcessManager extends ProcessManager<PaymentProcessManagerI
      *
      * @throws IllegalArgumentException if the ID type is unsupported
      */
-    public PaymentProcessManager(PaymentProcessManagerId id) {
+    public PaymentProcessManager(PaymentProcessManagerId id, BoundedContext boundedContext) {
         super(id);
+        this.boundedContext = boundedContext;
     }
 
     @Assign
     public CommandRouted handle(InstantiateThirdPartyProcessorPayment command, CommandContext context)
             throws SecondInstantiationAttempt {
         checkNotStarted();
-
-        final CommandRouted routed = newRouter().of(command, context)
+        // Create new Aggregate Repository
+        final PaymentRepository repo = PaymentRepository.getInstance(boundedContext);
+        final ThirdPartyPaymentAggregate aggregate = repo.createNewAggregate();
+        // Create InitializeThirdPartyProcessorPayment command from InstantiateThirdPartyProcessorPayment
+        final PaymentId id = aggregate.getId();
+        final OrderTotal total = command.getTotal();
+        final InitializeThirdPartyProcessorPayment initCommand = InitializeThirdPartyProcessorPayment.newBuilder()
+                                                                                                     .setId(id)
+                                                                                                     .setTotal(total)
+                                                                                                     .build();
+        final CommandId commandId = CommandId.newBuilder().setUuid(Identifiers.newUuid()).build();
+        final CommandContext commandContext = CommandContext.newBuilder(context)
+                .setCommandId(commandId)
+                .setTimestamp(Timestamps.getCurrentTime())
+                .build();
+        // Route the init command to further handlers (e.g. Aggregate)
+        final CommandRouted routed = newRouter().of(initCommand, commandContext)
                                                 .route();
         return routed;
     }

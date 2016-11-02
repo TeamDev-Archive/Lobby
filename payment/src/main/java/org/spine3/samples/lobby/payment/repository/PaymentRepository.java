@@ -20,22 +20,55 @@
 
 package org.spine3.samples.lobby.payment.repository;
 
+import org.spine3.base.Identifiers;
 import org.spine3.samples.lobby.payment.PaymentId;
 import org.spine3.samples.lobby.payment.ThirdPartyPaymentAggregate;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.aggregate.AggregateRepository;
+import org.spine3.server.storage.StorageFactory;
+import org.spine3.server.storage.memory.InMemoryStorageFactory;
 
 /**
  * @author Dmytro Dashenkov
  */
 public class PaymentRepository extends AggregateRepository<PaymentId, ThirdPartyPaymentAggregate> {
 
+    @SuppressWarnings("StaticNonFinalField") // Singleton
+    private static PaymentRepository defaultInstance = null;
+
+    @SuppressWarnings("WeakerAccess") // May be used in a Controller component later
+    public static synchronized PaymentRepository getInstance(BoundedContext bc, StorageFactory factory) {
+        if (defaultInstance == null) {
+            defaultInstance = new PaymentRepository(bc);
+            defaultInstance.initStorage(factory);
+        }
+        return defaultInstance;
+    }
+
+    public static synchronized PaymentRepository getInstance(BoundedContext bc) {
+        return getInstance(bc, InMemoryStorageFactory.getInstance());
+    }
+
     /**
      * Creates a new repository instance.
      *
      * @param boundedContext the bounded context to which this repository belongs
      */
-    public PaymentRepository(BoundedContext boundedContext) {
+    private PaymentRepository(BoundedContext boundedContext) {
         super(boundedContext);
+    }
+
+    /**
+     * Creates new instance of {@link ThirdPartyPaymentAggregate} and stores it in the storage.
+     *
+     * @return new instance of the aggregate.
+     */
+    public ThirdPartyPaymentAggregate createNewAggregate() {
+        final PaymentId paymentId = PaymentId.newBuilder()
+                                             .setValue(Identifiers.newUuid())
+                                             .build();
+        final ThirdPartyPaymentAggregate aggregate = new ThirdPartyPaymentAggregate(paymentId);
+        store(aggregate);
+        return aggregate;
     }
 }

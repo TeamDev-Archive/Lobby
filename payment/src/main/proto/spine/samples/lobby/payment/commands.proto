@@ -28,9 +28,19 @@ option java_multiple_files = true;
 
 import "spine/annotations.proto";
 import "spine/samples/lobby/registration/contracts/registration.proto";
+import "spine/samples/lobby/payment/payment.proto";
 
 message InstantiateThirdPartyProcessorPayment {
 
     // Summary info about the order including spine.money.Money
     spine.samples.lobby.registration.contracts.OrderTotal total = 1;
+}
+
+message InitializeThirdPartyProcessorPayment {
+
+    // Payment identifier
+    spine.samples.lobby.payment.PaymentId id = 1;
+
+    // Summary info about the order including spine.money.Money
+    spine.samples.lobby.registration.contracts.OrderTotal total = 2;
 }
