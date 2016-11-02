@@ -19,16 +19,16 @@
 //
 syntax = "proto3";
 
-package spine.samples.lobby.payment.procman;
+package spine.samples.lobby.payment;
 
 option (type_url_prefix) = "type.lobby.spine3.org";
-option java_package="org.spine3.samples.lobby.payment.procman";
+option java_package="org.spine3.samples.lobby.payment";
 
 import "spine/annotations.proto";
-import "spine/samples/lobby/payment/procman/procman.proto";
+import "spine/samples/lobby/payment/payment.proto";
 
-message SecondInstantiationAttempt {
+message SecondInitializationAttempt {
 
     // ID of the existing process
-    spine.samples.lobby.payment.procman.PaymentProcessManagerId processId = 1;
+    spine.samples.lobby.payment.PaymentId processId = 1;
 }
