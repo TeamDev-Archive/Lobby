@@ -38,7 +38,10 @@ import static org.spine3.samples.lobby.payment.ThirdPartyProcessorPayment.Paymen
 import static org.spine3.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus.INITIALIZED_VALUE;
 
 /**
+ * The payment aggregate that manages connection between the app and third-party payment processors.
+ *
  * @author Dmytro Dashenkov
+ * @see org.spine3.samples.lobby.payment.procman.PaymentProcessManager
  */
 public class ThirdPartyPaymentAggregate
         extends AbstractLobbyAggregate<PaymentId, ThirdPartyProcessorPayment, ThirdPartyProcessorPayment.Builder> {
@@ -64,14 +67,17 @@ public class ThirdPartyPaymentAggregate
             throw new SecondInitializationAttempt(getId());
         }
 
+        // Update aggregate state
         final OrderTotal total = command.getTotal();
         final Money orderCost = total.getTotalPrice();
         final ThirdPartyProcessorPayment.Builder newState = getState().toBuilder()
                                                                    .setPrice(orderCost);
+        markInitialized(newState);
+
+        // Construct and return events
         final Message resultEvent = PaymentInstantiated.newBuilder()
                                                        .setId(getId())
                                                        .build();
-        markInitialized(newState);
         return Collections.singletonList(resultEvent);
     }
 
