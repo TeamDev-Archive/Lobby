@@ -29,6 +29,7 @@ option java_multiple_files = true;
 import "spine/annotations.proto";
 import "spine/samples/lobby/payment/payment.proto";
 import "spine/net/url.proto";
+import "spine/samples/lobby/common/common.proto";
 
 // TODO:02-11-16:dmytro.dashenkov: Add docs for all proto definitions in "../".
 message PaymentProcessManagerId {
@@ -50,6 +51,9 @@ message PaymentProcess {
 
     // Third-party payment engine host
     spine.net.Url paymentEngine = 4;
+
+    // The ID of the order.
+    spine.samples.lobby.common.OrderId order_id = 5;
 
     enum PaymentState {
         NOT_STARTED = 0;

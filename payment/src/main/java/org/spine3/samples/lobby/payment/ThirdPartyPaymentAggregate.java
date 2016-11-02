@@ -22,7 +22,6 @@ package org.spine3.samples.lobby.payment;
 
 import com.google.protobuf.Message;
 import org.spine3.base.CommandContext;
-import org.spine3.base.Identifiers;
 import org.spine3.money.Money;
 import org.spine3.samples.lobby.common.util.aggregate.AbstractLobbyAggregate;
 import org.spine3.samples.lobby.registration.contracts.OrderTotal;
@@ -32,6 +31,11 @@ import org.spine3.server.entity.Entity;
 
 import java.util.Collections;
 import java.util.List;
+
+import static com.google.common.base.Preconditions.checkState;
+import static org.spine3.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus;
+import static org.spine3.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus.INITIALIZED;
+import static org.spine3.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus.INITIALIZED_VALUE;
 
 /**
  * @author Dmytro Dashenkov
@@ -54,18 +58,45 @@ public class ThirdPartyPaymentAggregate
     }
 
     @Assign
-    public List<Message> handle(InstantiateThirdPartyProcessorPayment command, CommandContext context) {
+    public List<Message> handle(InitializeThirdPartyProcessorPayment command, CommandContext context)
+            throws SecondInitializationAttempt {
+        if (getVersion() > 0) {
+            throw new SecondInitializationAttempt(getId());
+        }
+
         final OrderTotal total = command.getTotal();
         final Money orderCost = total.getTotalPrice();
-
-        // TODO:01-11-16:dmytro.dashenkov: Implement.
-
-        final PaymentId id = PaymentId.newBuilder()
-                                      .setValue(Identifiers.newUuid())
-                                      .build();
+        final ThirdPartyProcessorPayment.Builder newState = getState().toBuilder()
+                                                                   .setPrice(orderCost);
         final Message resultEvent = PaymentInstantiated.newBuilder()
-                                                     .setId(id)
-                                                     .build();
+                                                       .setId(getId())
+                                                       .build();
+        markInitialized(newState);
         return Collections.singletonList(resultEvent);
+    }
+
+    /**
+     * Is the aggregate initialized?
+     *
+     * @return {@code true} if {@link ThirdPartyProcessorPayment#status_ status} is greater or equal to
+     * {@link PaymentStatus#INITIALIZED INITIALIZED}.
+     */
+    public boolean isInitialized() {
+        final ThirdPartyProcessorPayment state = getState();
+        return state.getStatus()
+                    .getNumber() >= INITIALIZED_VALUE;
+    }
+
+    private void markInitialized(ThirdPartyProcessorPayment.Builder stateBuilder) {
+        final ThirdPartyProcessorPayment state = getState();
+        final PaymentStatus currentStatus = state.getStatus();
+        checkState(
+                currentStatus.getNumber() <= INITIALIZED_VALUE,
+                "Can't return aggregate from \""
+                        + currentStatus.name()
+                        + "\" to \"INITIALIZED\".");
+        stateBuilder.setStatus(INITIALIZED)
+               .build();
+        incrementState(stateBuilder.build());
     }
 }

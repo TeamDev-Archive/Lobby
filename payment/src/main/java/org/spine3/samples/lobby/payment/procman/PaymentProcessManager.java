@@ -27,7 +27,6 @@ import org.spine3.protobuf.Timestamps;
 import org.spine3.samples.lobby.payment.InitializeThirdPartyProcessorPayment;
 import org.spine3.samples.lobby.payment.InstantiateThirdPartyProcessorPayment;
 import org.spine3.samples.lobby.payment.PaymentId;
-import org.spine3.samples.lobby.payment.SecondInstantiationAttempt;
 import org.spine3.samples.lobby.payment.ThirdPartyPaymentAggregate;
 import org.spine3.samples.lobby.payment.procman.PaymentProcess.PaymentState;
 import org.spine3.samples.lobby.payment.repository.PaymentRepository;

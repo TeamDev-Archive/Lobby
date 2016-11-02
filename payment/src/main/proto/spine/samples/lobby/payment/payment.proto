@@ -27,15 +27,27 @@ option java_outer_classname = "PaymentProto";
 option java_multiple_files = true;
 
 import "spine/annotations.proto";
-import "spine/samples/lobby/registration/contracts/registration.proto";
+import "spine/money/money.proto";
 
 message ThirdPartyProcessorPayment {
 
     // Identifier of the payment
     PaymentId id = 1;
 
-    // Total price and seat booking lines of the order
-    spine.samples.lobby.registration.contracts.OrderTotal price = 2;
+    // Total price to pay for the order
+    spine.money.Money price = 2;
+
+    // Current status of the aggregate root
+    PaymentStatus status = 3;
+
+    enum PaymentStatus {
+            NOT_STARTED = 0;
+            INITIALIZED = 1;
+            SENT_TO_PAYMENT_ENGINE = 2;
+            SUCCEED = 3;
+            FAILED = 4;
+            CANCELED = 5;
+        }
 }
 
 message PaymentId {
