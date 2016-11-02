@@ -20,7 +20,15 @@
 
 package org.spine3.samples.lobby.payment.procman;
 
+import org.spine3.base.CommandContext;
+import org.spine3.samples.lobby.payment.InstantiateThirdPartyProcessorPayment;
+import org.spine3.samples.lobby.payment.SecondInstantiationAttempt;
+import org.spine3.samples.lobby.payment.procman.PaymentProcess.PaymentState;
+import org.spine3.server.command.Assign;
+import org.spine3.server.procman.CommandRouted;
 import org.spine3.server.procman.ProcessManager;
+
+import static org.spine3.samples.lobby.payment.procman.PaymentProcess.PaymentState.NOT_STARTED;
 
 /**
  * @author Dmytro Dashenkov
@@ -36,5 +44,24 @@ public class PaymentProcessManager extends ProcessManager<PaymentProcessManagerI
      */
     public PaymentProcessManager(PaymentProcessManagerId id) {
         super(id);
+    }
+
+    @Assign
+    public CommandRouted handle(InstantiateThirdPartyProcessorPayment command, CommandContext context)
+            throws SecondInstantiationAttempt {
+        checkNotStarted();
+
+        final CommandRouted routed = newRouter().of(command, context)
+                                                .route();
+        return routed;
+    }
+
+    private void checkNotStarted() throws SecondInstantiationAttempt {
+        final PaymentProcess process = getState();
+        final PaymentState state = process.getState();
+
+        if (state != NOT_STARTED) {
+            throw new SecondInstantiationAttempt(process.getId());
+        }
     }
 }
