@@ -57,11 +57,8 @@ message PaymentProcess {
 
     enum PaymentState {
         NOT_STARTED = 0;
-        INITIATED = 1;
-        INITIALIZED = 2;
-        SENT_TO_PAYMENT_ENGINE = 3;
-        SUCCEED = 4;
-        FAILED = 5;
-        CANCELED = 6;
+        INITIALIZED = 1;
+        SENT_TO_PAYMENT_ENGINE = 2;
+        RESOLVED = 3;
     }
 }

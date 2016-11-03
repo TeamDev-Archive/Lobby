@@ -45,7 +45,7 @@ import org.spine3.server.event.Subscribe;
 import org.spine3.server.procman.CommandRouted;
 import org.spine3.server.procman.ProcessManager;
 
-import static org.spine3.samples.lobby.payment.procman.PaymentProcess.PaymentState.NOT_STARTED;
+import static org.spine3.samples.lobby.payment.procman.PaymentProcess.PaymentState.*;
 
 /**
  * @author Dmytro Dashenkov
@@ -69,10 +69,18 @@ public class PaymentProcessManager extends ProcessManager<PaymentProcessManagerI
     @Assign
     public CommandRouted handle(InstantiateThirdPartyProcessorPayment command, CommandContext context)
             throws SecondInstantiationAttempt {
+        // Check process state
         checkNotStarted();
+        // Update process state
+        final PaymentProcess state = getState().toBuilder()
+                                               .setState(INITIALIZED)
+                                               .build();
+        incrementState(state);
+
         // Create new Aggregate Repository
         final PaymentRepository repo = PaymentRepository.getInstance(boundedContext);
         final ThirdPartyPaymentAggregate aggregate = repo.createNewAggregate();
+
         // Create InitializeThirdPartyProcessorPayment command from InstantiateThirdPartyProcessorPayment
         final PaymentId id = aggregate.getId();
         final OrderTotal total = command.getTotal();
@@ -104,6 +112,7 @@ public class PaymentProcessManager extends ProcessManager<PaymentProcessManagerI
             return;
         }
 
+        // Handle the event and send external event according to the Bounded Context contract
         final org.spine3.samples.lobby.payment.contracts.PaymentCompleted externalEventMessage
                 = org.spine3.samples.lobby.payment.contracts.PaymentCompleted.newBuilder()
                                                                              .setOrderId(state.getOrderId())
@@ -118,7 +127,19 @@ public class PaymentProcessManager extends ProcessManager<PaymentProcessManagerI
                                          .setMessage(wrappedEventMessage)
                                          .setContext(externalEventContext)
                                          .build();
-        boundedContext.getEventBus().post(externalEvent);
+        boundedContext.getEventBus()
+                      .post(externalEvent);
+    }
+
+    private void moveToStateResolved() throws SecondResolutionAttempt {
+        PaymentProcess process = getState();
+        if (process.getState().getNumber() > INITIALIZED_VALUE) {
+            throw new SecondResolutionAttempt(process.getId());
+        }
+        process = process.toBuilder()
+               .setState(RESOLVED)
+               .build();
+        incrementState(process);
     }
 
     private void checkNotStarted() throws SecondInstantiationAttempt {

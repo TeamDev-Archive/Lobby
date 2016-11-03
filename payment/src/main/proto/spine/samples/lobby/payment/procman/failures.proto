@@ -32,3 +32,9 @@ message SecondInstantiationAttempt {
     // ID of the existing process
     spine.samples.lobby.payment.procman.PaymentProcessManagerId processId = 1;
 }
+
+message SecondResolutionAttempt {
+
+    // ID of the existing process
+    spine.samples.lobby.payment.procman.PaymentProcessManagerId processId = 1;
+}
