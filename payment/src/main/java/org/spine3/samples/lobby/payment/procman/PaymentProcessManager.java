@@ -20,12 +20,20 @@
 
 package org.spine3.samples.lobby.payment.procman;
 
+import com.google.protobuf.Any;
+import com.google.protobuf.Message;
 import org.spine3.base.CommandContext;
 import org.spine3.base.CommandId;
+import org.spine3.base.Event;
+import org.spine3.base.EventContext;
+import org.spine3.base.EventId;
+import org.spine3.base.Events;
 import org.spine3.base.Identifiers;
+import org.spine3.protobuf.AnyPacker;
 import org.spine3.protobuf.Timestamps;
 import org.spine3.samples.lobby.payment.InitializeThirdPartyProcessorPayment;
 import org.spine3.samples.lobby.payment.InstantiateThirdPartyProcessorPayment;
+import org.spine3.samples.lobby.payment.PaymentCompleted;
 import org.spine3.samples.lobby.payment.PaymentId;
 import org.spine3.samples.lobby.payment.ThirdPartyPaymentAggregate;
 import org.spine3.samples.lobby.payment.procman.PaymentProcess.PaymentState;
@@ -33,6 +41,7 @@ import org.spine3.samples.lobby.payment.repository.PaymentRepository;
 import org.spine3.samples.lobby.registration.contracts.OrderTotal;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.command.Assign;
+import org.spine3.server.event.Subscribe;
 import org.spine3.server.procman.CommandRouted;
 import org.spine3.server.procman.ProcessManager;
 
@@ -71,15 +80,45 @@ public class PaymentProcessManager extends ProcessManager<PaymentProcessManagerI
                                                                                                      .setId(id)
                                                                                                      .setTotal(total)
                                                                                                      .build();
-        final CommandId commandId = CommandId.newBuilder().setUuid(Identifiers.newUuid()).build();
+        final CommandId commandId = CommandId.newBuilder()
+                                             .setUuid(Identifiers.newUuid())
+                                             .build();
         final CommandContext commandContext = CommandContext.newBuilder(context)
-                .setCommandId(commandId)
-                .setTimestamp(Timestamps.getCurrentTime())
-                .build();
+                                                            .setCommandId(commandId)
+                                                            .setTimestamp(Timestamps.getCurrentTime())
+                                                            .build();
         // Route the init command to further handlers (e.g. Aggregate)
         final CommandRouted routed = newRouter().of(initCommand, commandContext)
                                                 .route();
         return routed;
+    }
+
+    @Subscribe
+    public void on(PaymentCompleted event, EventContext context) {
+        final PaymentProcess state = getState();
+
+        // Check whether the event is addressed to current instance of the procman
+        final Message aggregateId = AnyPacker.unpack(context.getProducerId());
+        final boolean belongsToThisInstance = aggregateId.equals(state.getAggregateId());
+        if (!belongsToThisInstance) {
+            return;
+        }
+
+        final org.spine3.samples.lobby.payment.contracts.PaymentCompleted externalEventMessage
+                = org.spine3.samples.lobby.payment.contracts.PaymentCompleted.newBuilder()
+                                                                             .setOrderId(state.getOrderId())
+                                                                             .build();
+        final Any wrappedEventMessage = AnyPacker.pack(externalEventMessage);
+        final EventId externalEventId = Events.generateId();
+        final EventContext externalEventContext = context.toBuilder()
+                                                         .setEventId(externalEventId)
+                                                         .setTimestamp(Timestamps.getCurrentTime())
+                                                         .build();
+        final Event externalEvent = Event.newBuilder()
+                                         .setMessage(wrappedEventMessage)
+                                         .setContext(externalEventContext)
+                                         .build();
+        boundedContext.getEventBus().post(externalEvent);
     }
 
     private void checkNotStarted() throws SecondInstantiationAttempt {
