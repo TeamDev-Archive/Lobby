@@ -46,3 +46,9 @@ message PaymentRejected {
     // Payment ID
     spine.samples.lobby.payment.PaymentId id = 1;
 }
+
+message PaymentCanceled {
+
+    // Payment ID
+    spine.samples.lobby.payment.PaymentId id = 1;
+}

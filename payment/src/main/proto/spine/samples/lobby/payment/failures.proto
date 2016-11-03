@@ -32,3 +32,21 @@ message SecondInitializationAttempt {
     // ID of the existing process
     spine.samples.lobby.payment.PaymentId processId = 1;
 }
+
+message NotInitialized {
+
+    // ID of the existing process
+    spine.samples.lobby.payment.PaymentId processId = 1;
+}
+
+message AmbiguousPaymentResult {
+
+    // ID of the existing process
+    spine.samples.lobby.payment.PaymentId processId = 1;
+
+    // Current status of the payment aggregate
+    spine.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus current_status = 2;
+
+    // Status of the payment aggregate that was attempted to be assigned
+    spine.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus new_status = 3;
+}

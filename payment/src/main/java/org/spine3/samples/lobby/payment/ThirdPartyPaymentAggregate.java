@@ -22,6 +22,7 @@ package org.spine3.samples.lobby.payment;
 
 import com.google.protobuf.Message;
 import org.spine3.base.CommandContext;
+import org.spine3.base.FailureThrowable;
 import org.spine3.money.Money;
 import org.spine3.samples.lobby.common.util.aggregate.AbstractLobbyAggregate;
 import org.spine3.samples.lobby.registration.contracts.OrderTotal;
@@ -32,10 +33,10 @@ import org.spine3.server.entity.Entity;
 import java.util.Collections;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static org.spine3.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus;
-import static org.spine3.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus.INITIALIZED;
-import static org.spine3.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus.INITIALIZED_VALUE;
+import static org.spine3.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus.*;
 
 /**
  * The payment aggregate that manages connection between the app and third-party payment processors.
@@ -61,7 +62,7 @@ public class ThirdPartyPaymentAggregate
     }
 
     @Assign
-    public List<Message> handle(InitializeThirdPartyProcessorPayment command, CommandContext context)
+    public PaymentInstantiated handle(InitializeThirdPartyProcessorPayment command, CommandContext context)
             throws SecondInitializationAttempt {
         if (getVersion() > 0) {
             throw new SecondInitializationAttempt(getId());
@@ -71,24 +72,51 @@ public class ThirdPartyPaymentAggregate
         final OrderTotal total = command.getTotal();
         final Money orderCost = total.getTotalPrice();
         final ThirdPartyProcessorPayment.Builder newState = getState().toBuilder()
-                                                                   .setPrice(orderCost);
+                                                                      .setPrice(orderCost);
         markInitialized(newState);
 
         // Construct and return events
-        final Message resultEvent = PaymentInstantiated.newBuilder()
+        final PaymentInstantiated resultEvent = PaymentInstantiated.newBuilder()
                                                        .setId(getId())
                                                        .build();
+        return resultEvent;
+    }
+
+    @Assign
+    public List<Message> handle(CompleteThirdPartyProcessorPayment command, CommandContext context) throws FailureThrowable {
+        final boolean successful = command.getSuccessful();
+        final PaymentStatus status = successful ? SUCCEED : FAILED;
+        checkResultStatus(status);
+
+        final ThirdPartyProcessorPayment payment = getState().toBuilder()
+                                                             .setStatus(status)
+                                                             .build();
+        incrementState(payment);
+        final PaymentId id = payment.getId();
+        final Message resultEvent = successful
+                                    ? PaymentCompleted.newBuilder()
+                                                      .setId(id)
+                                                      .build()
+                                    : PaymentRejected.newBuilder()
+                                                     .setId(id)
+                                                     .build();
         return Collections.singletonList(resultEvent);
     }
 
     @Assign
-    public List<Message> handle(CompleteThirdPartyProcessorPayment command, CommandContext context) {
-        return null;
-    }
+    public PaymentCanceled handle(CancelThirdPartyProcessorPayment command, CommandContext context) throws FailureThrowable {
+        final PaymentStatus status = CANCELED;
+        checkResultStatus(status);
 
-    @Assign
-    public List<Message> handle(CancelThirdPartyProcessorPayment command, CommandContext context) {
-        return null;
+        final ThirdPartyProcessorPayment payment = getState().toBuilder()
+                                                             .setStatus(status)
+                                                             .build();
+        incrementState(payment);
+        final PaymentId id = payment.getId();
+        final PaymentCanceled resultEvent = PaymentCanceled.newBuilder()
+                                                   .setId(id)
+                                                   .build();
+        return resultEvent;
     }
 
     /**
@@ -112,7 +140,22 @@ public class ThirdPartyPaymentAggregate
                         + currentStatus.name()
                         + "\" to \"INITIALIZED\".");
         stateBuilder.setStatus(INITIALIZED)
-               .build();
+                    .build();
         incrementState(stateBuilder.build());
+    }
+
+    private void checkResultStatus(PaymentStatus status) throws FailureThrowable {
+        checkArgument(status.getNumber() > PaymentStatus.INITIALIZED_VALUE,
+                "checkResultStatus(paymentStatus) checks only result statuses.");
+        final ThirdPartyProcessorPayment state = getState();
+        final PaymentStatus currentStatus = state.getStatus();
+
+        if (currentStatus.getNumber() < INITIALIZED_VALUE) {
+            throw new NotInitialized(state.getId());
+        }
+
+        if (currentStatus.getNumber() > INITIALIZED_VALUE) {
+            throw new AmbiguousPaymentResult(state.getId(), state.getStatus(), status);
+        }
     }
 }
