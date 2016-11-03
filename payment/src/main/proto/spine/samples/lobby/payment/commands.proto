@@ -44,3 +44,18 @@ message InitializeThirdPartyProcessorPayment {
     // Summary info about the order including spine.money.Money
     spine.samples.lobby.registration.contracts.OrderTotal total = 2;
 }
+
+message CompleteThirdPartyProcessorPayment {
+
+    // Payment identifier
+    spine.samples.lobby.payment.PaymentId id = 1;
+
+    // Was the payment successful?
+    bool successful = 2;
+}
+
+message CancelThirdPartyProcessorPayment {
+
+    // Payment identifier
+    spine.samples.lobby.payment.PaymentId id = 1;
+}

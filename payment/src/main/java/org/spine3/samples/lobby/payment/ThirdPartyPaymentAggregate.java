@@ -81,6 +81,16 @@ public class ThirdPartyPaymentAggregate
         return Collections.singletonList(resultEvent);
     }
 
+    @Assign
+    public List<Message> handle(CompleteThirdPartyProcessorPayment command, CommandContext context) {
+        return null;
+    }
+
+    @Assign
+    public List<Message> handle(CancelThirdPartyProcessorPayment command, CommandContext context) {
+        return null;
+    }
+
     /**
      * Is the aggregate initialized?
      *
