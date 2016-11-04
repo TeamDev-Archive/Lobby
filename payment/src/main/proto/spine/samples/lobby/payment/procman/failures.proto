@@ -27,12 +27,14 @@ option java_package="org.spine3.samples.lobby.payment.procman";
 import "spine/annotations.proto";
 import "spine/samples/lobby/payment/procman/procman.proto";
 
+// Business failure thrown in the procman when trying to initialize second process with the same ID.
 message SecondInstantiationAttempt {
 
     // ID of the existing process
     spine.samples.lobby.payment.procman.PaymentProcessManagerId processId = 1;
 }
 
+// // Business failure thrown in the procman when trying to move process to the resoled state if it's already in it.
 message SecondResolutionAttempt {
 
     // ID of the existing process

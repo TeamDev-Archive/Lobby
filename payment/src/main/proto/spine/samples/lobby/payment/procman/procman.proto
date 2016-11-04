@@ -31,13 +31,14 @@ import "spine/samples/lobby/payment/payment.proto";
 import "spine/net/url.proto";
 import "spine/samples/lobby/common/common.proto";
 
-// TODO:02-11-16:dmytro.dashenkov: Add docs for all proto definitions in "../".
+// Unique identifier for the Payment process
 message PaymentProcessManagerId {
 
     // UID value for the typed identifier
     string value = 1;
 }
 
+// Metadata of the payment process.
 message PaymentProcess {
 
     // Process managed UID

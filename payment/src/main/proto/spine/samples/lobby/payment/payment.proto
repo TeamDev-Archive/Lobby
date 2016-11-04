@@ -29,6 +29,7 @@ option java_multiple_files = true;
 import "spine/annotations.proto";
 import "spine/money/money.proto";
 
+// Info about the payment for the user's order, which is handled by a third-party payment processor.
 message ThirdPartyProcessorPayment {
 
     // Identifier of the payment
@@ -50,6 +51,7 @@ message ThirdPartyProcessorPayment {
         }
 }
 
+// Unique identifier of the payment.
 message PaymentId {
 
     // String value of the ID

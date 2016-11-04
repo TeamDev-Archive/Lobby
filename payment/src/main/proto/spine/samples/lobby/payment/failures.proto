@@ -27,18 +27,24 @@ option java_package="org.spine3.samples.lobby.payment";
 import "spine/annotations.proto";
 import "spine/samples/lobby/payment/payment.proto";
 
+// Business failure which is thrown if the Payment aggregate had already been initialized but received another
+// initialization command.
 message SecondInitializationAttempt {
 
     // ID of the existing process
     spine.samples.lobby.payment.PaymentId processId = 1;
 }
 
+// Business failure which is thrown if the Payment aggregate had never been initialized but received a command or event
+// stating some result of a payment.
 message NotInitialized {
 
     // ID of the existing process
     spine.samples.lobby.payment.PaymentId processId = 1;
 }
 
+// Business failure which is thrown if the Payment aggregate had already received a command or an event stating
+// some result of the payment but had received one before.
 message AmbiguousPaymentResult {
 
     // ID of the existing process

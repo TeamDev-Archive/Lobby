@@ -29,26 +29,30 @@ option java_multiple_files = true;
 import "spine/annotations.proto";
 import "spine/samples/lobby/payment/payment.proto";
 
+// Event which is raised when a payment aggregate is initialized.
 message PaymentInstantiated {
 
-    // Payment ID
+    // ID of the target aggregate
     spine.samples.lobby.payment.PaymentId id = 1;
 }
 
+// Event which is raised when the payment is completed successfully.
 message PaymentCompleted {
 
-    // Payment ID
+    // ID of the target aggregate
     spine.samples.lobby.payment.PaymentId id = 1;
 }
 
+// Event which is raised when the payment is rejected by the payment processor.
 message PaymentRejected {
 
-    // Payment ID
+    // ID of the target aggregate
     spine.samples.lobby.payment.PaymentId id = 1;
 }
 
+// Event which is raised when the payment is canceled by the user.
 message PaymentCanceled {
 
-    // Payment ID
+    // ID of the target aggregate
     spine.samples.lobby.payment.PaymentId id = 1;
 }

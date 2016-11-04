@@ -30,12 +30,14 @@ import "spine/annotations.proto";
 import "spine/samples/lobby/registration/contracts/registration.proto";
 import "spine/samples/lobby/payment/payment.proto";
 
+// Command to create new ThirdPartyProcessorPayment.
 message InstantiateThirdPartyProcessorPayment {
 
     // Summary info about the order including spine.money.Money
     spine.samples.lobby.registration.contracts.OrderTotal total = 1;
 }
 
+// Command to initialize newly created Payment aggregate.
 message InitializeThirdPartyProcessorPayment {
 
     // Payment identifier
@@ -45,6 +47,7 @@ message InitializeThirdPartyProcessorPayment {
     spine.samples.lobby.registration.contracts.OrderTotal total = 2;
 }
 
+// Command stating the completion of the payment processing by the third-party processor.
 message CompleteThirdPartyProcessorPayment {
 
     // Payment identifier
@@ -54,6 +57,7 @@ message CompleteThirdPartyProcessorPayment {
     bool successful = 2;
 }
 
+// Command stating the cancellation of the payment by the user.
 message CancelThirdPartyProcessorPayment {
 
     // Payment identifier
