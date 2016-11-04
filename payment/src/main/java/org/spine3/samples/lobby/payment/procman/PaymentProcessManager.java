@@ -136,7 +136,7 @@ public class PaymentProcessManager extends ProcessManager<PaymentProcessManagerI
 
     @Subscribe
     public void on(PaymentRejected event, EventContext context) throws SecondResolutionAttempt {
-        // TODO:04-11-16:dmytro.dashenkov: Notify user.
+        // User should be notified by the MVC Controller.
         moveToStateResolved();
     }
 
