@@ -37,7 +37,7 @@ import org.spine3.samples.lobby.payment.PaymentCanceled;
 import org.spine3.samples.lobby.payment.PaymentCompleted;
 import org.spine3.samples.lobby.payment.PaymentId;
 import org.spine3.samples.lobby.payment.PaymentRejected;
-import org.spine3.samples.lobby.payment.ThirdPartyPaymentAggregate;
+import org.spine3.samples.lobby.payment.PaymentAggregate;
 import org.spine3.samples.lobby.payment.procman.PaymentProcess.PaymentState;
 import org.spine3.samples.lobby.payment.repository.PaymentRepository;
 import org.spine3.samples.lobby.registration.contracts.OrderTotal;
@@ -81,7 +81,7 @@ public class PaymentProcessManager extends ProcessManager<PaymentProcessManagerI
 
         // Create new Aggregate Repository
         final PaymentRepository repo = PaymentRepository.getInstance(boundedContext);
-        final ThirdPartyPaymentAggregate aggregate = repo.createNewAggregate();
+        final PaymentAggregate aggregate = repo.createNewAggregate();
 
         // Create InitializeThirdPartyProcessorPayment command from InstantiateThirdPartyProcessorPayment
         final PaymentId id = aggregate.getId();

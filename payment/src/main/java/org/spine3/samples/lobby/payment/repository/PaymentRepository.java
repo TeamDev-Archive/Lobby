@@ -22,7 +22,7 @@ package org.spine3.samples.lobby.payment.repository;
 
 import org.spine3.base.Identifiers;
 import org.spine3.samples.lobby.payment.PaymentId;
-import org.spine3.samples.lobby.payment.ThirdPartyPaymentAggregate;
+import org.spine3.samples.lobby.payment.PaymentAggregate;
 import org.spine3.server.BoundedContext;
 import org.spine3.server.aggregate.AggregateRepository;
 import org.spine3.server.storage.StorageFactory;
@@ -31,7 +31,7 @@ import org.spine3.server.storage.memory.InMemoryStorageFactory;
 /**
  * @author Dmytro Dashenkov
  */
-public class PaymentRepository extends AggregateRepository<PaymentId, ThirdPartyPaymentAggregate> {
+public class PaymentRepository extends AggregateRepository<PaymentId, PaymentAggregate> {
 
     @SuppressWarnings("StaticNonFinalField") // Singleton
     private static PaymentRepository defaultInstance = null;
@@ -59,15 +59,15 @@ public class PaymentRepository extends AggregateRepository<PaymentId, ThirdParty
     }
 
     /**
-     * Creates new instance of {@link ThirdPartyPaymentAggregate} and stores it in the storage.
+     * Creates new instance of {@link PaymentAggregate} and stores it in the storage.
      *
      * @return new instance of the aggregate.
      */
-    public ThirdPartyPaymentAggregate createNewAggregate() {
+    public PaymentAggregate createNewAggregate() {
         final PaymentId paymentId = PaymentId.newBuilder()
                                              .setValue(Identifiers.newUuid())
                                              .build();
-        final ThirdPartyPaymentAggregate aggregate = new ThirdPartyPaymentAggregate(paymentId);
+        final PaymentAggregate aggregate = new PaymentAggregate(paymentId);
         store(aggregate);
         return aggregate;
     }

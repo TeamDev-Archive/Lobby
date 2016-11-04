@@ -44,7 +44,8 @@ import static org.spine3.samples.lobby.payment.ThirdPartyProcessorPayment.Paymen
  * @author Dmytro Dashenkov
  * @see org.spine3.samples.lobby.payment.procman.PaymentProcessManager
  */
-public class ThirdPartyPaymentAggregate
+// TODO:04-11-16:dmytro.dashenkov: Handle wrong addressd case (i.e. ID in command/event does not match aggregate ID).
+public class PaymentAggregate
         extends AbstractLobbyAggregate<PaymentId, ThirdPartyProcessorPayment, ThirdPartyProcessorPayment.Builder> {
 
     /**
@@ -57,7 +58,7 @@ public class ThirdPartyPaymentAggregate
      * @see Aggregate
      * @see Entity
      */
-    public ThirdPartyPaymentAggregate(PaymentId id) {
+    public PaymentAggregate(PaymentId id) {
         super(id);
     }
 
