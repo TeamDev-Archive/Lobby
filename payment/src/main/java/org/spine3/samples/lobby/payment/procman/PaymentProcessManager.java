@@ -33,8 +33,10 @@ import org.spine3.protobuf.AnyPacker;
 import org.spine3.protobuf.Timestamps;
 import org.spine3.samples.lobby.payment.InitializeThirdPartyProcessorPayment;
 import org.spine3.samples.lobby.payment.InstantiateThirdPartyProcessorPayment;
+import org.spine3.samples.lobby.payment.PaymentCanceled;
 import org.spine3.samples.lobby.payment.PaymentCompleted;
 import org.spine3.samples.lobby.payment.PaymentId;
+import org.spine3.samples.lobby.payment.PaymentRejected;
 import org.spine3.samples.lobby.payment.ThirdPartyPaymentAggregate;
 import org.spine3.samples.lobby.payment.procman.PaymentProcess.PaymentState;
 import org.spine3.samples.lobby.payment.repository.PaymentRepository;
@@ -102,7 +104,8 @@ public class PaymentProcessManager extends ProcessManager<PaymentProcessManagerI
     }
 
     @Subscribe
-    public void on(PaymentCompleted event, EventContext context) {
+    public void on(PaymentCompleted event, EventContext context) throws SecondResolutionAttempt {
+        moveToStateResolved();
         final PaymentProcess state = getState();
 
         // Check whether the event is addressed to current instance of the procman
@@ -129,6 +132,18 @@ public class PaymentProcessManager extends ProcessManager<PaymentProcessManagerI
                                          .build();
         boundedContext.getEventBus()
                       .post(externalEvent);
+    }
+
+    @Subscribe
+    public void on(PaymentRejected event, EventContext context) throws SecondResolutionAttempt {
+        // TODO:04-11-16:dmytro.dashenkov: Notify user.
+        moveToStateResolved();
+    }
+
+    @Subscribe
+    public void on(PaymentCanceled event, EventContext context) throws SecondResolutionAttempt {
+        // No used interaction here, since the payment was canceled by the used himself.
+        moveToStateResolved();
     }
 
     private void moveToStateResolved() throws SecondResolutionAttempt {
