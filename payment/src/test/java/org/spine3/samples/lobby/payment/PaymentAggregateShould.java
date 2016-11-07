@@ -27,8 +27,6 @@ import org.spine3.base.FailureThrowable;
 import org.spine3.base.Identifiers;
 import org.spine3.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus;
 
-import java.util.List;
-
 import static org.junit.Assert.*;
 
 /**
@@ -58,6 +56,15 @@ public class PaymentAggregateShould {
         assertTrue(aggregate.isInitialized());
     }
 
+    @Test
+    public void have_state_with_sensible_id_after_init() throws SecondInitializationAttempt {
+        final String stringId = Identifiers.newUuid();
+        final PaymentAggregate aggregate = Given.aggregate(stringId);
+        final InitializeThirdPartyProcessorPayment command = Given.initCommand(aggregate);
+        aggregate.handle(command, CommandContext.getDefaultInstance());
+        assertEquals(aggregate.getId(), aggregate.getState().getId());
+    }
+
     @Test(expected = SecondInitializationAttempt.class)
     public void fail_to_initialize_twice() throws SecondInitializationAttempt {
         final PaymentAggregate aggregate = Given.aggregate(Identifiers.newUuid());
@@ -75,14 +82,13 @@ public class PaymentAggregateShould {
     public void handle_successful_completion_command() throws FailureThrowable {
         final PaymentAggregate aggregate = Given.initializedAggregate();
         final CompleteThirdPartyProcessorPayment completeCommand = Given.completeCommand(aggregate, true);
-        final List<Message> events = aggregate.handle(completeCommand, CommandContext.getDefaultInstance());
-        assertEquals(events.size(), 1);
-        final Message actualEvent = events.get(0);
-        assertNotNull(actualEvent);
-        assertTrue("Wrong result event type: " + actualEvent.getClass()
-                                                            .toString(), actualEvent instanceof PaymentCompleted);
-        final PaymentCompleted event = (PaymentCompleted) actualEvent;
-        assertEquals(aggregate.getId(), event.getId());
+        final Message event = aggregate.handle(completeCommand, CommandContext.getDefaultInstance());
+        assertNotNull(event);
+        assertTrue("Wrong result event type: " + event.getClass()
+                                                            .toString(), event instanceof PaymentCompleted);
+        @SuppressWarnings("TypeMayBeWeakened")
+        final PaymentCompleted actualEvent = (PaymentCompleted) event;
+        assertEquals(aggregate.getId(), actualEvent.getId());
     }
 
     private static class Given {

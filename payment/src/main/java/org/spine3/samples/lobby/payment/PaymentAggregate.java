@@ -30,9 +30,6 @@ import org.spine3.server.aggregate.Aggregate;
 import org.spine3.server.command.Assign;
 import org.spine3.server.entity.Entity;
 
-import java.util.Collections;
-import java.util.List;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static org.spine3.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus;
@@ -78,13 +75,13 @@ public class PaymentAggregate
 
         // Construct and return events
         final PaymentInstantiated resultEvent = PaymentInstantiated.newBuilder()
-                                                       .setId(getId())
-                                                       .build();
+                                                                   .setId(getId())
+                                                                   .build();
         return resultEvent;
     }
 
     @Assign
-    public List<Message> handle(CompleteThirdPartyProcessorPayment command, CommandContext context) throws FailureThrowable {
+    public Message handle(CompleteThirdPartyProcessorPayment command, CommandContext context) throws FailureThrowable {
         final boolean successful = command.getSuccessful();
         final PaymentStatus status = successful ? SUCCEED : FAILED;
         checkResultStatus(status);
@@ -101,7 +98,7 @@ public class PaymentAggregate
                                     : PaymentRejected.newBuilder()
                                                      .setId(id)
                                                      .build();
-        return Collections.singletonList(resultEvent);
+        return resultEvent;
     }
 
     @Assign
@@ -113,10 +110,10 @@ public class PaymentAggregate
                                                              .setStatus(status)
                                                              .build();
         incrementState(payment);
-        final PaymentId id = payment.getId();
+        final PaymentId id = getId();
         final PaymentCanceled resultEvent = PaymentCanceled.newBuilder()
-                                                   .setId(id)
-                                                   .build();
+                                                           .setId(id)
+                                                           .build();
         return resultEvent;
     }
 
