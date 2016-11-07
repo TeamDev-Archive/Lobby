@@ -27,6 +27,9 @@ import org.spine3.base.FailureThrowable;
 import org.spine3.base.Identifiers;
 import org.spine3.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import static org.junit.Assert.*;
 
 /**
@@ -34,6 +37,9 @@ import static org.junit.Assert.*;
  */
 @SuppressWarnings("InstanceMethodNamingConvention")
 public class PaymentAggregateShould {
+
+    private static final String WRONG_RESULT_EVENT_TYPE_ERR_TEMPLATE = "Wrong result event type: ";
+    private static final String SECOND_RESOLUTION_HANDLED = "Should not handle second payment resolution";
 
     //
     // Initialization
@@ -62,7 +68,8 @@ public class PaymentAggregateShould {
         final PaymentAggregate aggregate = Given.aggregate(stringId);
         final InitializeThirdPartyProcessorPayment command = Given.initCommand(aggregate);
         aggregate.handle(command, CommandContext.getDefaultInstance());
-        assertEquals(aggregate.getId(), aggregate.getState().getId());
+        assertEquals(aggregate.getId(), aggregate.getState()
+                                                 .getId());
     }
 
     @Test(expected = SecondInitializationAttempt.class)
@@ -80,15 +87,92 @@ public class PaymentAggregateShould {
 
     @Test
     public void handle_successful_completion_command() throws FailureThrowable {
+        final PaymentAggregate aggregate = checkProcessorResponseCommand(PaymentCompleted.class, true);
+        assertStatus(aggregate, PaymentStatus.SUCCEED);
+    }
+
+
+    @Test
+    public void handle_reject_payment_command() throws FailureThrowable {
+        final PaymentAggregate aggregate = checkProcessorResponseCommand(PaymentRejected.class, false);
+        assertStatus(aggregate, PaymentStatus.FAILED);
+    }
+
+    @Test
+    public void handle_cancel_payment_command() throws FailureThrowable {
         final PaymentAggregate aggregate = Given.initializedAggregate();
-        final CompleteThirdPartyProcessorPayment completeCommand = Given.completeCommand(aggregate, true);
-        final Message event = aggregate.handle(completeCommand, CommandContext.getDefaultInstance());
+        final CancelThirdPartyProcessorPayment command = Given.cencelCommand(aggregate);
+        final PaymentCanceled event = aggregate.handle(command, CommandContext.getDefaultInstance());
+        assertEquals(aggregate.getId(), event.getId());
+        final PaymentStatus status = aggregate.getState()
+                                              .getStatus();
+        assertEquals(PaymentStatus.CANCELED, status);
+    }
+
+    @Test
+    public void fail_to_handle_any_command_after_payment_resolved() throws FailureThrowable {
+        final PaymentAggregate aggregate = Given.initializedAggregate(); // Failure handled
+        assertEquals(aggregate.getVersion(), 1);
+
+        final CompleteThirdPartyProcessorPayment successCommand = Given.completeCommand(aggregate, true);
+        final CompleteThirdPartyProcessorPayment rejectCommand = Given.completeCommand(aggregate, false);
+        final CancelThirdPartyProcessorPayment cancelCommand = Given.cencelCommand(aggregate);
+
+        aggregate.handle(successCommand, CommandContext.getDefaultInstance()); // Failure handled
+        assertStatus(aggregate, PaymentStatus.SUCCEED);
+        assertEquals(aggregate.getVersion(), 2);
+
+        // Try to apply reject payment command
+        try {
+            aggregate.handle(rejectCommand, CommandContext.getDefaultInstance());
+            fail(SECOND_RESOLUTION_HANDLED);
+        } catch (AmbiguousPaymentResult ignored) {
+        }
+        // Try to apply successful payment command one more time
+        try {
+            aggregate.handle(successCommand, CommandContext.getDefaultInstance());
+            fail(SECOND_RESOLUTION_HANDLED);
+        } catch (AmbiguousPaymentResult ignored) {
+        }
+        // Try to apply cancel payment command
+        try {
+            aggregate.handle(cancelCommand, CommandContext.getDefaultInstance());
+            fail(SECOND_RESOLUTION_HANDLED);
+        } catch (AmbiguousPaymentResult ignored) {
+        }
+
+        // Same status and version an before the failed applications
+        assertStatus(aggregate, PaymentStatus.SUCCEED);
+        assertEquals(aggregate.getVersion(), 2);
+    }
+
+    private static <E extends Message> PaymentAggregate checkProcessorResponseCommand(Class<E> responceEventClass,
+                                                                                      boolean wasSuccessful)
+            throws FailureThrowable {
+        final PaymentAggregate aggregate = Given.initializedAggregate();
+        final CompleteThirdPartyProcessorPayment command = Given.completeCommand(aggregate, wasSuccessful);
+        final Message event = aggregate.handle(command, CommandContext.getDefaultInstance());
         assertNotNull(event);
-        assertTrue("Wrong result event type: " + event.getClass()
-                                                            .toString(), event instanceof PaymentCompleted);
-        @SuppressWarnings("TypeMayBeWeakened")
-        final PaymentCompleted actualEvent = (PaymentCompleted) event;
-        assertEquals(aggregate.getId(), actualEvent.getId());
+        assertTrue(
+                WRONG_RESULT_EVENT_TYPE_ERR_TEMPLATE + event.getClass()
+                                                            .toString(),
+                responceEventClass.isInstance(event));
+        @SuppressWarnings("unchecked") // Checked in previous line
+        final E actualEvent = (E) event;
+        try {
+            final Method idGetter = responceEventClass.getDeclaredMethod("getId");
+            assertEquals(aggregate.getId(), idGetter.invoke(actualEvent));
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            fail(e.getMessage());
+        }
+
+        return aggregate;
+    }
+
+    private static void assertStatus(PaymentAggregate aggregate, PaymentStatus status) {
+        final PaymentStatus actualStatus = aggregate.getState()
+                                                    .getStatus();
+        assertEquals(status, actualStatus);
     }
 
     private static class Given {
@@ -121,6 +205,13 @@ public class PaymentAggregateShould {
                                                         .setId(aggregate.getId())
                                                         .setSuccessful(success)
                                                         .build();
+            return command;
+        }
+
+        private static CancelThirdPartyProcessorPayment cencelCommand(PaymentAggregate aggregate) {
+            final CancelThirdPartyProcessorPayment command = CancelThirdPartyProcessorPayment.newBuilder()
+                                                                                             .setId(aggregate.getId())
+                                                                                             .build();
             return command;
         }
     }
