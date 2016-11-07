@@ -37,19 +37,21 @@ import java.util.List;
  * @param <S> the type of the state held by the aggregate
  * @param <B> the type of the aggregate state builder
  *
- * @see Aggregate
  * @author Dmytro Dashenkov
+ * @see Aggregate
  */
 @SuppressWarnings("AbstractClassWithoutAbstractMethods")
-public abstract class AbstractLobbyAggregate<I, S extends Message, B extends Message.Builder> extends Aggregate<I, S, B> {
+public abstract class AbstractLobbyAggregate<I, S extends Message, B extends Message.Builder>
+        extends Aggregate<I, S, B> {
 
     /**
      * Creates a new aggregate instance.
      *
      * @param id the ID for the new aggregate
-     * @throws IllegalArgumentException if the ID is not of one of the supported types.
-     *                                  Supported types are: {@code String}, {@code Long}, {@code Integer} and {@link Message}
      *
+     * @throws IllegalArgumentException if the ID is not of one of the supported types.
+     *                                  Supported types are: {@code String}, {@code Long}, {@code Integer}
+     *                                  and {@link Message}
      * @see Aggregate
      * @see org.spine3.server.entity.Entity
      */
@@ -70,7 +72,8 @@ public abstract class AbstractLobbyAggregate<I, S extends Message, B extends Mes
 
     /**
      * Provides basic logic for handling {@code ImportEvents} command.
-     * If no special logic is required, should be overridden "as is" with {@link org.spine3.server.command.Assign} annotation.
+     * <p>If no special logic is required, should be overridden "as is" with {@link org.spine3.server.command.Assign}
+     * annotation.
      */
     public List<Event> handle(ImportEvents command, CommandContext ctx) {
         return command.getEventList();

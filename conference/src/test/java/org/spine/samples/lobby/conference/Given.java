@@ -79,7 +79,7 @@ public class Given {
         return CONFERENCE_REPOSITORY.load(CONFERENCE_ID);
     }
 
-    /* package*/ SeatType newSeatType(ConferenceId conferenceId){
+    /* package*/ SeatType newSeatType(ConferenceId conferenceId) {
         final Money price = Money.newBuilder()
                                  .setCurrencyValue(1000)
                                  .build();

@@ -46,10 +46,11 @@ public abstract class CancelSeatReservationCmdHandling extends TestCase {
 
     private static final ReservationId RESERVATION_ID = newReservationId();
 
-    private static final CancelSeatReservation CANCEL_SEAT_RESERVATION = CancelSeatReservation.newBuilder()
-                                                                                              .setReservationId(RESERVATION_ID)
-                                                                                              .setConferenceId(newConferenceId())
-                                                                                              .build();
+    private static final CancelSeatReservation CANCEL_SEAT_RESERVATION
+            = CancelSeatReservation.newBuilder()
+                                   .setReservationId(RESERVATION_ID)
+                                   .setConferenceId(newConferenceId())
+                                   .build();
 
     public CancelSeatReservation givenCommand() {
         return CANCEL_SEAT_RESERVATION;

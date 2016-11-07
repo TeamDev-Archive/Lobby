@@ -49,6 +49,7 @@ import org.spine3.server.projection.Projection;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static com.google.common.base.Throwables.propagate;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static java.lang.Math.abs;
@@ -75,6 +76,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
      * Creates a new instance.
      *
      * @param id the ID for the new instance
+     *
      * @throws IllegalArgumentException if the ID type is not supported
      */
     public ConferenceProjection(ConferenceId id) {
@@ -171,20 +173,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                                          .setQuantity(newSeatQuantity(seatTypeId, quantity))
                                          .build();
         final Command command = create(message, newCommandContext());
-        commandBus.post(command, new StreamObserver<Response>() {
-            // TODO:12-09-16:dmytro.dashenkov: Handle completion or errors.
-            @Override
-            public void onNext(Response value) {
-            }
-
-            @Override
-            public void onError(Throwable t) {
-            }
-
-            @Override
-            public void onCompleted() {
-            }
-        });
+        commandBus.post(command, ConferenceProjection.<Response>emptyObserver());
     }
 
     private void sendRemoveSeatsRequest(SeatTypeId seatTypeId, int quantity) {
@@ -194,20 +183,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                                                .build();
         final Command command = create(message, newCommandContext());
 
-        // TODO:12-09-16:dmytro.dashenkov: Handle completion or errors.
-        commandBus.post(command, new StreamObserver<Response>() {
-            @Override
-            public void onNext(Response value) {
-            }
-
-            @Override
-            public void onError(Throwable t) {
-            }
-
-            @Override
-            public void onCompleted() {
-            }
-        });
+        commandBus.post(command, ConferenceProjection.<Response>emptyObserver());
     }
 
     private static List<SeatType> filterById(final SeatTypeId id, List<SeatType> seatTypes) {
@@ -226,6 +202,23 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
                                                              .setTimestamp(getCurrentTime())
                                                              .setCommandId(Commands.generateId());
         return builder.build();
+    }
+
+    private static <T> StreamObserver<T> emptyObserver() {
+        return new StreamObserver<T>() {
+            @Override
+            public void onNext(T value) { // NoOp
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                propagate(t);
+            }
+
+            @Override
+            public void onCompleted() { // NoOp
+            }
+        };
     }
 
     private static Logger log() {

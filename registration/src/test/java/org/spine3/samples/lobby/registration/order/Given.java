@@ -151,17 +151,19 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
         private static final CommandContext CMD_CONTEXT = CommandContext.getDefaultInstance();
 
-        private static final RegisterToConference REGISTER_TO_CONFERENCE = RegisterToConference.newBuilder()
-                                                                                               .setOrderId(ORDER_ID)
-                                                                                               .setConferenceId(CONFERENCE_ID)
-                                                                                               .addAllSeat(SEATS)
-                                                                                               .build();
+        private static final RegisterToConference REGISTER_TO_CONFERENCE
+                = RegisterToConference.newBuilder()
+                                      .setOrderId(ORDER_ID)
+                                      .setConferenceId(CONFERENCE_ID)
+                                      .addAllSeat(SEATS)
+                                      .build();
 
-        private static final MarkSeatsAsReserved MARK_SEATS_AS_RESERVED = MarkSeatsAsReserved.newBuilder()
-                                                                                             .setOrderId(ORDER_ID)
-                                                                                             .setReservationExpiration(TimeUtil.getCurrentTime())
-                                                                                             .addAllSeat(SEATS)
-                                                                                             .build();
+        private static final MarkSeatsAsReserved MARK_SEATS_AS_RESERVED
+                = MarkSeatsAsReserved.newBuilder()
+                                     .setOrderId(ORDER_ID)
+                                     .setReservationExpiration(TimeUtil.getCurrentTime())
+                                     .addAllSeat(SEATS)
+                                     .build();
 
         private static final RejectOrder REJECT_ORDER = RejectOrder.newBuilder()
                                                                    .setOrderId(ORDER_ID)
@@ -171,10 +173,11 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
                                                                       .setOrderId(ORDER_ID)
                                                                       .build();
 
-        private static final AssignRegistrantDetails ASSIGN_REGISTRANT_DETAILS = AssignRegistrantDetails.newBuilder()
-                                                                                                        .setOrderId(ORDER_ID)
-                                                                                                        .setRegistrant(newPersonalInfo("John", "Black", "jblack@gmail.com"))
-                                                                                                        .build();
+        private static final AssignRegistrantDetails ASSIGN_REGISTRANT_DETAILS
+                = AssignRegistrantDetails.newBuilder()
+                                         .setOrderId(ORDER_ID)
+                                         .setRegistrant(newPersonalInfo("John", "Black", "jblack@gmail.com"))
+                                         .build();
 
         private Command() {
         }
@@ -269,9 +272,11 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
         }
 
         /* package */ static OrderRegistrantAssigned orderRegistrantAssigned() {
-            final OrderRegistrantAssigned.Builder builder = OrderRegistrantAssigned.newBuilder()
-                                                                                   .setOrderId(ORDER_ID)
-                                                                                   .setPersonalInfo(newPersonalInfo("Albert", "Einstein", "einstein@fu-berlin.de"));
+            final OrderRegistrantAssigned.Builder builder
+                    = OrderRegistrantAssigned.newBuilder()
+                                             .setOrderId(ORDER_ID)
+                                             .setPersonalInfo(
+                                                     newPersonalInfo("Albert", "Einstein", "einstein@fu-berlin.de"));
             return builder.build();
         }
     }

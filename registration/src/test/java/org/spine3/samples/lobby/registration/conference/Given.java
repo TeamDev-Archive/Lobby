@@ -44,12 +44,14 @@ import static org.spine3.samples.lobby.common.util.IdFactory.newSeatTypeId;
 class Given {
 
     static final ConferenceId CONFERENCE_ID = newConferenceId();
-    private static final ConferenceUnpublished CONFERENCE_UNPUBLISHED = ConferenceUnpublished.newBuilder()
-                                                                                             .setConferenceId(CONFERENCE_ID)
-                                                                                             .build();
-    private static final ConferencePublished CONFERENCE_PUBLISHED = ConferencePublished.newBuilder()
-                                                                                       .setConferenceId(CONFERENCE_ID)
-                                                                                       .build();
+    private static final ConferenceUnpublished CONFERENCE_UNPUBLISHED
+            = ConferenceUnpublished.newBuilder()
+                                   .setConferenceId(CONFERENCE_ID)
+                                   .build();
+    private static final ConferencePublished CONFERENCE_PUBLISHED
+            = ConferencePublished.newBuilder()
+                                 .setConferenceId(CONFERENCE_ID)
+                                 .build();
     private static final SeatTypeId SEAT_TYPE_ID = newSeatTypeId();
     private static final String CONFERENCE_NAME = "Test Conference";
     private static final String TWITTER_SEARCH = CONFERENCE_NAME + " twitter";

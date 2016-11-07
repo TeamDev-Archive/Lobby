@@ -25,7 +25,7 @@ import com.google.protobuf.Message;
 import org.spine3.protobuf.AnyPacker;
 
 /**
- * Util class for extracting {@link Message} instance form {@link Any} wrapper.
+ * Utility class for extracting {@link Message} instance from {@link Any} wrapper.
  *
  * @author Dmytro Dashenkov
  */

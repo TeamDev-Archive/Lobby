@@ -70,17 +70,21 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
                                                                                  .getValue();
 
         private static final Map<Integer, SeatAssignment> MAP_WITH_ATTENDEES = ImmutableMap.<Integer, SeatAssignment>builder()
-                .put(
-                        MAIN_SEAT_POSITION.getValue(),
-                        newSeatAssignment(MAIN_SEAT_TYPE_ID, MAIN_SEAT_POSITION, MAIN_SEAT_ATTENDEE))
-                .put(
-                        WORKSHOP_SEAT_POSITION.getValue(),
-                        newSeatAssignment(WORKSHOP_SEAT_TYPE_ID, WORKSHOP_SEAT_POSITION, newPersonalInfo("K", "White", "k@mail.com")))
+                .put(MAIN_SEAT_POSITION.getValue(), newSeatAssignment(
+                        MAIN_SEAT_TYPE_ID,
+                        MAIN_SEAT_POSITION,
+                        MAIN_SEAT_ATTENDEE))
+                .put(WORKSHOP_SEAT_POSITION.getValue(), newSeatAssignment(
+                        WORKSHOP_SEAT_TYPE_ID,
+                        WORKSHOP_SEAT_POSITION,
+                        newPersonalInfo("K", "White", "k@mail.com")))
                 .build();
 
         private static final Map<Integer, SeatAssignment> MAP_WITHOUT_ATTENDEES = ImmutableMap.<Integer, SeatAssignment>builder()
                 .put(MAIN_SEAT_POSITION.getValue(), newSeatAssignment(MAIN_SEAT_TYPE_ID, MAIN_SEAT_POSITION))
-                .put(WORKSHOP_SEAT_POSITION.getValue(), newSeatAssignment(WORKSHOP_SEAT_TYPE_ID, WORKSHOP_SEAT_POSITION))
+                .put(WORKSHOP_SEAT_POSITION.getValue(), newSeatAssignment(
+                        WORKSHOP_SEAT_TYPE_ID,
+                        WORKSHOP_SEAT_POSITION))
                 .build();
     }
 
@@ -146,17 +150,19 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
                                                                                                   .addAllSeat(SEATS)
                                                                                                   .build();
 
-        private static final AssignSeat ASSIGN_SEAT_TO_NEW_ATTENDEE = AssignSeat.newBuilder()
-                                                                                .setSeatAssignmentsId(ASSIGNMENTS_ID)
-                                                                                .setAttendee(newPersonalInfo("Man", "Newman", "new@mail.com"))
-                                                                                .setPosition(Assignments.MAIN_SEAT_POSITION)
-                                                                                .build();
+        private static final AssignSeat ASSIGN_SEAT_TO_NEW_ATTENDEE
+                = AssignSeat.newBuilder()
+                            .setSeatAssignmentsId(ASSIGNMENTS_ID)
+                            .setAttendee(newPersonalInfo("Man", "Newman", "new@mail.com"))
+                            .setPosition(Assignments.MAIN_SEAT_POSITION)
+                            .build();
 
-        private static final AssignSeat ASSIGN_SEAT_TO_UPDATED_ATTENDEE = AssignSeat.newBuilder()
-                                                                                    .setSeatAssignmentsId(ASSIGNMENTS_ID)
-                                                                                    .setAttendee(newPersonalInfo("NewGivenName", "NewFamilyName", Assignments.MAIN_SEAT_ATTENDEE_EMAIL))
-                                                                                    .setPosition(Assignments.MAIN_SEAT_POSITION)
-                                                                                    .build();
+        private static final AssignSeat ASSIGN_SEAT_TO_UPDATED_ATTENDEE
+                = AssignSeat.newBuilder()
+                            .setSeatAssignmentsId(ASSIGNMENTS_ID)
+                            .setAttendee(newPersonalInfo("NewGivenName", "NewFamilyName", Assignments.MAIN_SEAT_ATTENDEE_EMAIL))
+                            .setPosition(Assignments.MAIN_SEAT_POSITION)
+                            .build();
 
         private static final UnassignSeat UNASSIGN_SEAT = UnassignSeat.newBuilder()
                                                                       .setSeatAssignmentsId(ASSIGNMENTS_ID)
@@ -192,33 +198,40 @@ import static org.spine3.samples.lobby.registration.util.Seats.*;
      */
     /* package */ static class Event {
 
-        private static final SeatAssignmentsCreated SEAT_ASSIGNMENTS_CREATED = SeatAssignmentsCreated.newBuilder()
-                                                                                                     .setAssignmentsId(ASSIGNMENTS_ID)
-                                                                                                     .setOrderId(ORDER_ID)
-                                                                                                     .addAllAssignment(Assignments.MAP_WITH_ATTENDEES.values())
-                                                                                                     .build();
+        private static final SeatAssignmentsCreated SEAT_ASSIGNMENTS_CREATED
+                = SeatAssignmentsCreated.newBuilder()
+                                        .setAssignmentsId(ASSIGNMENTS_ID)
+                                        .setOrderId(ORDER_ID)
+                                        .addAllAssignment(Assignments.MAP_WITH_ATTENDEES.values())
+                                        .build();
 
-        private static final SeatAssigned SEAT_ASSIGNED = SeatAssigned.newBuilder()
-                                                                      .setAssignmentsId(ASSIGNMENTS_ID)
-                                                                      .setAssignment(
-                                                                              newSeatAssignment(
-                                                                                      MAIN_SEAT_TYPE_ID,
-                                                                                      Assignments.MAIN_SEAT_POSITION,
-                                                                                      newPersonalInfo("NewName", "NewSurname", "n@mail.com")
-                                                                              )
-                                                                      )
-                                                                      .build();
+        private static final SeatAssigned SEAT_ASSIGNED
+                = SeatAssigned.newBuilder()
+                              .setAssignmentsId(ASSIGNMENTS_ID)
+                              .setAssignment(
+                                      newSeatAssignment(
+                                              MAIN_SEAT_TYPE_ID,
+                                              Assignments.MAIN_SEAT_POSITION,
+                                              newPersonalInfo("NewName", "NewSurname", "n@mail.com")
+                                      )
+                              )
+                              .build();
 
-        private static final SeatUnassigned SEAT_UNASSIGNED = SeatUnassigned.newBuilder()
-                                                                            .setAssignmentsId(ASSIGNMENTS_ID)
-                                                                            .setPosition(Assignments.MAIN_SEAT_POSITION)
-                                                                            .build();
+        private static final SeatUnassigned SEAT_UNASSIGNED
+                = SeatUnassigned.newBuilder()
+                                .setAssignmentsId(ASSIGNMENTS_ID)
+                                .setPosition(Assignments.MAIN_SEAT_POSITION)
+                                .build();
 
-        private static final SeatAssignmentUpdated SEAT_ASSIGNMENT_UPDATED = SeatAssignmentUpdated.newBuilder()
-                                                                                                  .setAssignmentsId(ASSIGNMENTS_ID)
-                                                                                                  .setPosition(Assignments.MAIN_SEAT_POSITION)
-                                                                                                  .setAttendee(newPersonalInfo("UpdatedGivenName", "UpdatedFamilyName", Assignments.MAIN_SEAT_ATTENDEE_EMAIL))
-                                                                                                  .build();
+        private static final SeatAssignmentUpdated SEAT_ASSIGNMENT_UPDATED
+                = SeatAssignmentUpdated.newBuilder()
+                                       .setAssignmentsId(ASSIGNMENTS_ID)
+                                       .setPosition(Assignments.MAIN_SEAT_POSITION)
+                                       .setAttendee(newPersonalInfo(
+                                               "UpdatedGivenName",
+                                               "UpdatedFamilyName",
+                                               Assignments.MAIN_SEAT_ATTENDEE_EMAIL))
+                                       .build();
 
         private Event() {
         }

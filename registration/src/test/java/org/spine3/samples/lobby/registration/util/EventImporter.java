@@ -42,12 +42,14 @@ public class EventImporter {
      * Apply {@code ImportEvents} command to given aggregate.
      *
      * @param aggregate Handler aggregate.
-     * @param event Event to be imported.
-     * @param context Command context for {@code ImportEvents} command.
+     * @param event     Event to be imported.
+     * @param context   Command context for {@code ImportEvents} command.
      */
     public static void apply(AbstractLobbyAggregate<?, ?, ?> aggregate, Message event, CommandContext context) {
         final ImportEvents importCmd = ImportEvents.newBuilder()
-                                                   .addEvent(Events.createEvent(event, EventContext.getDefaultInstance()))
+                                                   .addEvent(Events.createEvent(
+                                                           event,
+                                                           EventContext.getDefaultInstance()))
                                                    .build();
         aggregate.dispatchForTest(importCmd, context);
     }
