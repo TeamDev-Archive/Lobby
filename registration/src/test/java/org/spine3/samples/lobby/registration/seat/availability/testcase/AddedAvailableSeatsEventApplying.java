@@ -40,8 +40,8 @@ public abstract class AddedAvailableSeatsEventApplying extends ExistAvailableSea
 
     public AddedAvailableSeats givenEvent() {
         final AddedAvailableSeats event = AddedAvailableSeats.newBuilder()
-                .setQuantity(getQuantityToAdd())
-                .build();
+                                                             .setQuantity(getQuantityToAdd())
+                                                             .build();
         return event;
     }
 

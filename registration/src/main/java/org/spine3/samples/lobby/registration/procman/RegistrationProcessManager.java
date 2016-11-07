@@ -25,14 +25,14 @@ import com.google.protobuf.Any;
 import com.google.protobuf.Duration;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
+import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spine3.base.Command;
 import org.spine3.base.CommandContext;
 import org.spine3.base.Commands;
 import org.spine3.base.EventContext;
-import org.spine3.base.Schedule;
-import org.spine3.base.UserId;
+import org.spine3.base.Response;
 import org.spine3.protobuf.Durations;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.OrderId;
@@ -54,10 +54,12 @@ import org.spine3.server.event.Subscribe;
 import org.spine3.server.procman.CommandRouted;
 import org.spine3.server.procman.ProcessManager;
 import org.spine3.time.ZoneOffset;
+import org.spine3.users.TenantId;
+import org.spine3.users.UserId;
 
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static org.spine3.base.Commands.create;
-import static org.spine3.protobuf.Timestamps.isAfter;
+import static org.spine3.protobuf.Timestamps.isLaterThan;
 import static org.spine3.samples.lobby.registration.procman.RegistrationProcess.State.*;
 
 /**
@@ -158,12 +160,14 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
             final RejectOrder rejectOrder = commandSender.newRejectOrderCommand(getState().getOrderId());
             final CancelSeatReservation cancelReservation = commandSender.newCancelSeatReservationCommand(state);
             return newRouter().of(cmd, context)
-                    .add(rejectOrder)
-                    .add(cancelReservation)
-                    .route();
+                              .add(rejectOrder)
+                              .add(cancelReservation)
+                              .route();
         } else {
             log().warn("Ignoring {} command which is no longer relevant, command ID: {}",
-                    cmd.getClass().getSimpleName(), context.getCommandId().getUuid());
+                    cmd.getClass()
+                       .getSimpleName(), context.getCommandId()
+                                                .getUuid());
             return newRouter()
                     .of(cmd, context)
                     .route();
@@ -172,30 +176,30 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
 
     private void setProcessState(RegistrationProcess.State processState) {
         final RegistrationProcess newState = getState().toBuilder()
-                .setProcessState(processState)
-                .build();
+                                                       .setProcessState(processState)
+                                                       .build();
         incrementState(newState);
     }
 
     private void updateState(OrderPlaced event) {
         final RegistrationProcess newState = getState().toBuilder()
-                .setOrderId(event.getOrderId())
-                .setConferenceId(event.getConferenceId())
-                .setReservationAutoExpiration(event.getReservationAutoExpiration())
-                .build();
+                                                       .setOrderId(event.getOrderId())
+                                                       .setConferenceId(event.getConferenceId())
+                                                       .setReservationAutoExpiration(event.getReservationAutoExpiration())
+                                                       .build();
         incrementState(newState);
     }
 
     private static boolean isReservationExpired(Timestamp reservationAutoExpiration) {
         final Timestamp now = getCurrentTime();
-        final boolean isNowAfterThanExpiration = isAfter(now, reservationAutoExpiration);
+        final boolean isNowAfterThanExpiration = isLaterThan(now, reservationAutoExpiration);
         return isNowAfterThanExpiration;
     }
 
     private void setIsCompleted(boolean isCompleted) {
         final RegistrationProcess newState = getState().toBuilder()
-                .setIsCompleted(isCompleted)
-                .build();
+                                                       .setIsCompleted(isCompleted)
+                                                       .build();
         incrementState(newState);
     }
 
@@ -222,19 +226,19 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
         private void reserveSeats(OrderId orderId, ConferenceId conferenceId, Iterable<SeatQuantity> seats) {
             final ReservationId reservationId = toReservationId(orderId);
             final MakeSeatReservation message = MakeSeatReservation.newBuilder()
-                    .setConferenceId(conferenceId)
-                    .setReservationId(reservationId)
-                    .addAllSeat(seats)
-                    .build();
+                                                                   .setConferenceId(conferenceId)
+                                                                   .setReservationId(reservationId)
+                                                                   .addAllSeat(seats)
+                                                                   .build();
             send(message);
         }
 
         private void markSeatsAsReserved(SeatsReserved event, RegistrationProcess state) {
             final MarkSeatsAsReserved message = MarkSeatsAsReserved.newBuilder()
-                    .setOrderId(state.getOrderId())
-                    .setReservationExpiration(state.getReservationAutoExpiration())
-                    .addAllSeat(event.getReservedSeatUpdatedList())
-                    .build();
+                                                                   .setOrderId(state.getOrderId())
+                                                                   .setReservationExpiration(state.getReservationAutoExpiration())
+                                                                   .addAllSeat(event.getReservedSeatUpdatedList())
+                                                                   .build();
             send(message);
         }
 
@@ -245,70 +249,89 @@ public class RegistrationProcessManager extends ProcessManager<ProcessManagerId,
 
         private RejectOrder newRejectOrderCommand(OrderId orderId) {
             final RejectOrder message = RejectOrder.newBuilder()
-                    .setOrderId(orderId)
-                    .build();
+                                                   .setOrderId(orderId)
+                                                   .build();
             return message;
         }
 
         private void confirmOrder(PaymentCompleted event) {
             final ConfirmOrder message = ConfirmOrder.newBuilder()
-                    .setOrderId(event.getOrderId())
-                    .build();
+                                                     .setOrderId(event.getOrderId())
+                                                     .build();
             send(message);
         }
 
         private void commitSeatReservation(OrderConfirmed event) {
             final ReservationId reservationId = toReservationId(event.getOrderId());
             final CommitSeatReservation message = CommitSeatReservation.newBuilder()
-                    .setReservationId(reservationId)
-                    .build();
+                                                                       .setReservationId(reservationId)
+                                                                       .build();
             send(message);
         }
 
         private void expireRegistrationProcess(OrderPlaced event, ProcessManagerId id) {
             final ExpireRegistrationProcess msg = ExpireRegistrationProcess.newBuilder()
-                    .setProcessManagerId(id)
-                    .build();
+                                                                           .setProcessManagerId(id)
+                                                                           .build();
             send(msg, RESERVATION_EXPIRATION_OFFSET);
         }
 
         private CancelSeatReservation newCancelSeatReservationCommand(RegistrationProcess state) {
             final ReservationId reservationId = toReservationId(state.getOrderId());
             final CancelSeatReservation message = CancelSeatReservation.newBuilder()
-                    .setReservationId(reservationId)
-                    .setConferenceId(state.getConferenceId())
-                    .build();
+                                                                       .setReservationId(reservationId)
+                                                                       .setConferenceId(state.getConferenceId())
+                                                                       .build();
             return message;
         }
 
         private ReservationId toReservationId(OrderId orderId) {
-            final ReservationId.Builder builder = ReservationId.newBuilder().setUuid(orderId.getUuid());
+            final ReservationId.Builder builder = ReservationId.newBuilder()
+                                                               .setUuid(orderId.getUuid());
             return builder.build();
         }
 
         private void send(Message cmdMsg) {
             // TODO:2016-02-29:alexander.litus: obtain user ID and zone offset
-            final CommandContext context = Commands.createContext(UserId.getDefaultInstance(), ZoneOffset.getDefaultInstance());
+            final CommandContext context = Commands.createContext(
+                    TenantId.getDefaultInstance(),
+                    UserId.getDefaultInstance(),
+                    ZoneOffset.getDefaultInstance());
             final Command cmd = create(cmdMsg, context);
             post(cmd);
         }
 
         private void send(Message cmdMsg, Duration delay) {
             // TODO:2016-02-29:alexander.litus: obtain user ID and zone offset
-            final Schedule schedule = Schedule.newBuilder()
-                                           .setAfter(delay)
-                                           .build();
-            final CommandContext context = Commands.createContext(UserId.getDefaultInstance(), ZoneOffset.getDefaultInstance())
-                    .toBuilder()
-                    .setSchedule(schedule)
-                    .build();
+            final CommandContext.Schedule schedule = CommandContext.Schedule.newBuilder()
+                                                                            .setDelay(delay)
+                                                                            .build();
+            final CommandContext context = Commands.createContext(
+                    TenantId.getDefaultInstance(),
+                    UserId.getDefaultInstance(),
+                    ZoneOffset.getDefaultInstance())
+                                                   .toBuilder()
+                                                   .setSchedule(schedule)
+                                                   .build();
             final Command cmd = create(cmdMsg, context);
             post(cmd);
         }
 
         @VisibleForTesting // otherwise it would be private
         protected void post(Command cmd) {
-            getCommandBus().post(cmd);
+            getCommandBus().post(cmd, new StreamObserver<Response>() {
+                @Override
+                public void onNext(Response value) {
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                }
+
+                @Override
+                public void onCompleted() {
+                }
+            });
         }
     }
 

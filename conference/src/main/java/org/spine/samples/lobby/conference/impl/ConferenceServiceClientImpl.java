@@ -27,7 +27,7 @@ import org.spine3.base.Event;
 import org.spine3.base.EventContext;
 import org.spine3.base.EventId;
 import org.spine3.base.Identifiers;
-import org.spine3.protobuf.Messages;
+import org.spine3.protobuf.AnyPacker;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.util.RandomPasswordGenerator;
 import org.spine3.samples.lobby.conference.ConferenceInfo;
@@ -208,7 +208,7 @@ public class ConferenceServiceClientImpl implements ConferenceServiceClient {
 
         final EventContext eventContext = EventContext.newBuilder()
                                                       .setEventId(eventIDMessage)
-                                                      .setProducerId(Messages.toAny(conferenceId))
+                                                      .setProducerId(AnyPacker.pack(conferenceId))
                                                       .setTimestamp(TimeUtil.getCurrentTime())
                                                       .build();
         return eventContext;

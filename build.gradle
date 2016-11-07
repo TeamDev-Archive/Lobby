@@ -1,10 +1,11 @@
 project.ext {
-    SPINE_VERSION = '0.3-SNAPSHOT'
-    SPINE_PROTO_PLUGIN_VERSION = '1.3.3'
-    PROTOBUF_VERSION = '3.0.0-beta-1'
+    SPINE_VERSION = '0.6.0'
+    PROTOBUF_VERSION = '3.0.0'
+    SPINE_PROTO_PLUGIN_VERSION = '1.4.10'
     PROTOBUF_DEPENDENCY = "com.google.protobuf:protoc:${project.PROTOBUF_VERSION}"
     MAVEN_REPOSITORY_URL = 'http://maven.teamdev.com/repository/spine'
     MAVEN_SNAPSHOTS_REPOSITORY_URL = 'http://maven.teamdev.com/repository/spine-snapshots'
+    SLF4J_VERSION = '1.7.21'
 }
 
 buildscript {
@@ -12,7 +13,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.7.4'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.0'
     }
 }
 
@@ -44,6 +45,9 @@ subprojects {
         maven {
             url = project.MAVEN_SNAPSHOTS_REPOSITORY_URL
         }
+        maven {
+            url = project.MAVEN_REPOSITORY_URL
+        }
     }
 
     buildscript {
@@ -70,8 +74,8 @@ subprojects {
         compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
 
         // SLF4J
-        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.12'
-        compile group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.12'
+        compile group: 'org.slf4j', name: 'slf4j-api', version: project.SLF4J_VERSION
+        compile group: 'org.slf4j', name: 'slf4j-jdk14', version: project.SLF4J_VERSION
 
         // Protobuf
         compile group: 'com.google.protobuf', name: 'protobuf-java', version: project.PROTOBUF_VERSION
@@ -91,6 +95,8 @@ subprojects {
 
     final String SRC_ROOT_DIR = "$projectDir/src"
     final String GEN_ROOT_DIR = "$projectDir/generated"
+    final String GEN_MAIN_JAVA_DIR = "${GEN_ROOT_DIR}/main/java"
+    final String GEN_TEST_JAVA_DIR = "${GEN_ROOT_DIR}/test/java"
 
     idea.module {
         generatedSourceDirs += file("${GEN_ROOT_DIR}/main/grpc");
@@ -100,17 +106,20 @@ subprojects {
 
     sourceSets {
         main {
-            proto.srcDirs = ["${SRC_ROOT_DIR}/main/proto"]
-            java.srcDirs = ["${GEN_ROOT_DIR}/main/java",
-                            "${GEN_ROOT_DIR}/main/spine",
+            proto {
+                srcDir "${SRC_ROOT_DIR}/main/proto"
+            }
+            java.srcDirs = [GEN_MAIN_JAVA_DIR,
                             "${SRC_ROOT_DIR}/main/java",
+                            "${GEN_ROOT_DIR}/main/spine",
                             "${GEN_ROOT_DIR}/main/grpc"]
             resources.srcDirs = ["${GEN_ROOT_DIR}/main/resources"]
         }
         test {
-            proto.srcDirs = ["${SRC_ROOT_DIR}/test/proto"]
-            java.srcDirs = ["${GEN_ROOT_DIR}/test/java",
-                            "${SRC_ROOT_DIR}/test/java"]
+            proto {
+                srcDir "${SRC_ROOT_DIR}/test/proto"
+            }
+            java.srcDirs = [GEN_TEST_JAVA_DIR, "${SRC_ROOT_DIR}/test/java"]
             resources.srcDirs = ["${GEN_ROOT_DIR}/test/resources"]
         }
     }
@@ -124,10 +133,10 @@ subprojects {
             all().each { final task ->
                 task.plugins {
                     grpc {}
-                    task.generateDescriptorSet = true
-                    task.descriptorSetOptions.path = "${projectDir}/build/descriptors/${task.sourceSet.name}.desc"
-                    task.descriptorSetOptions.includeImports = true
                 }
+                task.generateDescriptorSet = true
+                task.descriptorSetOptions.path = "${projectDir}/build/descriptors/${task.sourceSet.name}.desc"
+                task.descriptorSetOptions.includeImports = true
             }
         }
         plugins {
@@ -136,7 +145,7 @@ subprojects {
                 artifact = 'io.grpc:protoc-gen-grpc-java:0.13.2'
             }
         }
-        
+
     }
 
     jacocoTestReport {

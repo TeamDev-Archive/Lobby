@@ -28,7 +28,8 @@ import org.spine3.samples.lobby.registration.seat.availability.SeatsReservationC
 public class SeatsReservationCommittedEventApplying extends ExistAvailableSeatsAndPendingReservations {
 
     private static final SeatsReservationCommitted SEATS_RESERVATION_COMMITTED = SeatsReservationCommitted.newBuilder()
-            .setReservationId(getReservationId()).build();
+                                                                                                          .setReservationId(getReservationId())
+                                                                                                          .build();
 
     public SeatsReservationCommitted givenEvent() {
         return SEATS_RESERVATION_COMMITTED;

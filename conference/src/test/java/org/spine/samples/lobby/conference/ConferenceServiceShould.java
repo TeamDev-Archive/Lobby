@@ -25,9 +25,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.spine3.base.EmailAddress;
 import org.spine3.base.Event;
-import org.spine3.protobuf.Messages;
+import org.spine3.net.EmailAddress;
+import org.spine3.protobuf.AnyPacker;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.SeatType;
 import org.spine3.samples.lobby.conference.EditableConferenceInfo;
@@ -266,7 +266,7 @@ public class ConferenceServiceShould {
             @SuppressWarnings("ReturnOfNull")
             @Override
             public Void apply(Event event) {
-                messages.add(Messages.fromAny(event.getMessage())
+                messages.add(AnyPacker.unpack(event.getMessage())
                                      .getClass());
                 return NO_RESULT;
             }
@@ -293,7 +293,7 @@ public class ConferenceServiceShould {
             @SuppressWarnings("ReturnOfNull")
             @Override
             public Void apply(Event event) {
-                assertEquals(Messages.fromAny(event.getMessage())
+                assertEquals(AnyPacker.unpack(event.getMessage())
                                      .getClass(), ConferenceCreated.class);
                 return NO_RESULT;
             }
@@ -310,7 +310,7 @@ public class ConferenceServiceShould {
             @SuppressWarnings("ReturnOfNull")
             @Override
             public Void apply(Event event) {
-                messages.add(Messages.fromAny(event.getMessage())
+                messages.add(AnyPacker.unpack(event.getMessage())
                                      .getClass());
                 return NO_RESULT;
             }
@@ -337,7 +337,7 @@ public class ConferenceServiceShould {
             @SuppressWarnings("ReturnOfNull")
             @Override
             public Void apply(Event event) {
-                messages.add(Messages.fromAny(event.getMessage())
+                messages.add(AnyPacker.unpack(event.getMessage())
                                      .getClass());
                 return NO_RESULT;
             }
@@ -365,7 +365,7 @@ public class ConferenceServiceShould {
             @SuppressWarnings("ReturnOfNull")
             @Override
             public Void apply(Event event) {
-                messages.add(Messages.fromAny(event.getMessage())
+                messages.add(AnyPacker.unpack(event.getMessage())
                                      .getClass());
                 return NO_RESULT;
             }

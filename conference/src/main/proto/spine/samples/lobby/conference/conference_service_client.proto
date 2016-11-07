@@ -27,7 +27,7 @@ option java_multiple_files = true;
 
 import "spine/samples/lobby/common/common.proto";
 import "spine/samples/lobby/conference/contracts/conference.proto";
-import "spine/base/email.proto";
+import "spine/net/email_address.proto";
 import "spine/time/time.proto";
 import "spine/money/money.proto";
 
@@ -127,7 +127,7 @@ message UpdateConferenceResponse {
 }
 
 message FindConferenceRequest {
-    spine.base.EmailAddress emailAddress = 1;
+    spine.net.EmailAddress emailAddress = 1;
     string accessCode = 2;
 }
 

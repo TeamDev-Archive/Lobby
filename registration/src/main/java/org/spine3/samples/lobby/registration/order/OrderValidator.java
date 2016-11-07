@@ -34,43 +34,54 @@ import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
 @SuppressWarnings({"TypeMayBeWeakened"/** "OrBuilder" parameters are not applicable*/, "UtilityClass"})
 /* package */ class OrderValidator {
 
-    private OrderValidator() {}
+    private OrderValidator() {
+    }
 
-    /* package */ static void checkNotConfirmed(Order order, Message cmd) {
+    /* package */
+    static void checkNotConfirmed(Order order, Message cmd) {
         final String message = format("Cannot modify a confirmed order with ID: %s; command: %s.",
-                order.getId().getUuid(), cmd.getClass().getName()
+                order.getId()
+                     .getUuid(), cmd.getClass()
+                                    .getName()
         );
         checkState(!order.getIsConfirmed(), message);
     }
 
-    /* package */ static void checkNewState(Order order) {
+    /* package */
+    static void checkNewState(Order order) {
         checkState(order.hasId(), "No order ID in a new order state.");
-        final String orderId = order.getId().getUuid();
+        final String orderId = order.getId()
+                                    .getUuid();
         checkState(order.hasConferenceId(), "No conference ID in a new order state, ID: " + orderId);
         checkSeats(order.getSeatList(), order);
     }
 
-    /* package */ static void validateCommand(RegisterToConference cmd) {
+    /* package */
+    static void validateCommand(RegisterToConference cmd) {
         checkOrderId(cmd.hasOrderId(), cmd);
         checkConferenceId(cmd.hasConferenceId(), cmd);
         checkSeats(cmd.getSeatList(), cmd);
     }
 
-    /* package */ static void validateCommand(MarkSeatsAsReserved cmd) {
+    /* package */
+    static void validateCommand(MarkSeatsAsReserved cmd) {
         checkOrderId(cmd.hasOrderId(), cmd);
         checkMessageField(cmd.hasReservationExpiration(), "reservation expiration", cmd);
         checkSeats(cmd.getSeatList(), cmd);
     }
 
-    /* package */ static void validateCommand(RejectOrder cmd) {
+    /* package */
+    static void validateCommand(RejectOrder cmd) {
         checkOrderId(cmd.hasOrderId(), cmd);
     }
 
-    /* package */ static void validateCommand(ConfirmOrder cmd) {
+    /* package */
+    static void validateCommand(ConfirmOrder cmd) {
         checkOrderId(cmd.hasOrderId(), cmd);
     }
 
-    /* package */ static void validateCommand(AssignRegistrantDetails cmd) {
+    /* package */
+    static void validateCommand(AssignRegistrantDetails cmd) {
         checkOrderId(cmd.hasOrderId(), cmd);
         checkMessageField(cmd.hasRegistrant(), "registrant", cmd);
     }
@@ -78,11 +89,12 @@ import static org.spine3.samples.lobby.registration.util.ValidationUtils.*;
     /**
      * Ensures the truth of a {@code hasId} expression.
      *
-     * @param hasId a boolean expression stating that the {@code message} has an order ID
+     * @param hasId   a boolean expression stating that the {@code message} has an order ID
      * @param message a checked message
      * @throws IllegalArgumentException if {@code hasId} expression is false
      */
-    /* package */ static void checkOrderId(boolean hasId, Message message) {
+    /* package */
+    static void checkOrderId(boolean hasId, Message message) {
         checkMessageField(hasId, "order ID", message);
     }
 }

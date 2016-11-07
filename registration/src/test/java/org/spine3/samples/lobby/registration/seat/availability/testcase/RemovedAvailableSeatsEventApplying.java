@@ -36,8 +36,8 @@ public abstract class RemovedAvailableSeatsEventApplying extends ExistAvailableS
         primarySeat = getAvailableSeats().get(0);
         final int quantityToRemove = getQuantityToRemove();
         final RemovedAvailableSeats event = RemovedAvailableSeats.newBuilder()
-                .setQuantity(newSeatQuantity(primarySeat.getSeatTypeId(), quantityToRemove))
-                .build();
+                                                                 .setQuantity(newSeatQuantity(primarySeat.getSeatTypeId(), quantityToRemove))
+                                                                 .build();
         return event;
     }
 

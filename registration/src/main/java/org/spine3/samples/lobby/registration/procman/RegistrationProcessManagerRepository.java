@@ -47,12 +47,12 @@ public class RegistrationProcessManagerRepository
 
     private final Map<EventClass, IdFunction<ProcessManagerId, ? extends Message, EventContext>> idFromEventFunctions =
             ImmutableMap.<EventClass, IdFunction<ProcessManagerId, ? extends Message, EventContext>>builder()
-            .put(EventClass.of(OrderPlaced.class), new GetIdFromEventOrderPlaced())
-            .put(EventClass.of(OrderUpdated.class), new GetIdFromEventOrderUpdated())
-            .put(EventClass.of(SeatsReserved.class), new GetIdFromEventSeatsReserved())
-            .put(EventClass.of(OrderConfirmed.class), new GetIdFromEventOrderConfirmed())
-            .put(EventClass.of(PaymentCompleted.class), new GetIdFromEventPaymentCompleted())
-            .build();
+                    .put(EventClass.of(OrderPlaced.class), new GetIdFromEventOrderPlaced())
+                    .put(EventClass.of(OrderUpdated.class), new GetIdFromEventOrderUpdated())
+                    .put(EventClass.of(SeatsReserved.class), new GetIdFromEventSeatsReserved())
+                    .put(EventClass.of(OrderConfirmed.class), new GetIdFromEventOrderConfirmed())
+                    .put(EventClass.of(PaymentCompleted.class), new GetIdFromEventPaymentCompleted())
+                    .build();
 
     /**
      * Creates a new repository instance.
@@ -140,7 +140,9 @@ public class RegistrationProcessManagerRepository
 
         private static ProcessManagerId toProcessManagerId(String uuid) {
             final String processManagerId = PROC_MAN_ID_PREFIX + uuid;
-            return ProcessManagerId.newBuilder().setUuid(processManagerId).build();
+            return ProcessManagerId.newBuilder()
+                                   .setUuid(processManagerId)
+                                   .build();
         }
     }
 }

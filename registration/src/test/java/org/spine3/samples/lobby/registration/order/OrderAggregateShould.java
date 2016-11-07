@@ -32,6 +32,7 @@ import org.spine3.samples.lobby.registration.contracts.OrderReservationCompleted
 import org.spine3.samples.lobby.registration.contracts.OrderTotalsCalculated;
 import org.spine3.samples.lobby.registration.contracts.OrderUpdated;
 import org.spine3.samples.lobby.registration.contracts.SeatQuantity;
+import org.spine3.samples.lobby.registration.util.EventImporter;
 
 import java.util.List;
 
@@ -164,7 +165,8 @@ public class OrderAggregateShould {
 
         final OrderConfirmed event = aggregate.handle(cmd, Given.Command.context());
 
-        final List<SeatQuantity> seats = aggregate.getState().getSeatList();
+        final List<SeatQuantity> seats = aggregate.getState()
+                                                  .getSeatList();
         Assert.eventIsValid(event, cmd, seats);
     }
 
@@ -204,7 +206,7 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.newOrder();
         final OrderPlaced event = Given.Event.orderPlaced();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
         final Order state = aggregate.getState();
         assertEquals(event.getOrderId(), state.getId());
@@ -217,9 +219,10 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderUpdated event = Given.Event.orderUpdated();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
-        assertEquals(event.getSeatList(), aggregate.getState().getSeatList());
+        assertEquals(event.getSeatList(), aggregate.getState()
+                                                   .getSeatList());
     }
 
     @Test
@@ -227,9 +230,10 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderPartiallyReserved event = Given.Event.orderPartiallyReserved();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
-        assertEquals(event.getSeatList(), aggregate.getState().getSeatList());
+        assertEquals(event.getSeatList(), aggregate.getState()
+                                                   .getSeatList());
     }
 
     @Test
@@ -237,9 +241,10 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderReservationCompleted event = Given.Event.orderReservationCompleted();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
-        assertEquals(event.getSeatList(), aggregate.getState().getSeatList());
+        assertEquals(event.getSeatList(), aggregate.getState()
+                                                   .getSeatList());
     }
 
     @Test
@@ -247,9 +252,10 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderConfirmed event = Given.Event.orderConfirmed();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
-        assertEquals(true, aggregate.getState().getIsConfirmed());
+        assertEquals(true, aggregate.getState()
+                                    .getIsConfirmed());
     }
 
     @Test
@@ -257,9 +263,10 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderTotalsCalculated event = Given.Event.orderTotalsCalculated();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
-        assertEquals(event.getTotal(), aggregate.getState().getPrice());
+        assertEquals(event.getTotal(), aggregate.getState()
+                                                .getPrice());
     }
 
     @Test
@@ -267,9 +274,10 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderExpired event = Given.Event.orderExpired();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
-        assertTrue(aggregate.getState().getIsExpired());
+        assertTrue(aggregate.getState()
+                            .getIsExpired());
     }
 
     @Test
@@ -277,9 +285,10 @@ public class OrderAggregateShould {
         final OrderAggregate aggregate = given.placedOrder();
         final OrderRegistrantAssigned event = Given.Event.orderRegistrantAssigned();
 
-        aggregate.applyForTest(event, Given.Command.context());
+        EventImporter.apply(aggregate, event, Given.Command.context());
 
-        assertEquals(event.getPersonalInfo(), aggregate.getState().getRegistrant());
+        assertEquals(event.getPersonalInfo(), aggregate.getState()
+                                                       .getRegistrant());
     }
 
     private static class Assert {

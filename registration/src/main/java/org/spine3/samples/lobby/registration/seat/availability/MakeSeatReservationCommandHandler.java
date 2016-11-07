@@ -107,10 +107,11 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
     }
 
     private int findReservedSeatCount(SeatTypeId seatTypeId, ReservationId reservationId) {
-        final SeatQuantities quantities = state.getPendingReservations().get(reservationId.getUuid());
+        final SeatQuantities quantities = state.getPendingReservations()
+                                               .get(reservationId.getUuid());
         final List<SeatQuantity> reservedSeats = (quantities != null) ?
-                quantities.getItemList() :
-                Collections.<SeatQuantity>emptyList();
+                                                 quantities.getItemList() :
+                                                 Collections.<SeatQuantity>emptyList();
         final SeatQuantity reservedOne = Seats.findById(reservedSeats, seatTypeId);
         final int reservedCount = reservedOne.getQuantity();
         return reservedCount;

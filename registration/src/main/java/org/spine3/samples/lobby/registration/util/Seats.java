@@ -41,8 +41,8 @@ import static org.spine3.samples.lobby.common.util.IdFactory.newSeatTypeId;
 /**
  * The utility class for working with objects related to seats.
  *
- * @see SeatQuantity
  * @author Alexander Litus
+ * @see SeatQuantity
  */
 @SuppressWarnings("UtilityClass")
 public class Seats {
@@ -55,7 +55,9 @@ public class Seats {
      */
     public static SeatsAvailabilityId newSeatsAvailabilityId() {
         final String id = Identifiers.newUuid();
-        return SeatsAvailabilityId.newBuilder().setUuid(id).build();
+        return SeatsAvailabilityId.newBuilder()
+                                  .setUuid(id)
+                                  .build();
     }
 
     /**
@@ -63,7 +65,9 @@ public class Seats {
      */
     public static SeatAssignmentsId newSeatAssignmentsId() {
         final String id = Identifiers.newUuid();
-        return SeatAssignmentsId.newBuilder().setUuid(id).build();
+        return SeatAssignmentsId.newBuilder()
+                                .setUuid(id)
+                                .build();
     }
 
     /**
@@ -88,7 +92,9 @@ public class Seats {
      * Creates a new {@code SeatQuantities} instance from the given {@code seats}.
      */
     public static SeatQuantities newSeatQuantities(Iterable<SeatQuantity> seats) {
-        final SeatQuantities result = SeatQuantities.newBuilder().addAllItem(seats).build();
+        final SeatQuantities result = SeatQuantities.newBuilder()
+                                                    .addAllItem(seats)
+                                                    .build();
         return result;
     }
 
@@ -106,8 +112,8 @@ public class Seats {
      */
     public static SeatQuantity newSeatQuantity(SeatTypeId id, int quantity) {
         final SeatQuantity.Builder result = SeatQuantity.newBuilder()
-                .setSeatTypeId(id)
-                .setQuantity(quantity);
+                                                        .setSeatTypeId(id)
+                                                        .setQuantity(quantity);
         return result.build();
     }
 
@@ -125,8 +131,9 @@ public class Seats {
             public boolean apply(@Nullable SeatQuantity seat) {
                 final boolean result =
                         (seat != null) &&
-                        seat.hasSeatTypeId() &&
-                        seat.getSeatTypeId().equals(id);
+                                seat.hasSeatTypeId() &&
+                                seat.getSeatTypeId()
+                                    .equals(id);
                 return result;
             }
         }, defaultResult);
@@ -148,8 +155,8 @@ public class Seats {
     /**
      * Filters seat assignments items by the {@code seatTypeId}.
      *
-     * @param seats         the collection to filter
-     * @param seatTypeId    the ID to use in filtering
+     * @param seats      the collection to filter
+     * @param seatTypeId the ID to use in filtering
      * @return the filtered items
      */
     public static FluentIterable<SeatAssignment> filterById(Iterable<SeatAssignment> seats, final SeatTypeId seatTypeId) {
@@ -158,8 +165,9 @@ public class Seats {
             public boolean apply(@Nullable SeatAssignment seat) {
                 final boolean result =
                         (seat != null) &&
-                        seat.hasSeatTypeId() &&
-                        seat.getSeatTypeId().equals(seatTypeId);
+                                seat.hasSeatTypeId() &&
+                                seat.getSeatTypeId()
+                                    .equals(seatTypeId);
                 return result;
             }
         });
@@ -170,6 +178,8 @@ public class Seats {
      * Creates a new {@code SeatPosition} with the given value.
      */
     public static SeatPosition newSeatPosition(int position) {
-        return SeatPosition.newBuilder().setValue(position).build();
+        return SeatPosition.newBuilder()
+                           .setValue(position)
+                           .build();
     }
 }

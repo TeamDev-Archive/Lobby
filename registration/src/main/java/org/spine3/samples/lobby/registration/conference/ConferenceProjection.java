@@ -22,12 +22,14 @@ package org.spine3.samples.lobby.registration.conference;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
+import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spine3.base.Command;
 import org.spine3.base.CommandContext;
 import org.spine3.base.Commands;
 import org.spine3.base.EventContext;
+import org.spine3.base.Response;
 import org.spine3.samples.lobby.common.ConferenceId;
 import org.spine3.samples.lobby.common.SeatType;
 import org.spine3.samples.lobby.common.SeatTypeId;
@@ -47,6 +49,7 @@ import org.spine3.server.projection.Projection;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static com.google.common.base.Throwables.propagate;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.protobuf.util.TimeUtil.getCurrentTime;
 import static java.lang.Math.abs;
@@ -56,9 +59,9 @@ import static org.spine3.samples.lobby.registration.util.Seats.newSeatQuantity;
 
 /**
  * Holds a structural representation of data extracted from a stream of events related to a conference.
- *
+ * <p>
  * <p> Contains the data about the conference for registrants.
- *
+ * <p>
  * <p> Also notifies about some of the data changes by sending commands.
  *
  * @author Alexander Litus
@@ -73,6 +76,7 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
      * Creates a new instance.
      *
      * @param id the ID for the new instance
+     *
      * @throws IllegalArgumentException if the ID type is not supported
      */
     public ConferenceProjection(ConferenceId id) {
@@ -117,7 +121,8 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         final SeatType seatType = event.getSeatType();
         final SeatTypeId id = seatType.getId();
         if (seatTypesListContains(id)) {
-            log().warn(format("Seat type with ID %s already exists. Conference ID: %s", id.getUuid(), conference.getId().getUuid()));
+            log().warn(format("Seat type with ID %s already exists. Conference ID: %s", id.getUuid(), conference.getId()
+                                                                                                                .getUuid()));
             return;
         }
         conference.addSeatType(seatType);
@@ -140,7 +145,8 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
 
         final List<SeatType> filtered = filterById(id, seatTypes);
         if (filtered.isEmpty()) {
-            log().warn("No seat type with ID %s; conference ID: %s", id.getUuid(), conference.getId().getUuid());
+            log().warn("No seat type with ID %s; conference ID: %s", id.getUuid(), conference.getId()
+                                                                                             .getUuid());
             return;
         }
         final SeatType oldSeatType = filtered.get(0);
@@ -156,27 +162,28 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
         final int difference = newQuantity - oldQuantity;
         if (difference > 0) {
             sendAddSeatsRequest(id, difference);
-        } else if(difference < 0) {
+        } else if (difference < 0) {
             sendRemoveSeatsRequest(id, abs(difference));
         }
     }
 
     private void sendAddSeatsRequest(SeatTypeId seatTypeId, int quantity) {
         final AddSeats message = AddSeats.newBuilder()
-                .setConferenceId(getState().getId())
-                .setQuantity(newSeatQuantity(seatTypeId, quantity))
-                .build();
+                                         .setConferenceId(getState().getId())
+                                         .setQuantity(newSeatQuantity(seatTypeId, quantity))
+                                         .build();
         final Command command = create(message, newCommandContext());
-        commandBus.post(command);
+        commandBus.post(command, ConferenceProjection.<Response>emptyObserver());
     }
 
     private void sendRemoveSeatsRequest(SeatTypeId seatTypeId, int quantity) {
         final RemoveSeats message = RemoveSeats.newBuilder()
-                .setConferenceId(getState().getId())
-                .setQuantity(newSeatQuantity(seatTypeId, quantity))
-                .build();
+                                               .setConferenceId(getState().getId())
+                                               .setQuantity(newSeatQuantity(seatTypeId, quantity))
+                                               .build();
         final Command command = create(message, newCommandContext());
-        commandBus.post(command);
+
+        commandBus.post(command, ConferenceProjection.<Response>emptyObserver());
     }
 
     private static List<SeatType> filterById(final SeatTypeId id, List<SeatType> seatTypes) {
@@ -192,9 +199,26 @@ public class ConferenceProjection extends Projection<ConferenceId, Conference> {
 
     private static CommandContext newCommandContext() {
         final CommandContext.Builder builder = CommandContext.newBuilder()
-                .setTimestamp(getCurrentTime())
-                .setCommandId(Commands.generateId());
+                                                             .setTimestamp(getCurrentTime())
+                                                             .setCommandId(Commands.generateId());
         return builder.build();
+    }
+
+    private static <T> StreamObserver<T> emptyObserver() {
+        return new StreamObserver<T>() {
+            @Override
+            public void onNext(T value) { // NoOp
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                propagate(t);
+            }
+
+            @Override
+            public void onCompleted() { // NoOp
+            }
+        };
     }
 
     private static Logger log() {

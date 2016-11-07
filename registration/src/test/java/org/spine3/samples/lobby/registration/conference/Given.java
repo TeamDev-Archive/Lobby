@@ -44,35 +44,47 @@ import static org.spine3.samples.lobby.common.util.IdFactory.newSeatTypeId;
 class Given {
 
     static final ConferenceId CONFERENCE_ID = newConferenceId();
-    private static final ConferenceUnpublished CONFERENCE_UNPUBLISHED = ConferenceUnpublished.newBuilder().setConferenceId(CONFERENCE_ID).build();
-    private static final ConferencePublished CONFERENCE_PUBLISHED = ConferencePublished.newBuilder().setConferenceId(CONFERENCE_ID).build();
+    private static final ConferenceUnpublished CONFERENCE_UNPUBLISHED
+            = ConferenceUnpublished.newBuilder()
+                                   .setConferenceId(CONFERENCE_ID)
+                                   .build();
+    private static final ConferencePublished CONFERENCE_PUBLISHED
+            = ConferencePublished.newBuilder()
+                                 .setConferenceId(CONFERENCE_ID)
+                                 .build();
     private static final SeatTypeId SEAT_TYPE_ID = newSeatTypeId();
     private static final String CONFERENCE_NAME = "Test Conference";
     private static final String TWITTER_SEARCH = CONFERENCE_NAME + " twitter";
     private static final String TAGLINE = CONFERENCE_NAME + " tagline";
     private static final String LOCATION = CONFERENCE_NAME + " location";
     private static final String DESCRIPTION = CONFERENCE_NAME + " description";
-    private static final ConferenceSlug.Builder SLUG = ConferenceSlug.newBuilder().setValue("slug");
+    private static final ConferenceSlug.Builder SLUG = ConferenceSlug.newBuilder()
+                                                                     .setValue("slug");
     private static final Conference CONFERENCE = Conference.newBuilder()
-            .setId(CONFERENCE_ID)
-            .setSlug(SLUG)
-            .setName(CONFERENCE_NAME)
-            .setDescription(DESCRIPTION)
-            .setLocation(LOCATION)
-            .setTagline(TAGLINE)
-            .setTwitterSearch(TWITTER_SEARCH).build();
+                                                           .setId(CONFERENCE_ID)
+                                                           .setSlug(SLUG)
+                                                           .setName(CONFERENCE_NAME)
+                                                           .setDescription(DESCRIPTION)
+                                                           .setLocation(LOCATION)
+                                                           .setTagline(TAGLINE)
+                                                           .setTwitterSearch(TWITTER_SEARCH)
+                                                           .build();
 
     private Given() {
     }
 
     static ConferenceCreated conferenceCreated() {
         final Conference conference = conference();
-        return ConferenceCreated.newBuilder().setConference(conference).build();
+        return ConferenceCreated.newBuilder()
+                                .setConference(conference)
+                                .build();
     }
 
     static ConferenceUpdated conferenceUpdated() {
         final Conference conference = conference();
-        return ConferenceUpdated.newBuilder().setConference(conference).build();
+        return ConferenceUpdated.newBuilder()
+                                .setConference(conference)
+                                .build();
     }
 
     static ConferencePublished conferencePublished() {
@@ -85,22 +97,30 @@ class Given {
 
     static SeatTypeCreated seatTypeCreated(int seatQuantity) {
         final SeatType seatType = newSeatType("descriptionForSeatTypeCreatedEvent", seatQuantity);
-        return SeatTypeCreated.newBuilder().setSeatType(seatType).build();
+        return SeatTypeCreated.newBuilder()
+                              .setSeatType(seatType)
+                              .build();
     }
 
     static SeatTypeUpdated seatTypeUpdated(int seatQuantity) {
         final SeatType seatType = newSeatType("descriptionForSeatTypeUpdatedEvent", seatQuantity);
-        return SeatTypeUpdated.newBuilder().setSeatType(seatType).build();
+        return SeatTypeUpdated.newBuilder()
+                              .setSeatType(seatType)
+                              .build();
     }
 
     static SeatTypeCreated seatTypeCreated(String description, int seatQuantity) {
         final SeatType seatType = newSeatType(description, seatQuantity);
-        return SeatTypeCreated.newBuilder().setSeatType(seatType).build();
+        return SeatTypeCreated.newBuilder()
+                              .setSeatType(seatType)
+                              .build();
     }
 
     static SeatTypeUpdated seatTypeUpdated(String description, int seatQuantity) {
         final SeatType seatType = newSeatType(description, seatQuantity);
-        return SeatTypeUpdated.newBuilder().setSeatType(seatType).build();
+        return SeatTypeUpdated.newBuilder()
+                              .setSeatType(seatType)
+                              .build();
     }
 
     static Conference conference() {
@@ -109,10 +129,10 @@ class Given {
 
     static SeatType newSeatType(String description, int seatQuantity) {
         final SeatType.Builder result = SeatType.newBuilder()
-                .setConferenceId(CONFERENCE_ID)
-                .setId(SEAT_TYPE_ID)
-                .setDescription(description)
-                .setQuantityTotal(seatQuantity);
+                                                .setConferenceId(CONFERENCE_ID)
+                                                .setId(SEAT_TYPE_ID)
+                                                .setDescription(description)
+                                                .setQuantityTotal(seatQuantity);
         return result.build();
     }
 }

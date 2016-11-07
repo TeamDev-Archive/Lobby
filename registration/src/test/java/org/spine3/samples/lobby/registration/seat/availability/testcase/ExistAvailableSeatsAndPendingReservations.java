@@ -46,7 +46,8 @@ public class ExistAvailableSeatsAndPendingReservations extends TestCase {
             newSeatQuantity(56), newSeatQuantity(38));
 
     private static final ImmutableMap<String, SeatQuantities> PENDING_RESERVATIONS = ImmutableMap.<String, SeatQuantities>builder()
-            .put(RESERVATION_ID.getUuid(), RESERVED_SEATS).build();
+            .put(RESERVATION_ID.getUuid(), RESERVED_SEATS)
+            .build();
 
     private static final List<SeatQuantity> AVAILABLE_SEATS = ImmutableList.of(
             newSeatQuantity(110),
@@ -55,11 +56,12 @@ public class ExistAvailableSeatsAndPendingReservations extends TestCase {
     @Override
     public SeatsAvailabilityAggregate givenAggregate() {
         final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
-        final SeatsAvailability state = aggregate.getState().toBuilder()
-                .addAllAvailableSeat(AVAILABLE_SEATS)
-                .putAllPendingReservations(PENDING_RESERVATIONS)
-                .build();
-        aggregate.incrementStateForTest(state);
+        final SeatsAvailability state = aggregate.getState()
+                                                 .toBuilder()
+                                                 .addAllAvailableSeat(AVAILABLE_SEATS)
+                                                 .putAllPendingReservations(PENDING_RESERVATIONS)
+                                                 .build();
+        aggregate.incrementAggregateState(state);
         return aggregate;
     }
 

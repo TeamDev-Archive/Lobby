@@ -46,9 +46,9 @@ public class RemoveSeatsCmdHandling extends TestCase {
     private static final SeatQuantity AVAILABLE_QUANTITY = newSeatQuantity(SEAT_TYPE_ID, 80);
 
     private static final RemoveSeats REMOVE_SEATS = RemoveSeats.newBuilder()
-            .setQuantity(newSeatQuantity(SEAT_TYPE_ID, SEAT_QUANTITY_TO_REMOVE))
-            .setConferenceId(newConferenceId())
-            .build();
+                                                               .setQuantity(newSeatQuantity(SEAT_TYPE_ID, SEAT_QUANTITY_TO_REMOVE))
+                                                               .setConferenceId(newConferenceId())
+                                                               .build();
 
     public RemoveSeats givenCommand() {
         return REMOVE_SEATS;
@@ -61,10 +61,11 @@ public class RemoveSeatsCmdHandling extends TestCase {
     @Override
     public SeatsAvailabilityAggregate givenAggregate() {
         final SeatsAvailabilityAggregate aggregate = super.givenAggregate();
-        final SeatsAvailability state = aggregate.getState().toBuilder()
-                .addAvailableSeat(AVAILABLE_QUANTITY)
-                .build();
-        aggregate.incrementStateForTest(state);
+        final SeatsAvailability state = aggregate.getState()
+                                                 .toBuilder()
+                                                 .addAvailableSeat(AVAILABLE_QUANTITY)
+                                                 .build();
+        aggregate.incrementAggregateState(state);
         return aggregate;
     }
 
