@@ -70,6 +70,7 @@ public class PaymentAggregate
         final OrderTotal total = command.getTotal();
         final Money orderCost = total.getTotalPrice();
         final ThirdPartyProcessorPayment.Builder newState = getState().toBuilder()
+                                                                      .setId(getId())
                                                                       .setPrice(orderCost);
         markInitialized(newState);
 
@@ -90,7 +91,7 @@ public class PaymentAggregate
                                                              .setStatus(status)
                                                              .build();
         incrementState(payment);
-        final PaymentId id = payment.getId();
+        final PaymentId id = getId();
         final Message resultEvent = successful
                                     ? PaymentCompleted.newBuilder()
                                                       .setId(id)
