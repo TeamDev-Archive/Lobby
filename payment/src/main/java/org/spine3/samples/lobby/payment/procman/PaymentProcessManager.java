@@ -54,7 +54,7 @@ import static org.spine3.samples.lobby.payment.procman.PaymentProcess.PaymentSta
  */
 public class PaymentProcessManager extends ProcessManager<PaymentProcessManagerId, PaymentProcess> {
 
-    private final BoundedContext boundedContext;
+    private BoundedContext boundedContext;
 
     /**
      * Creates a new instance.
@@ -63,9 +63,12 @@ public class PaymentProcessManager extends ProcessManager<PaymentProcessManagerI
      *
      * @throws IllegalArgumentException if the ID type is unsupported
      */
-    public PaymentProcessManager(PaymentProcessManagerId id, BoundedContext boundedContext) {
+    public PaymentProcessManager(PaymentProcessManagerId id) {
         super(id);
-        this.boundedContext = boundedContext;
+    }
+
+    public void setBoundedContext(BoundedContext context) {
+        this.boundedContext = context;
     }
 
     @Assign
