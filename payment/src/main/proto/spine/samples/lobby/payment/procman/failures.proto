@@ -1,0 +1,42 @@
+//
+// Copyright 2015, TeamDev Ltd. All rights reserved.
+//
+// Redistribution and use in source and/or binary forms, with or without
+// modification, must retain the above copyright notice and the following
+// disclaimer.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+syntax = "proto3";
+
+package spine.samples.lobby.payment.procman;
+
+option (type_url_prefix) = "type.lobby.spine3.org";
+option java_package="org.spine3.samples.lobby.payment.procman";
+
+import "spine/annotations.proto";
+import "spine/samples/lobby/payment/procman/procman.proto";
+
+// Business failure thrown in the procman when trying to initialize second process with the same ID.
+message SecondInstantiationAttempt {
+
+    // ID of the existing process
+    spine.samples.lobby.payment.procman.PaymentProcessManagerId processId = 1;
+}
+
+// // Business failure thrown in the procman when trying to move process to the resoled state if it's already in it.
+message SecondResolutionAttempt {
+
+    // ID of the existing process
+    spine.samples.lobby.payment.procman.PaymentProcessManagerId processId = 1;
+}

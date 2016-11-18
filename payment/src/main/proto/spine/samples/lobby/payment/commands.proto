@@ -1,0 +1,65 @@
+//
+// Copyright 2015, TeamDev Ltd. All rights reserved.
+//
+// Redistribution and use in source and/or binary forms, with or without
+// modification, must retain the above copyright notice and the following
+// disclaimer.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+syntax = "proto3";
+
+package spine.samples.lobby.payment;
+
+option (type_url_prefix) = "type.lobby.spine3.org";
+option java_package="org.spine3.samples.lobby.payment";
+option java_outer_classname = "CommandsProto";
+option java_multiple_files = true;
+
+import "spine/annotations.proto";
+import "spine/samples/lobby/registration/contracts/registration.proto";
+import "spine/samples/lobby/payment/payment.proto";
+
+// Command to create new ThirdPartyProcessorPayment.
+message InstantiateThirdPartyProcessorPayment {
+
+    // Summary info about the order including spine.money.Money
+    spine.samples.lobby.registration.contracts.OrderTotal total = 1;
+}
+
+// Command to initialize newly created Payment aggregate.
+message InitializeThirdPartyProcessorPayment {
+
+    // Payment identifier
+    spine.samples.lobby.payment.PaymentId id = 1;
+
+    // Summary info about the order including spine.money.Money
+    spine.samples.lobby.registration.contracts.OrderTotal total = 2;
+}
+
+// Command stating the completion of the payment processing by the third-party processor.
+message CompleteThirdPartyProcessorPayment {
+
+    // Payment identifier
+    spine.samples.lobby.payment.PaymentId id = 1;
+
+    // Was the payment successful?
+    bool successful = 2;
+}
+
+// Command stating the cancellation of the payment by the user.
+message CancelThirdPartyProcessorPayment {
+
+    // Payment identifier
+    spine.samples.lobby.payment.PaymentId id = 1;
+}

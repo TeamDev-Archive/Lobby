@@ -1,0 +1,58 @@
+//
+// Copyright 2015, TeamDev Ltd. All rights reserved.
+//
+// Redistribution and use in source and/or binary forms, with or without
+// modification, must retain the above copyright notice and the following
+// disclaimer.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+syntax = "proto3";
+
+package spine.samples.lobby.payment;
+
+option (type_url_prefix) = "type.lobby.spine3.org";
+option java_package="org.spine3.samples.lobby.payment";
+
+import "spine/annotations.proto";
+import "spine/samples/lobby/payment/payment.proto";
+
+// Business failure which is thrown if the Payment aggregate had already been initialized but received another
+// initialization command.
+message SecondInitializationAttempt {
+
+    // ID of the existing process
+    spine.samples.lobby.payment.PaymentId processId = 1;
+}
+
+// Business failure which is thrown if the Payment aggregate had never been initialized but received a command or event
+// stating some result of a payment.
+message NotInitialized {
+
+    // ID of the existing process
+    spine.samples.lobby.payment.PaymentId processId = 1;
+}
+
+// Business failure which is thrown if the Payment aggregate had already received a command or an event stating
+// some result of the payment but had received one before.
+message AmbiguousPaymentResult {
+
+    // ID of the existing process
+    spine.samples.lobby.payment.PaymentId processId = 1;
+
+    // Current status of the payment aggregate
+    spine.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus current_status = 2;
+
+    // Status of the payment aggregate that was attempted to be assigned
+    spine.samples.lobby.payment.ThirdPartyProcessorPayment.PaymentStatus new_status = 3;
+}

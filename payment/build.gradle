@@ -1,0 +1,17 @@
+dependencies {
+    compile project(':common')
+    compile project(':registration-contracts')
+    compile project(':conference-contracts')
+    compile project(':payment-contracts')
+}
+
+buildscript {
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+    dependencies {
+        classpath group: 'org.spine3.tools', name: 'protobuf-plugin', version: "$SPINE_PROTO_PLUGIN_VERSION", changing: true
+    }
+}
+
+apply plugin: 'org.spine3.tools.protobuf-plugin';

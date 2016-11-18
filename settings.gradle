@@ -20,3 +20,5 @@ project(':conference-contracts').projectDir = "$rootDir/conference-contracts" as
 
 include ':conference'
 project(':conference').projectDir = "$rootDir/conference" as File
+include 'payment'
+
