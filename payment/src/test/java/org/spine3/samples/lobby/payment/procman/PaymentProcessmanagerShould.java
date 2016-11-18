@@ -58,7 +58,7 @@ public class PaymentProcessmanagerShould {
         final InstantiateThirdPartyProcessorPayment command = Given.instantiateCommand();
 
         final CommandRouted routedCommand = procMan.handle(command, CommandContext.getDefaultInstance());
-        assertEquals(0, procMan.getVersion(), 1);
+        assertEquals(1, procMan.getVersion());
         final Collection<Command> commands = routedCommand.getProducedList();
         assertEquals(1, commands.size());
 
@@ -69,25 +69,35 @@ public class PaymentProcessmanagerShould {
 
     private static class Given {
 
+        private static final PaymentProcessManagerRepository REPOSITORY = new PaymentProcessManagerRepository(boundedContext());
+        private static final BoundedContext boundedContext = boundedContext();
+
+        @SuppressWarnings({"NonThreadSafeLazyInitialization", "StaticVariableUsedBeforeInitialization"})
         private static BoundedContext boundedContext() {
-            final StorageFactory storageFactory = InMemoryStorageFactory.getInstance();
-            final CommandStore commandStore = new CommandStore(storageFactory.createCommandStorage());
-            final CommandBus commandBus = CommandBus.newInstance(commandStore);
-            final BoundedContext bc = BoundedContext.newBuilder()
-                                                    .setName("Payment-bc")
-                                                    .setMultitenant(false)
-                                                    .setStorageFactory(storageFactory)
-                                                    .setCommandBus(commandBus)
-                                                    .build();
-            return bc;
+            if (boundedContext == null) {
+                final StorageFactory storageFactory = InMemoryStorageFactory.getInstance();
+                final CommandStore commandStore = new CommandStore(storageFactory.createCommandStorage());
+                final CommandBus commandBus = CommandBus.newInstance(commandStore);
+                final BoundedContext bc = BoundedContext.newBuilder()
+                                                        .setName("Payment-bc")
+                                                        .setMultitenant(false)
+                                                        .setStorageFactory(storageFactory)
+                                                        .setCommandBus(commandBus)
+                                                        .build();
+                return bc;
+            }
+
+            return boundedContext;
         }
 
         private static PaymentProcessManager newProcMan(BoundedContext bc) {
             final PaymentProcessManagerId id = PaymentProcessManagerId.newBuilder()
-                                                                      .setValue(Identifiers.newUuid())
-                                                                      .build();
-            final PaymentProcessManager procMan = new PaymentProcessManager(id, bc);
-            return procMan;
+                    .setValue(Identifiers.newUuid())
+                    .build();
+            // Create and pass procman through the whole initialization cycle
+            final PaymentProcessManager initialized = REPOSITORY.load(id);
+            initialized.setBoundedContext(bc);
+            return initialized;
         }
 
         private static InstantiateThirdPartyProcessorPayment instantiateCommand() {
